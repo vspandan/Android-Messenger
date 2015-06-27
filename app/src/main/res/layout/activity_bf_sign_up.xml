@@ -1,0 +1,99 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootRL"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:background="@drawable/screen1">
+
+
+<!--
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="City"
+        android:id="@+id/city"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="250dp"
+        android:textColor="#ffffffff"
+        android:textColorHighlight="#ffffffff" />
+-->
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:ems="10"
+        android:id="@+id/phoneValue"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:hint="@string/enter_phn_no"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="85dp" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:ems="10"
+        android:id="@+id/nameValue"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:hint="@string/enter_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="135dp" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/addressLine1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:hint="@string/enter_addr"
+        android:layout_marginTop="185dp" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/streetValue"
+        android:hint="@string/enter_street"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="235dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"/>
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/landmark"
+        android:hint="@string/enter_landmark"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="285dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"/>
+
+    <Spinner
+        android:id="@+id/cityValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/city_arrays"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="350dp"
+        android:clickable="true" /><![CDATA[
+    />
+    ]]>
+
+    <Button
+        android:layout_width="124dip"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        android:id="@+id/confirm"
+        android:layout_marginTop="400dp"
+        android:layout_marginLeft="125dp" />
+
+</RelativeLayout>
