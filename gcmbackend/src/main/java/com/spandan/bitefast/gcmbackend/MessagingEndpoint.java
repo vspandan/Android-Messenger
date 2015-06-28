@@ -13,6 +13,8 @@ import com.google.android.gcm.server.Sender;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.spandan.bitefast.gcmbackend.models.RegistrationRecord;
+import com.spandan.bitefast.gcmbackend.models.UserBean;
 
 import org.json.simple.JSONValue;
 
@@ -36,23 +38,10 @@ public class MessagingEndpoint {
     private static final String API_KEY = System.getProperty("gcm.api.key");
     private Sender sender=null;
 
-
-    public void addUserRecord(@Named("name") String name, @Named("addressLine1") String addressLine1,  @Named("street") String street, @Named("city") String city, @Named("phoneNum") String phoneNum, @Named("country") String country, @Named("password") String password) {
-        UserRecord user=new UserRecord( name, addressLine1, street, city, phoneNum, country,false, "", password);
-        ofy().save().entity(user).now();
-    }
-
-    public UserRecord findUser(@Named("PhoneNum") String phoneNum) {
-        return ofy().load().type(UserRecord.class).filter("phoneNum", phoneNum).first().now();
-    }
-
-    public UserRecord verifiedUser(@Named("PhoneNum") String phoneNum) {
-        UserRecord user= ofy().load().type(UserRecord.class).filter("phoneNum", phoneNum).first().now();
-        if (user.isVerified())
-            return user;
-        else
-            return null;
-
+    @ApiMethod(name = "insertUser")
+    public void insertUser(@Named("phoneNum") int phoneNum, @Named("isAdmin") boolean isAdmin){
+        UserBean bean = new UserBean(isAdmin,phoneNum);
+        ofy().save().entity(bean).now();
     }
 
     public void sendMessage(@Named("message") String message,@Named("redId") String regId) throws IOException {

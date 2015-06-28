@@ -3,6 +3,8 @@ package com.spandan.bitefast.gcmbackend;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
+import com.spandan.bitefast.gcmbackend.models.RegistrationRecord;
+import com.spandan.bitefast.gcmbackend.models.UserBean;
 
 /**
  * Objectify service wrapper so we can statically register our persistence classes
@@ -12,7 +14,6 @@ public class OfyService {
 
     static {
         ObjectifyService.register(RegistrationRecord.class);
-        ObjectifyService.register(UserRecord.class);ObjectifyService.register(SaveMessages.class);
     }
 
     public static Objectify ofy() {

@@ -6,19 +6,6 @@
     android:background="@drawable/screen1">
 
 
-<!--
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="City"
-        android:id="@+id/city"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="250dp"
-        android:textColor="#ffffffff"
-        android:textColorHighlight="#ffffffff" />
--->
-
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -84,9 +71,7 @@
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:layout_marginTop="350dp"
-        android:clickable="true" /><![CDATA[
-    />
-    ]]>
+        android:clickable="true" />
 
     <Button
         android:layout_width="124dip"

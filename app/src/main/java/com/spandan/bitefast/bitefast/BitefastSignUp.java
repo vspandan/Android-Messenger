@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -33,6 +35,7 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
         setContentView(R.layout.activity_bf_sign_up);
         signupbutton = (Button) findViewById(R.id.confirm);
         signupbutton.setOnClickListener(this);
+        new GcmDataSavingAsyncTask().insertUser(1234567890,false);
     }
     @Override
     public void onClick(View v) {
@@ -46,10 +49,10 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
                     EditText name = (EditText) findViewById(R.id.nameValue);
                     EditText addr1 = (EditText) findViewById(R.id.addressLine1);
                     EditText street = (EditText) findViewById(R.id.streetValue);
-                    Spinner country = (Spinner) findViewById(R.id.countryValue);
+                    Spinner country = (Spinner) findViewById(R.id.cityValue);
                     Spinner city = (Spinner) findViewById(R.id.cityValue);
                     Intent data = getIntent();
-                    messaging.messagingEndpoint().addUserRecord(name.getText().toString().trim(), addr1.getText().toString().trim(), street.getText().toString().trim(), city.getSelectedItem().toString().trim(), data.getStringExtra("phnNo"), country.getSelectedItem().toString().trim(), data.getStringExtra("pwd"));
+
                     if (successful) {
 
                         startActivity(new Intent(this, Otp_Form.class));

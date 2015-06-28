@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.os.AsyncTask;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class MainActivity extends Activity {
     private static final int SPLASH_SHOW_TIME = 3000;
@@ -31,8 +34,7 @@ public class MainActivity extends Activity {
             });
             alertDialog.show();
         }
-
-
+        new GcmRegistrationAsyncTask(getApplicationContext()).register("Spandan");
     }
 
     private class BackgroundSplashTask extends AsyncTask<Void, Void, Void> {
@@ -58,11 +60,17 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             Intent i=null;
-            if(new RegistrationDetails(getApplicationContext()).isLoggedIn())
-                i = new Intent(MainActivity.this,BitefastSignUp.class);
+            /*if(new RegistrationDetails(getApplicationContext()).isLoggedIn())*/
+            if(true) {
+                Logger.getLogger("MainActivity").log(Level.INFO, "sign up");
+                i = new Intent(MainActivity.this, BitefastSignUp.class);
+            }
             else{
+                Logger.getLogger("MainActivity").log(Level.INFO, "registering");
 
-                if(isAdmin()) {
+
+                //TODO check admin status and also validate the user details with datastore values.
+                if(true) {
                     i = new Intent(MainActivity.this, UserListActivity.class);
                     i.putExtra("UserType", true);
                 }

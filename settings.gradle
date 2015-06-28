@@ -1,1 +1,1 @@
-include ':app', ':backend1'/*, ':backend'*/, ':gcmbackend'
+include ':app',':gcmbackend'
