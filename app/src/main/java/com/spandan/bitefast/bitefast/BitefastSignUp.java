@@ -35,7 +35,6 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
         setContentView(R.layout.activity_bf_sign_up);
         signupbutton = (Button) findViewById(R.id.confirm);
         signupbutton.setOnClickListener(this);
-        new GcmDataSavingAsyncTask().insertUser(1234567890,false);
     }
     @Override
     public void onClick(View v) {
@@ -46,17 +45,20 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
                             new AndroidJsonFactory(), null);
                     builder.setApplicationName("BiteFast");
                     Messaging messaging = builder.build();
+                    EditText phone = (EditText) findViewById(R.id.phoneValue);
                     EditText name = (EditText) findViewById(R.id.nameValue);
+                    EditText email = (EditText) findViewById(R.id.emailValue);
                     EditText addr1 = (EditText) findViewById(R.id.addressLine1);
                     EditText street = (EditText) findViewById(R.id.streetValue);
-                    Spinner country = (Spinner) findViewById(R.id.cityValue);
+                    EditText landmark = (EditText) findViewById(R.id.landmark);
                     Spinner city = (Spinner) findViewById(R.id.cityValue);
-                    Intent data = getIntent();
-
-                    if (successful) {
-
+                    try{
+                        int phn=Integer.parseInt(phone.getText().toString().trim());
+                        new GcmDataSavingAsyncTask().registerDevice("",phn,getApplicationContext());
+                        new GcmDataSavingAsyncTask().insertUser(phn,false);
+                        new GcmDataSavingAsyncTask().insertAppUserDetails("",phn,name.getText().toString(),email.getText().toString(),addr1.getText().toString(),street.getText().toString(),landmark.getText().toString(),city.getSelectedItem().toString());
                         startActivity(new Intent(this, Otp_Form.class));
-                    } else {
+                    } catch(Exception e) {
                         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
                         alertDialog.setMessage("UnSuccessful");
                         alertDialog.setButton("Please Retry", new DialogInterface.OnClickListener() {

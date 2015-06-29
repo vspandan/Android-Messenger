@@ -5,6 +5,7 @@
         <item>Hyderabad</item>
     </string-array>
     <string name="enter_addr">Address Line 1</string>
+    <string name="enter_email">Email Address</string>
     <string name="enter_street">Street</string>
     <string name="enter_landmark">Land Mark</string>
     <string name="enter_name">Full Name</string>

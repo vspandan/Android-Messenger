@@ -5,11 +5,20 @@ package com.spandan.bitefast.bitefast;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.spandan.bitefast.gcmbackend.registration.Registration;
+
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,13 +26,19 @@ import java.util.logging.Logger;
 public class MainActivity extends Activity {
     private static final int SPLASH_SHOW_TIME = 3000;
     private CheckInternetConnectivity cd = null;
+    private GoogleCloudMessaging gcm;
+    private AsyncTask<Void, Void, String> sendTask;
+    private static final String SENDER_ID = "281575560274";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         cd=new CheckInternetConnectivity(getApplicationContext());
-        if(cd.isConnectingToInternet())
+        if(cd.isConnectingToInternet()) {
+            register();
             new BackgroundSplashTask().execute();
+        }
         else{
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setMessage("No Network Connectivity");
@@ -34,7 +49,34 @@ public class MainActivity extends Activity {
             });
             alertDialog.show();
         }
-        new GcmRegistrationAsyncTask(getApplicationContext()).register("Spandan");
+
+    }
+
+    public void register() {
+        Logger.getLogger("REGISTRATION").log(Level.INFO, "Starting");
+        sendTask = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                    }
+                    String regId = gcm.register(SENDER_ID);
+                    msg = "Device registered, registration ID=" + regId;
+                    new RegistrationDetails(getApplicationContext()).storeRegistrationId(regId);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    msg = "Error: " + ex.getMessage();
+                }
+                return msg;
+            }
+            @Override
+            protected void onPostExecute(String msg) {
+                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+            }
+        };
+        sendTask.execute(null, null, null);
     }
 
     private class BackgroundSplashTask extends AsyncTask<Void, Void, Void> {
@@ -60,15 +102,8 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             Intent i=null;
-            /*if(new RegistrationDetails(getApplicationContext()).isLoggedIn())*/
-            if(true) {
+            if(new RegistrationDetails(getApplicationContext()).isLoggedIn()){
                 Logger.getLogger("MainActivity").log(Level.INFO, "sign up");
-                i = new Intent(MainActivity.this, BitefastSignUp.class);
-            }
-            else{
-                Logger.getLogger("MainActivity").log(Level.INFO, "registering");
-
-
                 //TODO check admin status and also validate the user details with datastore values.
                 if(true) {
                     i = new Intent(MainActivity.this, UserListActivity.class);
@@ -80,12 +115,21 @@ public class MainActivity extends Activity {
                     i.putExtra("UserType",false);
                 }
             }
+            else {
+                i = new Intent(MainActivity.this, BitefastSignUp.class);
+                Logger.getLogger("MainActivity").log(Level.INFO, "registering");
+            }
             startActivity(i);
             finish();
         }
 
     }
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+        }
+    };
     private boolean isAdmin() {
         return false;
     }

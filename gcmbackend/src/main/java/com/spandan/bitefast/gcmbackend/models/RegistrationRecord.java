@@ -15,7 +15,7 @@ public class RegistrationRecord {
 
     @Index
     private String regId;
-    private String phoneNum;
+    private int phoneNum;
     // you can add more fields...
 
     public RegistrationRecord() {
@@ -29,14 +29,11 @@ public class RegistrationRecord {
         this.regId = regId;
     }
 
-    public String getPhoneNum() {
+    public int getPhoneNum() {
         return phoneNum;
     }
-    public void setPhoneNum(String phoneNum) {
+    public void setPhoneNum(int phoneNum) {
         this.phoneNum = phoneNum;
     }
 
-    /**
-     * Created by spandanv on 6/28/2015.
-     */
 }

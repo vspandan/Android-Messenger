@@ -33,13 +33,25 @@
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:inputType="text"
+        android:ems="10"
+        android:id="@+id/emailValue"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:hint="@string/enter_email"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="185dp" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:ems="10"
         android:id="@+id/addressLine1"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:hint="@string/enter_addr"
-        android:layout_marginTop="185dp" />
+        android:layout_marginTop="235dp" />
 
     <EditText
         android:layout_width="fill_parent"
@@ -48,7 +60,7 @@
         android:id="@+id/streetValue"
         android:hint="@string/enter_street"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="235dp"
+        android:layout_marginTop="285dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"/>
     <EditText
@@ -58,7 +70,7 @@
         android:id="@+id/landmark"
         android:hint="@string/enter_landmark"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="285dp"
+        android:layout_marginTop="335dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"/>
 
@@ -70,7 +82,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginTop="350dp"
+        android:layout_marginTop="380dp"
         android:clickable="true" />
 
     <Button
@@ -78,7 +90,7 @@
         android:layout_height="wrap_content"
         android:text="Confirm"
         android:id="@+id/confirm"
-        android:layout_marginTop="400dp"
+        android:layout_marginTop="440dp"
         android:layout_marginLeft="125dp" />
 
 </RelativeLayout>

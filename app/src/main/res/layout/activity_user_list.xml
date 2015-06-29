@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Customer List"
-        android:id="@+id/email"
+        android:id="@+id/customerList"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:textColor="#ffffffff"

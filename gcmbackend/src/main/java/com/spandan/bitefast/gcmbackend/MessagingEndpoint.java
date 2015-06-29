@@ -51,6 +51,24 @@ public class MessagingEndpoint {
         datastore.put(customer);
     }
 
+    @ApiMethod(name = "insertAppUser")
+    public void insertAppUser(@Named("regId") String regId, @Named("phoneNum") int phoneNum, @Named("name") String name, @Named("email") String email, @Named("addr") String addr, @Named("street") String street, @Named("landmark") String landmark, @Named("city") String city){
+        Key customerKey = KeyFactory.createKey("UserAppDetails", regId);
+        Entity customer = new Entity("Customer", customerKey);
+        customer.setProperty("Reg Id", regId);
+        customer.setProperty("isAdmin", false);
+        customer.setProperty("Phone Num", phoneNum);
+        customer.setProperty("Email", email);
+        customer.setProperty("Name", name);
+        customer.setProperty("Address Line1", addr);
+        customer.setProperty("Street", street);
+        customer.setProperty("LandMark", landmark);
+        customer.setProperty("City", city);
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.put(customer);
+    }
+
+
     @ApiMethod(name = "sendMessage")
     public void sendMessage(@Named("message") String message,@Named("redId") String regId) throws IOException {
         if (message == null || message.length() == 0) {
