@@ -4,7 +4,6 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.spandan.bitefast.gcmbackend.models.RegistrationRecord;
-import com.spandan.bitefast.gcmbackend.models.UserBean;
 
 /**
  * Objectify service wrapper so we can statically register our persistence classes

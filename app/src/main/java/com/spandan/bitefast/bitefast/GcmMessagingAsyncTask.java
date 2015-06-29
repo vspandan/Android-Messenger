@@ -27,7 +27,7 @@ public class GcmMessagingAsyncTask  {
                 }
                 String msg = jsondata;
                 try {
-                    regService.messagingEndpoint().sendMessage(jsondata,regId).execute();
+                    regService.sendMessage(jsondata,regId).execute();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     msg += "; Error: " + ex.getMessage();

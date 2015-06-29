@@ -28,7 +28,7 @@ public class GcmDataSavingAsyncTask {
                 }
                 String msg = phn+":"+isAdmin;
                 try {
-                    regService.messagingEndpoint().insertUser(phn,isAdmin).execute();
+                    regService.insertUser(phn,isAdmin).execute();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     msg += "; Error: " + ex.getMessage();
