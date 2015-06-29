@@ -18,7 +18,7 @@ public class GcmDataSavingAsyncTask {
     public AsyncTask<Void, Void, String> sendTask;
     private static Registration regService = null;
 
-    public void insertUser(final int phn, final boolean isAdmin) {
+    public void insertUser(final String phn, final boolean isAdmin) {
 
         sendTask = new AsyncTask<Void, Void, String>() {
             @Override
@@ -47,7 +47,7 @@ public class GcmDataSavingAsyncTask {
         sendTask.execute(null, null, null);
     }
 
-    public void insertAppUserDetails(final String regId, final int phn, final String name, final String email, final String addr, final String street, final String landmark, final String city) {
+    public void insertAppUserDetails(final String regId, final String phn, final String name, final String email, final String addr, final String street, final String landmark, final String city) {
         {
 
             sendTask = new AsyncTask<Void, Void, String>() {
@@ -77,7 +77,38 @@ public class GcmDataSavingAsyncTask {
             sendTask.execute(null, null, null);
         }
     }
-    public void registerDevice(final String regId,final int phoneNum,final Context context) {
+
+    public void finduser(final String regId,final String phoneNum){
+
+            sendTask = new AsyncTask<Void, Void, String>() {
+                @Override
+                protected String doInBackground(Void... params) {
+                    if (regService == null) {
+                        Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
+                                new AndroidJsonFactory(), null);
+                        builder.setApplicationName("BiteFast");
+                        msgService = builder.build();
+                    }
+                    String msg="";
+                    try {
+                        msgService.findUser(regId, phoneNum).execute();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        msg += "; Error: " + ex.getMessage();
+                    }
+                    return msg;
+                }
+
+                @Override
+                protected void onPostExecute(String msg) {
+                    Logger.getLogger("Messaging").log(Level.INFO, msg);
+                }
+            };
+            sendTask.execute(null, null, null);
+
+    }
+
+    public void registerDevice(final String regId,final long phoneNum,final Context context) {
         Logger.getLogger("REGISTRATION").log(Level.INFO, "Starting");
         sendTask = new AsyncTask<Void, Void, String>() {
             @Override

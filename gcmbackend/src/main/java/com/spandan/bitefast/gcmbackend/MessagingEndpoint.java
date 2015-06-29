@@ -16,13 +16,14 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.spandan.bitefast.gcmbackend.models.RegistrationRecord;
 
 import org.json.simple.JSONValue;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,30 +43,56 @@ public class MessagingEndpoint {
     private Sender sender=null;
 
     @ApiMethod(name = "insertUser")
-    public void insertUser(@Named("phoneNum") int phoneNum, @Named("isAdmin") boolean isAdmin){
-        Key customerKey = KeyFactory.createKey("UserDetails", phoneNum);
-        Entity customer = new Entity("Customer", customerKey);
-        customer.setProperty("phone no", phoneNum);
-        customer.setProperty("isadmin", isAdmin);
+    public void insertUser(@Named("phoneNum") String phoneNum, @Named("isAdmin") boolean isAdmin){
+        Entity customer = new Entity("UserList", phoneNum);
+        customer.setProperty("Phoneno", phoneNum);
+        customer.setProperty("Admin", isAdmin);
+        customer.setProperty("TimeStamp", new Date());
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(customer);
+
     }
 
     @ApiMethod(name = "insertAppUser")
-    public void insertAppUser(@Named("regId") String regId, @Named("phoneNum") int phoneNum, @Named("name") String name, @Named("email") String email, @Named("addr") String addr, @Named("street") String street, @Named("landmark") String landmark, @Named("city") String city){
-        Key customerKey = KeyFactory.createKey("UserAppDetails", regId);
-        Entity customer = new Entity("Customer", customerKey);
-        customer.setProperty("Reg Id", regId);
+    public void insertAppUser(@Named("regId") String regId, @Named("phoneNum") String phoneNum, @Named("name") String name, @Named("email") String email, @Named("addr") String addr, @Named("street") String street, @Named("landmark") String landmark, @Named("city") String city){
+        Entity customer = new Entity("UserAppDetails");
+        customer.setProperty("RegId", regId);
         customer.setProperty("isAdmin", false);
-        customer.setProperty("Phone Num", phoneNum);
+        customer.setProperty("PhoneNum", phoneNum);
         customer.setProperty("Email", email);
         customer.setProperty("Name", name);
         customer.setProperty("Address Line1", addr);
         customer.setProperty("Street", street);
         customer.setProperty("LandMark", landmark);
         customer.setProperty("City", city);
+        customer.setProperty("TimeStamp",new Date());
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(customer);
+    }
+
+    @ApiMethod(name="findUser")
+    public void findUser(@Named("regid") String regid,@Named("phoneNo") String phoneNo) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query.Filter heightMinFilter =
+                new Query.FilterPredicate("Phoneno",
+                        Query.FilterOperator.EQUAL,phoneNo
+                        );
+        Query q = new Query("UserList").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+        Map<String,String> data=new HashMap<String,String>();
+        for (Entity result : pq.asIterable()) {
+            data.put("Phoneno", (String) result.getProperty("Phoneno"));
+            if((Boolean) result.getProperty("Admin"))
+                data.put("Admin","1");
+            else
+                data.put("Admin","0");
+        }
+        try {
+            data.put("ACTION","FINDUSER");
+            send(regid,data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -75,9 +102,6 @@ public class MessagingEndpoint {
             log.warning("Not sending message because it is empty");
             return;
         }
-
-        sender = new Sender(API_KEY);
-
         try {
             Map<String, String> jsonObject = (Map<String, String>) JSONValue
                     .parseWithException(message);
@@ -88,37 +112,13 @@ public class MessagingEndpoint {
 
     }
     private void send(String regId,Map<String, String>  message) throws  IOException{
+        sender = new Sender(API_KEY);
         Message msg = new Message.Builder().setData(message).build();
-
         Result result = sender.send(msg, regId, 5);
-        if (result.getMessageId() != null) {
-            log.info("Message sent to " + regId);
-            String canonicalRegId = result.getCanonicalRegistrationId();
-            if (canonicalRegId != null) {
-                //TODO re-impl for timebeing commenting
-                    /*log.info("Registration Id changed for " + regId + " updating to " + canonicalRegId);
-                    record.setRegId(canonicalRegId);
-                    ofy().save().entity(record).now();*/
-            }
-        } else {
-            String error = result.getErrorCodeName();
-            if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
-                // if the device is no longer registered with Gcm, remove it from the datastore
-                //TODO re-impl for timebeing commenting
-                    /*log.warning("Registration Id " + record.getRegId() + " no longer registered with GCM, removing from datastore");
-                    ofy().save().entity(record).now();*/
-            } else {
-                log.warning("Error when sending message : " + error);
-            }
-        }
     }
 
     private static String createJsonMessage(String messageId,
                                             Map<String, String> jsonObject) {
-        /*Map<String, Object> message = new HashMap<String, Object>();
-        message.put("message_id", messageId);
-        message.put("data", jsonObject);
-        return JSONValue.toJSONString(message);*/
         return JSONValue.toJSONString(jsonObject);
     }
 

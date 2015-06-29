@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BiteFast.iml" filepath="$PROJECT_DIR$/BiteFast.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bitefast.iml" filepath="$PROJECT_DIR$/bitefast.iml" />
       <module fileurl="file://$PROJECT_DIR$/gcmbackend/gcmbackend.iml" filepath="$PROJECT_DIR$/gcmbackend/gcmbackend.iml" />
     </modules>
   </component>

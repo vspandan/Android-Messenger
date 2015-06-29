@@ -17,6 +17,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -31,6 +33,7 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Logger.getLogger("BitefastSignUp").log(Level.INFO, "loading");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bf_sign_up);
         signupbutton = (Button) findViewById(R.id.confirm);
@@ -41,10 +44,10 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
         switch (v.getId()) {
             case R.id.confirm:
                 try {
+                    Logger.getLogger("BitefastSignUp").log(Level.INFO, "Opening sign up form");
                     Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
                             new AndroidJsonFactory(), null);
                     builder.setApplicationName("BiteFast");
-                    Messaging messaging = builder.build();
                     EditText phone = (EditText) findViewById(R.id.phoneValue);
                     EditText name = (EditText) findViewById(R.id.nameValue);
                     EditText email = (EditText) findViewById(R.id.emailValue);
@@ -53,10 +56,14 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
                     EditText landmark = (EditText) findViewById(R.id.landmark);
                     Spinner city = (Spinner) findViewById(R.id.cityValue);
                     try{
-                        int phn=Integer.parseInt(phone.getText().toString().trim());
-                        new GcmDataSavingAsyncTask().registerDevice("",phn,getApplicationContext());
-                        new GcmDataSavingAsyncTask().insertUser(phn,false);
-                        new GcmDataSavingAsyncTask().insertAppUserDetails("",phn,name.getText().toString(),email.getText().toString(),addr1.getText().toString(),street.getText().toString(),landmark.getText().toString(),city.getSelectedItem().toString());
+
+                        String phn=phone.getText().toString().trim();
+                        String regId=new RegistrationDetails(getApplicationContext()).getRegistrationId();
+                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:"+regId);
+                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Inserting user");
+                        new GcmDataSavingAsyncTask().insertUser(phn, false);
+                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Inserting user and app details");
+                        new GcmDataSavingAsyncTask().insertAppUserDetails(regId, phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString());
                         startActivity(new Intent(this, Otp_Form.class));
                     } catch(Exception e) {
                         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
