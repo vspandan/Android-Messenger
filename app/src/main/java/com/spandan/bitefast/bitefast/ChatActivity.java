@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -46,7 +47,7 @@ public class ChatActivity extends ActionBarActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         context=getApplicationContext();
-        regId=new RegistrationDetails(context).getRegistrationId();
+        regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
         Intent i = getIntent();
         toUserName = i.getStringExtra("TOUSER");
         isAdmin=i.getBooleanExtra("UserType",false);
@@ -96,26 +97,17 @@ public class ChatActivity extends ActionBarActivity {
     private boolean sendChatMessage(){
 
         HashMap<String,String> dataBundle = new HashMap<String,String>();
-        /*Bundle dataBundle = new Bundle();
-        dataBundle.putString("ACTION", "CHAT");
-        if(isAdmin)
-            dataBundle.putString("TOUSER", toUserName);
-        else
-
-        //TODO for timebeinghard coded
-        dataBundle.putString("TOUSER", "8885551544");
-        dataBundle.putString("CHATMESSAGE", chatText.getText().toString());
-        messageSender.sendMessage(dataBundle,gcm);*/
         dataBundle.put("ACTION", "CHAT");
         if(isAdmin)
             dataBundle.put("TOUSER", toUserName);
         else
-            dataBundle.put("TOUSER", "8885551544");
+            dataBundle.put("TOUSER", "8886799788");
+        dataBundle.put("TOUSER", toUserName);
 
         dataBundle.put("CHATMESSAGE", chatText.getText().toString());
-        new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
+        new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
+        new GcmDataSavingAsyncTask().saveMessage(regId,new RegistrationDetails().getPhoneNum(getApplicationContext()),toUserName,chatText.getText().toString());
 
-        //updating the current device
         chatArrayAdapter.add(new ChatMessage(false, chatText.getText().toString()));
         chatText.setText("");
         return true;
@@ -138,10 +130,6 @@ public class ChatActivity extends ActionBarActivity {
     public void onBackPressed()
     {
         if(isAdmin) {
-            /*Bundle dataBundle = new Bundle();
-            dataBundle.putString("ACTION", "USERLIST");
-            messageSender.sendMessage(dataBundle, gcm);*/
-
             HashMap dataBundle =new HashMap();
             dataBundle.put("ACTION", "USERLIST");
             new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);

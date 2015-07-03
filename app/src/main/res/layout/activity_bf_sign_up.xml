@@ -2,8 +2,7 @@
     android:id="@+id/rootRL"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="fill_parent"
-    android:background="@drawable/screen1">
+    android:layout_height="fill_parent">
 
 
     <EditText
@@ -17,7 +16,8 @@
         android:layout_marginRight="25dp"
         android:hint="@string/enter_phn_no"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="85dp" />
+        android:layout_marginTop="85dp"
+        android:nextFocusDown="@+id/nameValue"/>
 
     <EditText
         android:layout_width="fill_parent"
@@ -29,7 +29,8 @@
         android:layout_marginRight="25dp"
         android:hint="@string/enter_name"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="135dp" />
+        android:layout_marginTop="135dp"
+        android:nextFocusDown="@+id/emailValue"/>
 
     <EditText
         android:layout_width="fill_parent"
@@ -41,7 +42,8 @@
         android:layout_marginRight="25dp"
         android:hint="@string/enter_email"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="185dp" />
+        android:layout_marginTop="185dp"
+        android:nextFocusDown="@+id/addressLine1"/>
 
     <EditText
         android:layout_width="fill_parent"
@@ -52,7 +54,8 @@
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:hint="@string/enter_addr"
-        android:layout_marginTop="235dp" />
+        android:layout_marginTop="235dp"
+        android:nextFocusDown="@+id/streetValue"/>
 
     <EditText
         android:layout_width="fill_parent"
@@ -63,7 +66,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="285dp"
         android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"/>
+        android:layout_marginRight="25dp"
+        android:nextFocusDown="@+id/landmark"/>
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -73,7 +77,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="335dp"
         android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"/>
+        android:layout_marginRight="25dp"
+        android:nextFocusDown="@+id/cityValue"/>
 
     <Spinner
         android:id="@+id/cityValue"

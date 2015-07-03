@@ -40,7 +40,7 @@ public class RegistrationEndpoint {
      * @param regId The Google Cloud Messaging registration Id to add
      */
     @ApiMethod(name = "register")
-    public void registerDevice(@Named("regId") String regId,@Named("phoneNo") long phoneNo) {
+    public void registerDevice(@Named("regId") String regId,@Named("phoneNo") String phoneNo) {
         if (findRecord(regId) != null) {
             unregisterDevice(regId);
         }

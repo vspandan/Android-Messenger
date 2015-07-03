@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/5mwiYjf9Ck7absD82Hw15b9Bgv8\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/xcFHxcmCSaECCZymLbreo_nA3Gg\"",
  "discoveryVersion": "v1",
  "id": "messaging:v1",
  "name": "messaging",
@@ -72,34 +72,24 @@
    }
   }
  },
- "methods": {
-  "findUser": {
-   "id": "messaging.findUser",
-   "path": "findUser/{regid}/{phoneNo}",
-   "httpMethod": "POST",
-   "parameters": {
-    "phoneNo": {
-     "type": "string",
-     "required": true,
-     "location": "path"
+ "schemas": {
+  "User": {
+   "id": "User",
+   "type": "object",
+   "properties": {
+    "admin": {
+     "type": "boolean"
     },
-    "regid": {
-     "type": "string",
-     "required": true,
-     "location": "path"
+    "userNum": {
+     "type": "string"
     }
-   },
-   "parameterOrder": [
-    "regid",
-    "phoneNo"
-   ],
-   "scopes": [
-    "https://www.googleapis.com/auth/userinfo.email"
-   ]
-  },
-  "insertAppUser": {
-   "id": "messaging.insertAppUser",
-   "path": "void/{regId}/{phoneNum}/{name}/{email}/{addr}/{street}/{landmark}/{city}",
+   }
+  }
+ },
+ "methods": {
+  "insertUser": {
+   "id": "messaging.insertUser",
+   "path": "void/{regId}/{phoneNum}/{name}/{email}/{addr}/{street}/{landmark}/{city}/{isAdmin}",
    "httpMethod": "POST",
    "parameters": {
     "addr": {
@@ -114,6 +104,11 @@
     },
     "email": {
      "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "isAdmin": {
+     "type": "boolean",
      "required": true,
      "location": "path"
     },
@@ -151,31 +146,89 @@
     "addr",
     "street",
     "landmark",
-    "city"
+    "city",
+    "isAdmin"
    ],
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
-  "insertUser": {
-   "id": "messaging.insertUser",
-   "path": "void/{phoneNum}/{isAdmin}",
+  "isAdmin": {
+   "id": "messaging.isAdmin",
+   "path": "isAdmin/{phoneNo}",
    "httpMethod": "POST",
    "parameters": {
-    "isAdmin": {
-     "type": "boolean",
-     "required": true,
-     "location": "path"
-    },
-    "phoneNum": {
+    "phoneNo": {
      "type": "string",
      "required": true,
      "location": "path"
     }
    },
    "parameterOrder": [
-    "phoneNum",
-    "isAdmin"
+    "phoneNo"
+   ],
+   "response": {
+    "$ref": "User"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "register": {
+   "id": "messaging.register",
+   "path": "register/{regId}/{phn}",
+   "httpMethod": "POST",
+   "parameters": {
+    "phn": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "regId": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "regId",
+    "phn"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "saveMessage": {
+   "id": "messaging.saveMessage",
+   "path": "saveMessage/{regId}/{from}/{to}/{message}",
+   "httpMethod": "POST",
+   "parameters": {
+    "from": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "message": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "regId": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "to": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "regId",
+    "from",
+    "to",
+    "message"
    ],
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"

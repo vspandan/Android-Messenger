@@ -8,7 +8,6 @@ import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -17,6 +16,8 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.spandan.bitefast.gcmbackend.messaging.Messaging;
+import com.spandan.bitefast.gcmbackend.messaging.model.User;
 import com.spandan.bitefast.gcmbackend.registration.Registration;
 
 import java.io.IOException;
@@ -36,9 +37,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         cd=new CheckInternetConnectivity(getApplicationContext());
-        registerReceiver(broadcastReceiver, new IntentFilter("com.spandan.bitefast.bitefast"));
         if(cd.isConnectingToInternet()) {
-            if (new RegistrationDetails(getApplicationContext()).getRegistrationId().isEmpty())
+            String regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
+            if (regId.isEmpty()||regId==null)
                 register();
             new BackgroundSplashTask().execute();
         }
@@ -67,7 +68,7 @@ public class MainActivity extends Activity {
                     }
                     String regId = gcm.register(SENDER_ID);
                     msg = "Device registered, registration ID=" + regId;
-                    new RegistrationDetails(getApplicationContext()).storeRegistrationId(regId);
+                    new RegistrationDetails().storeRegistrationId(getApplicationContext(),regId);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     msg = "Error: " + ex.getMessage();
@@ -81,30 +82,6 @@ public class MainActivity extends Activity {
         };
         sendTask.execute(null, null, null);
     }
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Intent i=null;
-
-            String action=intent.getStringExtra("ACTION");
-            Logger.getLogger("MainActivity").log(Level.INFO, action);
-            if("FINDUSER".equals(action)) {
-                String phoneNum=intent.getStringExtra("Phoneno");
-                String admin=intent.getStringExtra("Admin");
-                    /*String ph=new RegistrationDetails(getApplicationContext()).getPhoneNum();*/
-                String ph="9440077887";
-                if (ph.equals(phoneNum)&& "1".equals(admin)) {
-                    i = new Intent(MainActivity.this, UserListActivity.class);
-                    i.putExtra("UserType", true);
-                } else {
-                    i = new Intent(MainActivity.this, ChatActivity.class);
-                    i.putExtra("TOUSER", "888551544");
-                    i.putExtra("UserType", false);
-                }
-            }
-        }
-    };
 
     private class BackgroundSplashTask extends AsyncTask<Void, Void, Void> {
 
@@ -123,24 +100,63 @@ public class MainActivity extends Activity {
             super.onPreExecute();
         }
 
+
+
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            Intent i=null;
+            if(new RegistrationDetails().isLoggedIn(getApplicationContext())){
+                Logger.getLogger("MainActivity").log(Level.INFO, "sign up");
+                final boolean values[] = new boolean[1];
+                try {
 
-            /*if(new RegistrationDetails(getApplicationContext()).isLoggedIn()){*/
-            if(true){
-                new GcmDataSavingAsyncTask().finduser(new RegistrationDetails(getApplicationContext()).getRegistrationId(),"9440077887");
+                    final String phoneNum =new RegistrationDetails().getPhoneNum(getApplicationContext());
+                    Thread t = new Thread(new Runnable() {
+                        public void run() {
+                            Messaging msgService = null;
+                            if (msgService == null) {
+                                Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
+                                        new AndroidJsonFactory(), null);
+                                builder.setApplicationName("BiteFast");
+                                msgService = builder.build();
+                            }
+                            User usr = new User();
+                            try {
+                                usr = msgService.isAdmin(phoneNum).execute();
+                                values[0] = usr.getAdmin();
+                            } catch (Exception ex) {
+                                System.exit(1);
+                                ex.printStackTrace();
+                            }
+                            Logger.getLogger("LaunchActivity").log(Level.INFO, phoneNum + ":" + usr.toString());
+                        }
+                    });
+                    t.start();
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                Logger.getLogger("LaunchActivity").log(Level.INFO, "Retrieved User: " + values[0]);
+                if(values[0]) {
+                    i = new Intent(MainActivity.this, UserListActivity.class);
+                    i.putExtra("UserType", true);
+                }
+                else {
+                    i = new Intent(MainActivity.this, ChatActivity.class);
+                    i.putExtra("TOUSER","8886799788");
+                    i.putExtra("UserType",false);
+                }
             }
             else {
-                Intent i=null;
                 i = new Intent(MainActivity.this, BitefastSignUp.class);
                 Logger.getLogger("MainActivity").log(Level.INFO, "registering");
             }
-
+            startActivity(i);
+            finish();
         }
 
     }
-
-
 
 }

@@ -6,7 +6,6 @@
 
 package com.spandan.bitefast.gcmbackend;
 
-import com.google.android.gcm.server.Constants;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
@@ -19,12 +18,14 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.spandan.bitefast.gcmbackend.models.RegistrationRecord;
+import com.spandan.bitefast.gcmbackend.models.User;
 
 import org.json.simple.JSONValue;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -42,20 +43,17 @@ public class MessagingEndpoint {
     private static final String API_KEY = System.getProperty("gcm.api.key");
     private Sender sender=null;
 
-    @ApiMethod(name = "insertUser")
-    public void insertUser(@Named("phoneNum") String phoneNum, @Named("isAdmin") boolean isAdmin){
+    @ApiMethod(name = "insertUser",httpMethod = ApiMethod.HttpMethod.POST)
+    public void insertUser(@Named("regId") String regId, @Named("phoneNum") String phoneNum, @Named("name") String name, @Named("email") String email, @Named("addr") String addr, @Named("street") String street, @Named("landmark") String landmark, @Named("city") String city, @Named("isAdmin") boolean isAdmin){
+
         Entity customer = new Entity("UserList", phoneNum);
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         customer.setProperty("Phoneno", phoneNum);
         customer.setProperty("Admin", isAdmin);
         customer.setProperty("TimeStamp", new Date());
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.put(customer);
-
-    }
-
-    @ApiMethod(name = "insertAppUser")
-    public void insertAppUser(@Named("regId") String regId, @Named("phoneNum") String phoneNum, @Named("name") String name, @Named("email") String email, @Named("addr") String addr, @Named("street") String street, @Named("landmark") String landmark, @Named("city") String city){
-        Entity customer = new Entity("UserAppDetails");
+        if(!findUser(phoneNum))
+            datastore.put(customer);
+        customer = new Entity("UserAppDetails");
         customer.setProperty("RegId", regId);
         customer.setProperty("isAdmin", false);
         customer.setProperty("PhoneNum", phoneNum);
@@ -66,12 +64,43 @@ public class MessagingEndpoint {
         customer.setProperty("LandMark", landmark);
         customer.setProperty("City", city);
         customer.setProperty("TimeStamp",new Date());
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(customer);
     }
 
-    @ApiMethod(name="findUser")
-    public void findUser(@Named("regid") String regid,@Named("phoneNo") String phoneNo) {
+    @ApiMethod(name = "isAdmin")
+    public User isAdmin(@Named("phoneNo") String phoneNo){
+        User user=new User();
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query.Filter heightMinFilter =
+                new Query.FilterPredicate("Phoneno",
+                        Query.FilterOperator.EQUAL,phoneNo
+                );
+        Query q = new Query("UserList").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+        Map<String,String> data=new HashMap<String,String>();
+        for (Entity result : pq.asIterable()) {
+            if(result.getProperty("Phoneno").equals(phoneNo))
+            {
+                user.setUserNum((String) result.getProperty("Phoneno"));
+                user.setAdmin((boolean)result.getProperty("Admin"));
+            }
+        }
+        return user;
+    }
+
+    @ApiMethod(name = "saveMessage")
+    public void saveMessage(@Named("regId") String regId, @Named("from") String from, @Named("to") String to, @Named("message") String message)
+    {
+        Entity customer = new Entity("MessageLog");
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        customer.setProperty("Source RegId", regId);
+        customer.setProperty("Sender", from);
+        customer.setProperty("TimeStamp", new Date());
+        customer.setProperty("Receiver",to);
+        customer.setProperty("Msessage",message);
+        datastore.put(customer);
+    }
+    private boolean findUser(String phoneNo) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Query.Filter heightMinFilter =
                 new Query.FilterPredicate("Phoneno",
@@ -81,18 +110,10 @@ public class MessagingEndpoint {
         PreparedQuery pq = datastore.prepare(q);
         Map<String,String> data=new HashMap<String,String>();
         for (Entity result : pq.asIterable()) {
-            data.put("Phoneno", (String) result.getProperty("Phoneno"));
-            if((Boolean) result.getProperty("Admin"))
-                data.put("Admin","1");
-            else
-                data.put("Admin","0");
+            if(result.getProperty("Phoneno").equals(phoneNo))
+                return true;
         }
-        try {
-            data.put("ACTION","FINDUSER");
-            send(regid,data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return false;
     }
 
 
@@ -126,22 +147,35 @@ public class MessagingEndpoint {
         return "m-" + Long.toString(random.nextLong());
     }
 
-    private String retreiveKey(String toUser){
-        List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).list();
-        for (RegistrationRecord record : records) {
-            if(toUser.equals(record.getPhoneNum())){
-                return record.getRegId();
-            }
-        }
-        return null;
+    @ApiMethod(name = "register")
+    public void register(@Named("regId") String regId, @Named("phn") String phn){
+        Entity customer = new Entity("RegistrationDetails", regId);
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        customer.setProperty("RegId", regId);
+        customer.setProperty("Phoneno", phn);
+        customer.setProperty("TimeStamp", new Date());
+        datastore.put(customer);
     }
 
+    private HashSet<String> retreiveKey(String toUser){
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query.Filter heightMinFilter =
+                new Query.FilterPredicate("Phoneno",
+                        Query.FilterOperator.EQUAL,toUser
+                );
+        Query q = new Query("RegistrationDetails").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+        Map<String,String> data=new HashMap<String,String>();
+        HashSet<String> userRegIds=new HashSet<String>();
+        for (Entity result : pq.asIterable()) {
+            userRegIds.add((String) result.getProperty("RegId"));
+        }
+        return userRegIds;
+    }
+
+    //TODO Implement this
     private String extractUsers(){
         String users = "";
-        List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).list();
-        for (RegistrationRecord record : records) {
-            users = users + record.getPhoneNum() + ":";
-        }
         return users;
     }
 
@@ -149,25 +183,44 @@ public class MessagingEndpoint {
         @SuppressWarnings("unchecked")
 
         String action = jsonObject.get("ACTION");
-
+        String toUser="";
+        String message="";
+        HashSet<String> admins = findAdminUsers();
         if ("USERLIST".equals(action)) {
             jsonObject.put("SM", "USERLIST");
             jsonObject.put("USERLIST", extractUsers());
-            String message = createJsonMessage(getRandomMessageId(),jsonObject);
-            send(retreiveKey("8885551544"),jsonObject);
+            for(String admin:admins){
+                HashSet<String> regIds=retreiveKey(admin);
+                for(String regId : regIds) {
+                    send(regId, jsonObject);
+                }
+            }
         } else if ("CHAT".equals(action)) {
             jsonObject.put("SM", "CHAT");
-            String toUser = jsonObject.get("TOUSER");
-            String message = createJsonMessage(getRandomMessageId(),
+            toUser = jsonObject.get("TOUSER");
+            message = createJsonMessage(getRandomMessageId(),
                     jsonObject);
-            send(retreiveKey(toUser),jsonObject);
+            HashSet<String> regIds=retreiveKey(toUser);
+            for(String regId : regIds) {
+                send(regId, jsonObject);
+            }
         }
     }
-    private static String createJsonAck(String to, String messageId) {
-        Map<String, Object> message = new HashMap<String, Object>();
-        message.put("message_type", "ack");
-        message.put("to", to);
-        message.put("message_id", messageId);
-        return JSONValue.toJSONString(message);
+
+    private HashSet<String> findAdminUsers() {
+        HashSet<String> admins=new HashSet<String>();
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query.Filter heightMinFilter =
+                new Query.FilterPredicate("Admin",
+                        Query.FilterOperator.EQUAL,true
+                );
+        Query q = new Query("UserList").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+
+        for (Entity result : pq.asIterable()) {
+            admins.add((String)result.getProperty("Phoneno"));
+        }
+        return admins;
     }
 }

@@ -58,13 +58,15 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
                     try{
 
                         String phn=phone.getText().toString().trim();
-                        String regId=new RegistrationDetails(getApplicationContext()).getRegistrationId();
-                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:"+regId);
-                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Inserting user");
-                        new GcmDataSavingAsyncTask().insertUser(phn, false);
-                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Inserting user and app details");
-                        new GcmDataSavingAsyncTask().insertAppUserDetails(regId, phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString());
-                        startActivity(new Intent(this, Otp_Form.class));
+                        String regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
+                        new RegistrationDetails().storeUserInfo(getApplicationContext(), phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString());
+                        new GcmDataSavingAsyncTask().registerDevice(regId,phn);
+                        new GcmDataSavingAsyncTask().insertUser(regId, phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString(), false);
+                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:" + regId);
+
+                        Intent i= new Intent(this, Otp_Form.class);
+                        i.putExtra("USER_NAME", phn);
+                        startActivity(i);
                     } catch(Exception e) {
                         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
                         alertDialog.setMessage("UnSuccessful");
@@ -88,7 +90,7 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
     @Override
     public void onBackPressed()
     {
-        startActivity(new Intent(this, MainActivity.class));
+
     }
 
 }

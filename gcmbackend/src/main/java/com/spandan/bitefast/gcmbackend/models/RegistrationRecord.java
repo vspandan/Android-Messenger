@@ -11,10 +11,11 @@ import com.googlecode.objectify.annotation.Index;
 public class RegistrationRecord {
 
     @Id
-    private Long phoneNum;
+    private String regId;
+
 
     @Index
-    private String regId;
+    private String phoneNum;
     // you can add more fields...
 
     public RegistrationRecord() {
@@ -28,10 +29,10 @@ public class RegistrationRecord {
         this.regId = regId;
     }
 
-    public long getPhoneNum() {
+    public String getPhoneNum() {
         return phoneNum;
     }
-    public void setPhoneNum(long phoneNum) {
+    public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
     }
 

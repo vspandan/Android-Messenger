@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/5mwiYjf9Ck7absD82Hw15b9Bgv8\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/xcFHxcmCSaECCZymLbreo_nA3Gg\"",
  "discoveryVersion": "v1",
  "id": "messaging:v1",
  "name": "messaging",
@@ -70,29 +70,23 @@
    }
   }
  },
- "methods": {
-  "messaging.findUser": {
-   "id": "messaging.findUser",
-   "parameters": {
-    "phoneNo": {
-     "type": "string",
-     "required": true
+ "schemas": {
+  "User": {
+   "id": "User",
+   "type": "object",
+   "properties": {
+    "admin": {
+     "type": "boolean"
     },
-    "regid": {
-     "type": "string",
-     "required": true
+    "userNum": {
+     "type": "string"
     }
-   },
-   "parameterOrder": [
-    "regid",
-    "phoneNo"
-   ],
-   "scopes": [
-    "https://www.googleapis.com/auth/userinfo.email"
-   ]
-  },
-  "messaging.insertAppUser": {
-   "id": "messaging.insertAppUser",
+   }
+  }
+ },
+ "methods": {
+  "messaging.insertUser": {
+   "id": "messaging.insertUser",
    "parameters": {
     "addr": {
      "type": "string",
@@ -104,6 +98,10 @@
     },
     "email": {
      "type": "string",
+     "required": true
+    },
+    "isAdmin": {
+     "type": "boolean",
      "required": true
     },
     "landmark": {
@@ -135,27 +133,76 @@
     "addr",
     "street",
     "landmark",
-    "city"
+    "city",
+    "isAdmin"
    ],
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
-  "messaging.insertUser": {
-   "id": "messaging.insertUser",
+  "messaging.isAdmin": {
+   "id": "messaging.isAdmin",
    "parameters": {
-    "isAdmin": {
-     "type": "boolean",
-     "required": true
-    },
-    "phoneNum": {
+    "phoneNo": {
      "type": "string",
      "required": true
     }
    },
    "parameterOrder": [
-    "phoneNum",
-    "isAdmin"
+    "phoneNo"
+   ],
+   "returns": {
+    "$ref": "User"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.register": {
+   "id": "messaging.register",
+   "parameters": {
+    "phn": {
+     "type": "string",
+     "required": true
+    },
+    "regId": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "regId",
+    "phn"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.saveMessage": {
+   "id": "messaging.saveMessage",
+   "parameters": {
+    "from": {
+     "type": "string",
+     "required": true
+    },
+    "message": {
+     "type": "string",
+     "required": true
+    },
+    "regId": {
+     "type": "string",
+     "required": true
+    },
+    "to": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "regId",
+    "from",
+    "to",
+    "message"
    ],
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"

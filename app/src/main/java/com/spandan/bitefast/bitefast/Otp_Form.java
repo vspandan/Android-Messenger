@@ -29,7 +29,7 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
         signupbutton.setOnClickListener(this);
         messageSender=new MessageSender();
         context=getApplicationContext();
-        regId=new RegistrationDetails(context).getRegistrationId();
+        regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
     }
     @Override
     public void onClick(View v) {
@@ -40,26 +40,16 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
                     String userName = null;
                     Bundle extras = getIntent().getExtras();
                     if(extras !=null) {
-                         userName = extras.getString("userName");
+                         userName = extras.getString("USER_NAME");
                     }
-                    /*Bundle dataBundle = new Bundle();
-                    dataBundle.putString("ACTION", "SIGNIN");
-                    dataBundle.putString("USER_NAME", userName);
-                    messageSender.sendMessage(dataBundle, gcm);
-                    new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
-                    */
-                    /*dataBundle = new Bundle();
-                    dataBundle.putString("ACTION", "USERLIST");
-                    dataBundle.putString("USER_NAME", userName);
-                    messageSender.sendMessage(dataBundle, gcm);*/
                     HashMap<String,String> dataBundle =new HashMap<String,String>();
                     dataBundle.put("ACTION", "USERLIST");
                     dataBundle.put("USER_NAME", userName);
                     new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
-                    //TODO confirm as admin
-                    new RegistrationDetails(context).otpVerified();
+                    new RegistrationDetails().otpVerified(getApplicationContext());
                     Intent i = new Intent(this,
-                            UserListActivity.class);
+                            ChatActivity.class);
+                    i.putExtra("TOUSER", userName);
                     startActivity(i);
                 }
                 else{

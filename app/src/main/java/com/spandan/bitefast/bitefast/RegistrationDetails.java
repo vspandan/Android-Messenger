@@ -1,51 +1,40 @@
 package com.spandan.bitefast.bitefast;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 
 /**
  * Created by spandanv on 6/26/2015.
  */
-public class RegistrationDetails {
+public class RegistrationDetails extends Application{
     private static final String REG_ID = "regId";
     private static final String APP_VERSION = "appVersion";
-    private Context context = null;
 
-    public RegistrationDetails(Context context){
-        this.context = context;
-    }
 
-    public String getRegistrationId() {
-        final SharedPreferences prefs = context.getSharedPreferences(
-                "BiteFast", Context.MODE_PRIVATE);
+    public String getRegistrationId(Context context) {
+        final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(REG_ID, "");
-        registrationId="APA91bFd0cW2fln35cCBmMxHAiuJZ2OyiYYCgVRD5p_3A6H55qkiUMDeX87Tr75isosxa7zmj3JfjqAlFMW4Kwp25feKgXVM5GRG-Omia2h_1EOQyufWihTyZfBKmYJD7fDY-I8GKYbk";
-        if (registrationId.isEmpty()) {
-            return "";
-        }
         return registrationId;
     }
 
 
-    public void storeRegistrationId(String regId) {
-        final SharedPreferences prefs = context.getSharedPreferences(
-                "BiteFast", Context.MODE_PRIVATE);
+    public void storeRegistrationId(Context context, String regId) {
+        final SharedPreferences prefs = getGCMPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(REG_ID, regId);
         editor.commit();
     }
 
-    public void storeUserInfo(String phoneNum, String userName,
+
+    public void storeUserInfo(Context context,String phoneNum, String userName,
                               String email,
                               String addr,
                               String street,
                               String landMark,
                               String city){
 
-        final SharedPreferences prefs = context.getSharedPreferences(
-                "BiteFast", Context.MODE_PRIVATE);
+        final SharedPreferences prefs = getGCMPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("phoneNum", phoneNum);
         editor.putString("userName", userName);
@@ -56,9 +45,8 @@ public class RegistrationDetails {
         editor.putString("city", city);
         editor.commit();
     }
-    public boolean isLoggedIn() {
-        final SharedPreferences prefs = context.getSharedPreferences(
-                "BiteFast", Context.MODE_PRIVATE);
+    public boolean isLoggedIn(Context context) {
+        final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(REG_ID, "");
         if(registrationId.isEmpty() || prefs.getString("userName","").isEmpty() ||
             prefs.getString("email", "").isEmpty() ||
@@ -71,24 +59,25 @@ public class RegistrationDetails {
         }
         return true;
     }
-    public void storAsOtpVerified(){
+    public void storAsOtpVerified(Context context){
 
-        final SharedPreferences prefs = context.getSharedPreferences(
-                "BiteFast", Context.MODE_PRIVATE);
+        final SharedPreferences prefs = getGCMPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("verified", true);
         editor.commit();
     }
 
-    public boolean otpVerified(){
-        final SharedPreferences prefs = context.getSharedPreferences(
-                "BiteFast", Context.MODE_PRIVATE);
+    public boolean otpVerified(Context context){
+        final SharedPreferences prefs = getGCMPreferences(context);
         return prefs.getBoolean("verified", false);
     }
 
-    public String getPhoneNum() {
-        final SharedPreferences prefs = context.getSharedPreferences(
-                "BiteFast", Context.MODE_PRIVATE);
+    private SharedPreferences getGCMPreferences(Context context) {
+        return context.getSharedPreferences(RegistrationDetails.class.getSimpleName(), Context.MODE_PRIVATE);
+    }
+
+    public String getPhoneNum(Context context) {
+        final SharedPreferences prefs = getGCMPreferences(context);
         return prefs.getString("phoneNum", "");
     }
 }
