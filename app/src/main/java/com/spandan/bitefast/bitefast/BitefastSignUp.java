@@ -8,7 +8,9 @@ import com.spandan.bitefast.gcmbackend.messaging.Messaging;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.widget.Button;
 import android.support.v7.app.ActionBarActivity;
@@ -35,6 +37,9 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         Logger.getLogger("BitefastSignUp").log(Level.INFO, "loading");
         super.onCreate(savedInstanceState);
+        ActionBar bar = getSupportActionBar();
+        bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
+
         setContentView(R.layout.activity_bf_sign_up);
         signupbutton = (Button) findViewById(R.id.confirm);
         signupbutton.setOnClickListener(this);

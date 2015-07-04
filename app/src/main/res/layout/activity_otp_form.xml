@@ -2,7 +2,8 @@
         android:id="@+id/rootRL"
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:background="@drawable/screen2">
 
     <EditText
             android:layout_width="wrap_content"

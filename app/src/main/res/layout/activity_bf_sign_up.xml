@@ -1,102 +1,127 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rootRL"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:background="@drawable/screen2">
 
 
     <EditText
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:inputType="phone"
         android:ems="10"
         android:id="@+id/phoneValue"
-
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:hint="@string/enter_phn_no"
+        android:maxLength="10"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="85dp"
-        android:nextFocusDown="@+id/nameValue"/>
+        android:layout_marginTop="30dp"
+        android:nextFocusDown="@+id/nameValue"
+        android:layout_weight="1" />
 
     <EditText
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="@+id/phoneValue"
+        android:layout_height="0dp"
         android:inputType="text"
         android:ems="10"
         android:id="@+id/nameValue"
+        android:maxLength="30"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:hint="@string/enter_name"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="135dp"
-        android:nextFocusDown="@+id/emailValue"/>
+        android:singleLine="true"
+        android:layout_marginTop="10dp"
+        android:nextFocusDown="@+id/emailValue"
+        android:layout_weight="1" />
 
     <EditText
+        android:layout_alignParentBottom="@+id/nameValue"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:inputType="textEmailAddress"
         android:ems="10"
         android:id="@+id/emailValue"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:hint="@string/enter_email"
+        android:singleLine="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="185dp"
-        android:nextFocusDown="@+id/addressLine1"/>
+        android:layout_marginTop="10dp"
+        android:nextFocusDown="@+id/addressLine1"
+        android:layout_weight="1" />
 
     <EditText
+        android:layout_alignParentBottom="@+id/emailValue"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:ems="10"
         android:id="@+id/addressLine1"
+        android:singleLine="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:hint="@string/enter_addr"
-        android:layout_marginTop="235dp"
-        android:nextFocusDown="@+id/streetValue"/>
+        android:maxLength="30"
+        android:layout_marginTop="10dp"
+        android:nextFocusDown="@+id/streetValue"
+        android:layout_weight="1" />
 
     <EditText
+        android:layout_alignParentBottom="@+id/addressLine1"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:ems="10"
+        android:singleLine="true"
         android:id="@+id/streetValue"
         android:hint="@string/enter_street"
+        android:maxLength="30"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="285dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:nextFocusDown="@+id/landmark"/>
+        android:nextFocusDown="@+id/landmark"
+        android:layout_weight="1" />
     <EditText
+        android:layout_alignParentBottom="@+id/streetValue"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:ems="10"
+        android:singleLine="true"
         android:id="@+id/landmark"
         android:hint="@string/enter_landmark"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="335dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="25dp"
+        android:maxLength="30"
         android:layout_marginRight="25dp"
-        android:nextFocusDown="@+id/cityValue"/>
+        android:layout_weight="1" />
 
     <Spinner
+        android:layout_alignParentBottom="@+id/landmark"
         android:id="@+id/cityValue"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:entries="@array/city_arrays"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginTop="380dp"
-        android:clickable="true" />
+        android:layout_marginTop="10dp"
+        android:clickable="false"
+        android:layout_weight="1" />
 
     <Button
-        android:layout_width="124dip"
-        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="@+id/cityValue"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:text="Confirm"
         android:id="@+id/confirm"
-        android:layout_marginTop="440dp"
-        android:layout_marginLeft="125dp" />
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal" />
 
-</RelativeLayout>
+</LinearLayout>

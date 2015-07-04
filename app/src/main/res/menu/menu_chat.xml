@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.spandan.bitefast.bitefast.ChatActivity">
     <item android:id="@+id/action_menu" android:title="@string/action_menu"
-        android:orderInCategory="100" app:showAsAction="always" />
+        android:orderInCategory="100" app:showAsAction="withText" />
     <item android:id="@+id/action_help" android:title="@string/action_help"
-        android:orderInCategory="100" app:showAsAction="always" />
+        android:orderInCategory="100" app:showAsAction="withText" />
     <item android:id="@+id/action_more" android:title="@string/action_no_menu"
         android:orderInCategory="100" app:showAsAction="withText" />
     <item android:id="@+id/action_more_help" android:title="@string/action_more_help"

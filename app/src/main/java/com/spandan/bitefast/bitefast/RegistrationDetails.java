@@ -59,7 +59,7 @@ public class RegistrationDetails extends Application{
         }
         return true;
     }
-    public void storAsOtpVerified(Context context){
+    public void storeAsOtpVerified(Context context){
 
         final SharedPreferences prefs = getGCMPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
@@ -80,4 +80,16 @@ public class RegistrationDetails extends Application{
         final SharedPreferences prefs = getGCMPreferences(context);
         return prefs.getString("phoneNum", "");
     }
+    public boolean isAdmin(Context context) {
+        final SharedPreferences prefs = getGCMPreferences(context);
+        return prefs.getBoolean("admin", false);
+    }
+    public void setAdmin(Context context){
+
+        final SharedPreferences prefs = getGCMPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("admin", true);
+        editor.commit();
+    }
+
 }

@@ -140,12 +140,13 @@ public class MainActivity extends Activity {
 
                 Logger.getLogger("LaunchActivity").log(Level.INFO, "Retrieved User: " + values[0]);
                 if(values[0]) {
+                    new RegistrationDetails().setAdmin(getApplicationContext());
                     i = new Intent(MainActivity.this, UserListActivity.class);
                     i.putExtra("UserType", true);
                 }
                 else {
                     i = new Intent(MainActivity.this, ChatActivity.class);
-                    i.putExtra("TOUSER","8886799788");
+                    i.putExtra("SENDTO","BITEFAST_ADMIN");
                     i.putExtra("UserType",false);
                 }
             }

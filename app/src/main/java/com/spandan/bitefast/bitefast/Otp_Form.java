@@ -2,16 +2,24 @@ package com.spandan.bitefast.bitefast;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.spandan.bitefast.gcmbackend.messaging.Messaging;
+import com.spandan.bitefast.gcmbackend.messaging.model.User;
 
 import org.json.simple.JSONValue;
 
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
@@ -26,6 +34,8 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp_form);
         signupbutton = (Button) findViewById(R.id.confirm);
+        ActionBar bar = getSupportActionBar();
+        bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         signupbutton.setOnClickListener(this);
         messageSender=new MessageSender();
         context=getApplicationContext();
@@ -42,15 +52,51 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
                     if(extras !=null) {
                          userName = extras.getString("USER_NAME");
                     }
-                    HashMap<String,String> dataBundle =new HashMap<String,String>();
-                    dataBundle.put("ACTION", "USERLIST");
-                    dataBundle.put("USER_NAME", userName);
-                    new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
                     new RegistrationDetails().otpVerified(getApplicationContext());
-                    Intent i = new Intent(this,
-                            ChatActivity.class);
-                    i.putExtra("TOUSER", userName);
-                    startActivity(i);
+                    final String phoneNum =new RegistrationDetails().getPhoneNum(getApplicationContext());
+                    final boolean values[] = new boolean[1];
+                    try {
+                        Thread t = new Thread(new Runnable() {
+                            public void run() {
+                                Messaging msgService = null;
+                                if (msgService == null) {
+                                    Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
+                                            new AndroidJsonFactory(), null);
+                                    builder.setApplicationName("BiteFast");
+                                    msgService = builder.build();
+                                }
+                                User usr = new User();
+                                try {
+                                    usr = msgService.isAdmin(phoneNum).execute();
+                                    values[0] = usr.getAdmin();
+                                } catch (Exception ex) {
+                                    System.exit(1);
+                                    ex.printStackTrace();
+                                }
+                                Logger.getLogger("LaunchActivity").log(Level.INFO, phoneNum + ":" + usr.toString());
+                            }
+                        });
+                        t.start();
+                        t.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(values[0]) {
+                        new RegistrationDetails().setAdmin(getApplicationContext());
+                        HashMap<String,String> dataBundle =new HashMap<String,String>();
+                        dataBundle.put("ACTION", "USERLIST");
+                        dataBundle.put("USER_NAME", userName);
+                        new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
+                        Intent i = new Intent(Otp_Form.this, UserListActivity.class);
+                        startActivity(i);
+                    }
+                    else {
+
+                        Intent i = new Intent(this,
+                                ChatActivity.class);
+                        i.putExtra("SENDTO", userName);
+                        startActivity(i);
+                    }
                 }
                 else{
                     //TODO Action for failure

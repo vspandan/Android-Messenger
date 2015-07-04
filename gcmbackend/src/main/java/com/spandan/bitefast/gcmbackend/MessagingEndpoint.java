@@ -23,6 +23,7 @@ import com.spandan.bitefast.gcmbackend.models.User;
 import org.json.simple.JSONValue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -134,8 +135,10 @@ public class MessagingEndpoint {
     }
     private void send(String regId,Map<String, String>  message) throws  IOException{
         sender = new Sender(API_KEY);
-        Message msg = new Message.Builder().setData(message).build();
-        Result result = sender.send(msg, regId, 5);
+        Message msg = new Message.Builder().timeToLive(0)
+                .collapseKey("0")
+                .delayWhileIdle(false).setData(message).build();
+        sender.send(msg, new ArrayList<String>(), 5);
     }
 
     private static String createJsonMessage(String messageId,
@@ -155,6 +158,23 @@ public class MessagingEndpoint {
         customer.setProperty("Phoneno", phn);
         customer.setProperty("TimeStamp", new Date());
         datastore.put(customer);
+    }
+
+    private String retreiveKey_ (String toUser){
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query.Filter heightMinFilter =
+                new Query.FilterPredicate("Phoneno",
+                        Query.FilterOperator.EQUAL,toUser
+                );
+        Query q = new Query("RegistrationDetails").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+        Map<String,String> data=new HashMap<String,String>();
+        HashSet<String> userRegIds=new HashSet<String>();
+        for (Entity result : pq.asIterable()) {
+            userRegIds.add((String) result.getProperty("RegId"));
+            return(String) result.getProperty("RegId");
+        }
+        return "";
     }
 
     private HashSet<String> retreiveKey(String toUser){
@@ -185,8 +205,9 @@ public class MessagingEndpoint {
         String action = jsonObject.get("ACTION");
         String toUser="";
         String message="";
-        HashSet<String> admins = findAdminUsers();
+
         if ("USERLIST".equals(action)) {
+            HashSet<String> admins = findAdminUsers();
             jsonObject.put("SM", "USERLIST");
             jsonObject.put("USERLIST", extractUsers());
             for(String admin:admins){
@@ -197,13 +218,21 @@ public class MessagingEndpoint {
             }
         } else if ("CHAT".equals(action)) {
             jsonObject.put("SM", "CHAT");
-            toUser = jsonObject.get("TOUSER");
+            toUser = jsonObject.get("SENDTO");
             message = createJsonMessage(getRandomMessageId(),
                     jsonObject);
-            HashSet<String> regIds=retreiveKey(toUser);
-            for(String regId : regIds) {
-                send(regId, jsonObject);
+
+            if (toUser.equals("BITEFAST_ADMIN")) {
+                HashSet<String> admins = findAdminUsers();
+                send(retreiveKey_(toUser), jsonObject);
             }
+            else {
+                HashSet<String> regIds=retreiveKey(toUser);
+                for(String regId : regIds) {
+                    send(regId, jsonObject);
+                }
+            }
+
         }
     }
 

@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,14 +35,15 @@ public class UserListActivity extends ActionBarActivity {
     private Intent intent;
     private MessageSender messageSender;
     private GoogleCloudMessaging gcm;
-    private boolean isAdmin=false;
     private Context context = null;
     private String regId=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setTitle("BITEFAST-CUSTOMERS");
-        isAdmin=getIntent().getBooleanExtra("UserType", false);
+        this.setTitle("BiteFast");
+        ActionBar bar = getSupportActionBar();
+        bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
+
         setContentView(R.layout.activity_user_list);
         context=getApplicationContext();
         regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
@@ -51,16 +54,16 @@ public class UserListActivity extends ActionBarActivity {
         HashMap dataBundle =new HashMap();
         dataBundle.put("ACTION", "USERLIST");
         new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
-        Button refreshButton = (Button) findViewById(R.id.refreshButton);
+        /*Button refreshButton = (Button) findViewById(R.id.refreshButton);
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                HashMap dataBundle =new HashMap();
+                *//*HashMap dataBundle =new HashMap();
                 dataBundle.put("ACTION", "USERLIST");
-                new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
+                new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);*//*
             }
-        });
+        });*/
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -96,8 +99,7 @@ public class UserListActivity extends ActionBarActivity {
 
                 Intent i = new Intent(getApplicationContext(),
                         ChatActivity.class);
-                i.putExtra("TOUSER", itemValue);
-                i.putExtra("UserType", isAdmin);
+                i.putExtra("SENDTO", itemValue);
                 startActivity(i);
                 finish();
             }

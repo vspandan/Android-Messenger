@@ -1,18 +1,16 @@
 package com.spandan.bitefast.bitefast;
 
-import java.util.HashMap;
-import java.util.Random;
-
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -28,6 +26,9 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.json.simple.JSONValue;
 
+import java.util.HashMap;
+import java.util.Random;
+
 public class ChatActivity extends ActionBarActivity {
     private static final String TAG = "ChatActivity";
     private String regId = "";
@@ -39,7 +40,7 @@ public class ChatActivity extends ActionBarActivity {
     private GoogleCloudMessaging gcm;
     private Intent intent;
 	private static Random random;
-    private String toUserName;
+    private String sendTo;
     private MessageSender messageSender;
     private Context context=null;
 
@@ -48,12 +49,14 @@ public class ChatActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
         context=getApplicationContext();
         regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
-        Intent i = getIntent();
-        toUserName = i.getStringExtra("TOUSER");
-        isAdmin=i.getBooleanExtra("UserType",false);
+        isAdmin=new RegistrationDetails().isAdmin(getApplicationContext());
+        Log.d(TAG, "Is Admin: " + isAdmin);
+        sendTo = getIntent().getStringExtra("SENDTO");
 		setContentView(R.layout.activity_chat);
         if (isAdmin)
-            this.setTitle(toUserName);
+            this.setTitle(sendTo);
+        ActionBar bar = getSupportActionBar();
+        bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         buttonSend = (Button) findViewById(R.id.buttonSend);
         intent = new Intent(this, GCMNotificationIntentService.class);
         registerReceiver(broadcastReceiver, new IntentFilter("com.spandan.bitefast.bitefast.chatmessage"));
@@ -67,6 +70,7 @@ public class ChatActivity extends ActionBarActivity {
 
         chatText = (EditText) findViewById(R.id.chatText);
         chatText.setOnKeyListener(new OnKeyListener() {
+
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                   return sendChatMessage();
@@ -99,16 +103,16 @@ public class ChatActivity extends ActionBarActivity {
         HashMap<String,String> dataBundle = new HashMap<String,String>();
         dataBundle.put("ACTION", "CHAT");
         if(isAdmin)
-            dataBundle.put("TOUSER", toUserName);
+            dataBundle.put("SENDTO", sendTo);
         else
-            dataBundle.put("TOUSER", "8886799788");
-        dataBundle.put("TOUSER", toUserName);
+            dataBundle.put("SENDTO", "8886799788");
+        dataBundle.put("SENDTO", sendTo);
 
         dataBundle.put("CHATMESSAGE", chatText.getText().toString());
         new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
-        new GcmDataSavingAsyncTask().saveMessage(regId,new RegistrationDetails().getPhoneNum(getApplicationContext()),toUserName,chatText.getText().toString());
+        new GcmDataSavingAsyncTask().saveMessage(regId,new RegistrationDetails().getPhoneNum(getApplicationContext()), sendTo,chatText.getText().toString());
 
-        chatArrayAdapter.add(new ChatMessage(false, chatText.getText().toString()));
+        chatArrayAdapter.add(new ChatMessage(false, chatText.getText().toString().trim()));
         chatText.setText("");
         return true;
     }
@@ -118,7 +122,7 @@ public class ChatActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, " Chat onReceive: " + intent.getStringExtra("CHATMESSAGE"));
-            chatArrayAdapter.add(new ChatMessage(true, intent.getStringExtra("CHATMESSAGE")));
+            chatArrayAdapter.add(new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim()));
         }
     };
     @Override
@@ -133,7 +137,6 @@ public class ChatActivity extends ActionBarActivity {
             HashMap dataBundle =new HashMap();
             dataBundle.put("ACTION", "USERLIST");
             new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
-            Button refreshButton = (Button) findViewById(R.id.refreshButton);
             Intent i = new Intent(this,
                     UserListActivity.class);
             i.putExtra("UserType", isAdmin);
