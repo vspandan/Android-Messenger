@@ -53,7 +53,7 @@ public class UserListActivity extends ActionBarActivity {
         gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
         HashMap dataBundle =new HashMap();
         dataBundle.put("ACTION", "USERLIST");
-        new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
+        new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
         /*Button refreshButton = (Button) findViewById(R.id.refreshButton);
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
@@ -61,7 +61,7 @@ public class UserListActivity extends ActionBarActivity {
             public void onClick(View arg0) {
                 *//*HashMap dataBundle =new HashMap();
                 dataBundle.put("ACTION", "USERLIST");
-                new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);*//*
+                new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);*//*
             }
         });*/
     }

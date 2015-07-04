@@ -43,7 +43,6 @@ public class GCMNotificationIntentService extends IntentService {
                         .equals(messageType)) {
 
                     if("USERLIST".equals(extras.get("SM"))){
-                        //update the userlist view
                         Intent userListIntent = new Intent("com.spandan.bitefast.bitefast.userlist");
                         String userList = extras.get("USERLIST").toString();
                         userListIntent.putExtra("USERLIST",userList);

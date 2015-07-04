@@ -142,12 +142,10 @@ public class MainActivity extends Activity {
                 if(values[0]) {
                     new RegistrationDetails().setAdmin(getApplicationContext());
                     i = new Intent(MainActivity.this, UserListActivity.class);
-                    i.putExtra("UserType", true);
                 }
                 else {
                     i = new Intent(MainActivity.this, ChatActivity.class);
                     i.putExtra("SENDTO","BITEFAST_ADMIN");
-                    i.putExtra("UserType",false);
                 }
             }
             else {

@@ -68,9 +68,7 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
                         new GcmDataSavingAsyncTask().registerDevice(regId,phn);
                         new GcmDataSavingAsyncTask().insertUser(regId, phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString(), false);
                         Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:" + regId);
-
                         Intent i= new Intent(this, Otp_Form.class);
-                        i.putExtra("USER_NAME", phn);
                         startActivity(i);
                     } catch(Exception e) {
                         AlertDialog alertDialog = new AlertDialog.Builder(this).create();

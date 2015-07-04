@@ -102,14 +102,12 @@ public class ChatActivity extends ActionBarActivity {
 
         HashMap<String,String> dataBundle = new HashMap<String,String>();
         dataBundle.put("ACTION", "CHAT");
-        if(isAdmin)
-            dataBundle.put("SENDTO", sendTo);
-        else
-            dataBundle.put("SENDTO", "8886799788");
-        dataBundle.put("SENDTO", sendTo);
-
+        dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
+        //TODO remove this ;;added jsut for debugging purpose
+        dataBundle.put("SENDTO", new RegistrationDetails().getPhoneNum(getApplicationContext()));
+        /*dataBundle.put("SENDTO", sendTo);*/
         dataBundle.put("CHATMESSAGE", chatText.getText().toString());
-        new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
+        new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
         new GcmDataSavingAsyncTask().saveMessage(regId,new RegistrationDetails().getPhoneNum(getApplicationContext()), sendTo,chatText.getText().toString());
 
         chatArrayAdapter.add(new ChatMessage(false, chatText.getText().toString().trim()));
@@ -136,7 +134,7 @@ public class ChatActivity extends ActionBarActivity {
         if(isAdmin) {
             HashMap dataBundle =new HashMap();
             dataBundle.put("ACTION", "USERLIST");
-            new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
+            new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
             Intent i = new Intent(this,
                     UserListActivity.class);
             i.putExtra("UserType", isAdmin);

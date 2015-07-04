@@ -47,11 +47,6 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
             case R.id.confirm:
                 //TODO logic to verify otp
                 if(confirmed) {
-                    String userName = null;
-                    Bundle extras = getIntent().getExtras();
-                    if(extras !=null) {
-                         userName = extras.getString("USER_NAME");
-                    }
                     new RegistrationDetails().otpVerified(getApplicationContext());
                     final String phoneNum =new RegistrationDetails().getPhoneNum(getApplicationContext());
                     final boolean values[] = new boolean[1];
@@ -85,8 +80,7 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
                         new RegistrationDetails().setAdmin(getApplicationContext());
                         HashMap<String,String> dataBundle =new HashMap<String,String>();
                         dataBundle.put("ACTION", "USERLIST");
-                        dataBundle.put("USER_NAME", userName);
-                        new GcmMessagingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
+                        new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
                         Intent i = new Intent(Otp_Form.this, UserListActivity.class);
                         startActivity(i);
                     }
@@ -94,7 +88,7 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
 
                         Intent i = new Intent(this,
                                 ChatActivity.class);
-                        i.putExtra("SENDTO", userName);
+                        i.putExtra("SENDTO", "BITEFAST_ADMIN");
                         startActivity(i);
                     }
                 }
