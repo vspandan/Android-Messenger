@@ -115,14 +115,16 @@ public class UserListActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
+
         AlertDialog alertDialog=new AlertDialog.Builder(this).create();
         alertDialog.setMessage("Exit?");
         alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                System.exit(0);
+                finish();
             }
         });
         alertDialog.show();
+        super.onBackPressed();
     }
 
     @Override

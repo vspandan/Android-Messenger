@@ -30,10 +30,14 @@ import com.spandan.bitefast.gcmbackend.messaging.model.UserDetails;
 import org.json.simple.JSONValue;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 public class ChatActivity extends ActionBarActivity {
     private static final String TAG = "ChatActivity";
+
     private String regId = "";
     private ChatArrayAdapter chatArrayAdapter;
 	private ListView listView;
@@ -48,8 +52,13 @@ public class ChatActivity extends ActionBarActivity {
     private Context context=null;
     private String androidId = null;
     private String androidIdReceiver = null;
-	@Override
+
+    private Set<String> storedLocalMessages_value =null;
+    private Set<String> storedLocalMessages_left =null;
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
         context=getApplicationContext();
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -58,31 +67,34 @@ public class ChatActivity extends ActionBarActivity {
         Log.d(TAG, "Is Admin: " + isAdmin);
         sendTo = getIntent().getStringExtra("SENDTO");
 		setContentView(R.layout.activity_chat);
+
+        chatArrayAdapter = new ChatArrayAdapter(context, R.layout.activity_chat_singlemessage);
+
         if (isAdmin)
             this.setTitle(sendTo);
         ActionBar bar = getSupportActionBar();
+
+        //TODO retrieve from shared data and update localChatListUserWise;
+
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         buttonSend = (Button) findViewById(R.id.buttonSend);
         intent = new Intent(this, GCMNotificationIntentService.class);
         registerReceiver(broadcastReceiver, new IntentFilter("com.spandan.bitefast.bitefast.chatmessage"));
-		random = new Random();
+
         messageSender = new MessageSender();
 		listView = (ListView) findViewById(R.id.listView1);
         gcm = GoogleCloudMessaging.getInstance(context);
 
-		chatArrayAdapter = new ChatArrayAdapter(context, R.layout.activity_chat_singlemessage);
-		listView.setAdapter(chatArrayAdapter);
-
         chatText = (EditText) findViewById(R.id.chatText);
         chatText.setOnKeyListener(new OnKeyListener() {
 
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                  return sendChatMessage();
+                    return sendChatMessage();
                 }
                 return false;
-			}
-		});
+            }
+        });
 
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +113,30 @@ public class ChatActivity extends ActionBarActivity {
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
-	}
+
+        storedLocalMessages_value = new RegistrationDetails().fetchMessagesForUserValues(getApplicationContext(), sendTo);
+        storedLocalMessages_left = new RegistrationDetails().fetchMessagesForUserLeftValues(getApplicationContext(), sendTo);
+
+        if(storedLocalMessages_left.size()==storedLocalMessages_value.size() && storedLocalMessages_left.size()>0 && storedLocalMessages_value.size()>0) {
+            update(storedLocalMessages_value, storedLocalMessages_left);
+        }
+
+
+    }
+
+    private void update(Set<String> storedLocalMessages_value, Set<String> storedLocalMessages_left) {
+        int size = storedLocalMessages_left.size();
+        ChatMessage chatMessage=null;
+        Object[] storedLocalMessages_Value_Strs=storedLocalMessages_value.toArray();
+        Object[] storedLocalMessages_left_Strs=storedLocalMessages_left.toArray();
+
+        for (int i=0; i < size; i++){
+            String tempBool=((String)storedLocalMessages_left_Strs[i]).substring(2);
+            String tempVal=((String)storedLocalMessages_Value_Strs[i]).substring(2);
+            chatMessage=new ChatMessage(Boolean.getBoolean(tempBool),tempVal);
+            chatArrayAdapter.add(chatMessage);
+        }
+    }
 
     private boolean sendChatMessage(){
         String message=chatText.getText().toString();
@@ -116,9 +151,20 @@ public class ChatActivity extends ActionBarActivity {
         dataBundle.put("SENDTO", sendTo);
         dataBundle.put("CHATMESSAGE", chatText.getText().toString());
         new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
-        new GcmDataSavingAsyncTask().saveMessage(regId,new RegistrationDetails().getPhoneNum(getApplicationContext()), sendTo,message);
+        new GcmDataSavingAsyncTask().saveMessage(regId, new RegistrationDetails().getPhoneNum(getApplicationContext()), sendTo, message);
 
-        chatArrayAdapter.add(new ChatMessage(false, chatText.getText().toString().trim()));
+
+        ChatMessage chatMessage = new ChatMessage(false, chatText.getText().toString().trim());
+
+        chatArrayAdapter.add(chatMessage);
+
+        int i=storedLocalMessages_left.size();
+        storedLocalMessages_value.add(i+"_"+chatMessage.message);
+        storedLocalMessages_left.add(i+"_"+chatMessage.left);
+
+        new RegistrationDetails().saveMessagesForUserValues(getApplicationContext(), sendTo, storedLocalMessages_value);
+        new RegistrationDetails().saveMessagesForUserLeftValues(getApplicationContext(), sendTo, storedLocalMessages_left);
+
         chatText.setText("");
         return true;
     }
@@ -128,7 +174,14 @@ public class ChatActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, " Chat onReceive: " + intent.getStringExtra("CHATMESSAGE"));
-            chatArrayAdapter.add(new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim()));
+
+            ChatMessage chatMessage=new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim());
+            chatArrayAdapter.add(chatMessage);
+            int i=storedLocalMessages_left.size();
+            storedLocalMessages_value.add(i+"_"+chatMessage.message);
+            storedLocalMessages_left.add(i+"_"+chatMessage.left);
+            new RegistrationDetails().saveMessagesForUserValues(getApplicationContext(), sendTo, storedLocalMessages_value);
+            new RegistrationDetails().saveMessagesForUserLeftValues(getApplicationContext(), sendTo, storedLocalMessages_left);
             androidIdReceiver=intent.getStringExtra("DEVICEID");
         }
     };
@@ -158,6 +211,7 @@ public class ChatActivity extends ActionBarActivity {
             });
             alertDialog.show();
         }
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

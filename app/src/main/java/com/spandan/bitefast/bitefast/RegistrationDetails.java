@@ -105,11 +105,38 @@ public class RegistrationDetails extends Application{
         return prefs.getBoolean("admin", false);
     }
     public void setAdmin(Context context){
-
         final SharedPreferences prefs = getGCMPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("admin", true);
         editor.commit();
     }
+
+    public Set<String> fetchMessagesForUserValues(Context context, String sendTo) {
+        final SharedPreferences prefs = getGCMPreferences(context);
+        return (Set<String>)prefs.getStringSet(sendTo + "_values", new LinkedHashSet<String>());
+
+    }
+
+    public Set<String> fetchMessagesForUserLeftValues(Context context, String sendTo) {
+        final SharedPreferences prefs = getGCMPreferences(context);
+        return (Set<String>)prefs.getStringSet(sendTo + "_left_values", new LinkedHashSet<String>());
+
+    }
+
+
+    public void saveMessagesForUserValues(Context applicationContext, String sendTo, Set<String> storedLocalMessages) {
+        final SharedPreferences prefs = getGCMPreferences(applicationContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putStringSet(sendTo+"_values",storedLocalMessages);
+        editor.commit();
+    }
+
+    public void saveMessagesForUserLeftValues(Context applicationContext, String sendTo, Set<String> storedLocalMessages) {
+        final SharedPreferences prefs = getGCMPreferences(applicationContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putStringSet(sendTo+"_left_values",storedLocalMessages);
+        editor.commit();
+    }
+
 
 }
