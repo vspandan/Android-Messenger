@@ -61,7 +61,7 @@
         <activity
             android:name=".ChatActivity"
             android:label="@string/title_activity_messaging"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:screenOrientation="portrait" >
         </activity>
 

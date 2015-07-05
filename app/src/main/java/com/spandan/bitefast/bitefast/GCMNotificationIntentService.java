@@ -82,7 +82,7 @@ public class GCMNotificationIntentService extends IntentService {
                 "New Message", System.currentTimeMillis());
         notification.sound=defaultSoundUri;
         notification.setLatestEventInfo(this, title,
-                message, pendingIntent);
+                "New Message", pendingIntent);
 
 
 

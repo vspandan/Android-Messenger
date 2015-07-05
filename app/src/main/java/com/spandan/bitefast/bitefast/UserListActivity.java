@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -30,6 +32,8 @@ import java.util.logging.Logger;
 
 
 public class UserListActivity extends ActionBarActivity {
+
+    private final HashMap<String,Boolean> msgReadStatus=new HashMap<String, Boolean>();
     private static final String TAG = "UserListActivity";
     private Intent intent;
     private MessageSender messageSender;
@@ -44,6 +48,7 @@ public class UserListActivity extends ActionBarActivity {
         this.setTitle("BiteFast");
         senderList=new ArrayList<String>();
         ActionBar bar = getSupportActionBar();
+
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
 
         setContentView(R.layout.activity_user_list);
@@ -83,8 +88,10 @@ public class UserListActivity extends ActionBarActivity {
         if (senderList.contains(from))
             senderList.remove(from);
         senderList.add(from);
-        new RegistrationDetails().storeChatUserList(getApplicationContext(),new LinkedHashSet<String>(senderList));
+
+        new RegistrationDetails().storeChatUserList(getApplicationContext(), new LinkedHashSet<String>(senderList));
         updateUIActivity(senderList);
+        //refresh colors
     }
 
     public void updateUIActivity(List<String> senderList){
@@ -95,6 +102,8 @@ public class UserListActivity extends ActionBarActivity {
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, userListArr);
+
+
         final ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -103,14 +112,16 @@ public class UserListActivity extends ActionBarActivity {
                 int itemPosition = position;
 
                 String itemValue = (String) adapter.getItem(position);
-
+                view.setBackgroundColor(Color.CYAN);
                 Intent i = new Intent(getApplicationContext(),
                         ChatActivity.class);
+                msgReadStatus.put(itemValue,true);
                 i.putExtra("SENDTO", itemValue);
                 startActivity(i);
                 finish();
             }
         });
+
     }
 
     @Override
@@ -120,7 +131,7 @@ public class UserListActivity extends ActionBarActivity {
         alertDialog.setMessage("Exit?");
         alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                finish();
+                System.exit(0);
             }
         });
         alertDialog.show();

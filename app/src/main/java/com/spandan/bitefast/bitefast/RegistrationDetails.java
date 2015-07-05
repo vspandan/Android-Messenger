@@ -127,6 +127,7 @@ public class RegistrationDetails extends Application{
     public void saveMessagesForUserValues(Context applicationContext, String sendTo, Set<String> storedLocalMessages) {
         final SharedPreferences prefs = getGCMPreferences(applicationContext);
         SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
         editor.putStringSet(sendTo+"_values",storedLocalMessages);
         editor.commit();
     }
@@ -134,6 +135,7 @@ public class RegistrationDetails extends Application{
     public void saveMessagesForUserLeftValues(Context applicationContext, String sendTo, Set<String> storedLocalMessages) {
         final SharedPreferences prefs = getGCMPreferences(applicationContext);
         SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
         editor.putStringSet(sendTo+"_left_values",storedLocalMessages);
         editor.commit();
     }

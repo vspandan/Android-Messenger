@@ -3,6 +3,7 @@ package com.spandan.bitefast.bitefast;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.spandan.bitefast.bitefast.util.SystemUiHider;
+import com.spandan.bitefast.bitefast.util.Utilities;
 import com.spandan.bitefast.gcmbackend.messaging.Messaging;
 
 import android.app.AlertDialog;
@@ -64,14 +65,78 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
                     try{
 
                         String phn=phone.getText().toString().trim();
+                        String nameval=name.getText().toString().trim();
+                        String emailVal=email.getText().toString().trim();;
+                        String addrVal=addr1.getText().toString().trim();;
+                        String streetval=street.getText().toString().trim();
+                        String landMarkVal= landmark.getText().toString().trim();
                         String regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
                         String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device ANDROID_ID details:" + androidId);
-                        new RegistrationDetails().storeUserInfo(getApplicationContext(), phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString());
-                        new GcmDataSavingAsyncTask().insertUser(androidId, regId, phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString(), false);
-                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:" + regId);
-                        Intent i= new Intent(this, Otp_Form.class);
-                        startActivity(i);
+                        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                        if(!Utilities.isPhnNoValid(phn)){
+                            alertDialog.setMessage("Invalid Phone Num");
+                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            alertDialog.show();
+
+                        }
+                        else if(nameval.isEmpty()){
+                            alertDialog.setMessage("Please Enter Name");
+                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            alertDialog.show();
+                        }
+                        else if(!Utilities.isEmailValid(emailVal)){
+                            alertDialog.setMessage("InValid Email");
+                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            alertDialog.show();
+                        }
+                        else if(addrVal.isEmpty()){
+                            alertDialog.setMessage("Please Enter Address");
+                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            alertDialog.show();
+                        }
+                        else if(streetval.isEmpty()){
+                            alertDialog.setMessage("Please Street Name");
+                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            alertDialog.show();
+                        }
+                        else if(landMarkVal.isEmpty()){
+                            alertDialog.setMessage("Please Land Mark");
+                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            alertDialog.show();
+                        }
+
+                        else {
+                            Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device ANDROID_ID details:" + androidId);
+                            new RegistrationDetails().storeUserInfo(getApplicationContext(), phn, nameval, emailVal, addrVal, streetval, landMarkVal, city.getSelectedItem().toString());
+                            new GcmDataSavingAsyncTask().insertUser(androidId, regId, phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString(), false);
+                            Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:" + regId);
+                            Intent i = new Intent(this, Otp_Form.class);
+                            startActivity(i);
+                        }
                     } catch(Exception e) {
                         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
                         alertDialog.setMessage("UnSuccessful");

@@ -27,4 +27,19 @@ public class Utilities {
         else
             return false;
     }
+
+    public static boolean isPhnNoValid(String phn)
+    {
+        String regExpn ="^[789]\\d{9}$";
+
+        CharSequence inputStr = phn;
+
+        Pattern pattern = Pattern.compile(regExpn,Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+
+        if(matcher.matches())
+            return true;
+        else
+            return false;
+    }
 }

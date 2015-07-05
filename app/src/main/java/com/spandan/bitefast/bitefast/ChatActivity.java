@@ -53,9 +53,6 @@ public class ChatActivity extends ActionBarActivity {
     private String androidId = null;
     private String androidIdReceiver = null;
 
-    private Set<String> storedLocalMessages_value =null;
-    private Set<String> storedLocalMessages_left =null;
-
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -114,8 +111,8 @@ public class ChatActivity extends ActionBarActivity {
             }
         });
 
-        storedLocalMessages_value = new RegistrationDetails().fetchMessagesForUserValues(getApplicationContext(), sendTo);
-        storedLocalMessages_left = new RegistrationDetails().fetchMessagesForUserLeftValues(getApplicationContext(), sendTo);
+        Set<String> storedLocalMessages_value = new RegistrationDetails().fetchMessagesForUserValues(getApplicationContext(), sendTo);
+        Set<String> storedLocalMessages_left = new RegistrationDetails().fetchMessagesForUserLeftValues(getApplicationContext(), sendTo);
 
         if(storedLocalMessages_left.size()==storedLocalMessages_value.size() && storedLocalMessages_left.size()>0 && storedLocalMessages_value.size()>0) {
             update(storedLocalMessages_value, storedLocalMessages_left);
@@ -158,6 +155,9 @@ public class ChatActivity extends ActionBarActivity {
 
         chatArrayAdapter.add(chatMessage);
 
+        Set<String> storedLocalMessages_value = new RegistrationDetails().fetchMessagesForUserValues(getApplicationContext(), sendTo);
+        Set<String> storedLocalMessages_left = new RegistrationDetails().fetchMessagesForUserLeftValues(getApplicationContext(), sendTo);
+
         int i=storedLocalMessages_left.size();
         storedLocalMessages_value.add(i+"_"+chatMessage.message);
         storedLocalMessages_left.add(i+"_"+chatMessage.left);
@@ -177,6 +177,9 @@ public class ChatActivity extends ActionBarActivity {
 
             ChatMessage chatMessage=new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim());
             chatArrayAdapter.add(chatMessage);
+            Set<String> storedLocalMessages_value = new RegistrationDetails().fetchMessagesForUserValues(getApplicationContext(), sendTo);
+            Set<String> storedLocalMessages_left = new RegistrationDetails().fetchMessagesForUserLeftValues(getApplicationContext(), sendTo);
+
             int i=storedLocalMessages_left.size();
             storedLocalMessages_value.add(i+"_"+chatMessage.message);
             storedLocalMessages_left.add(i+"_"+chatMessage.left);

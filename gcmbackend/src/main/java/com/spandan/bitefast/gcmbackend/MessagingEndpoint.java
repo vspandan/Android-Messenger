@@ -196,17 +196,17 @@ public class MessagingEndpoint {
     }
     private void send(String regId,Map<String, String>  message) throws  IOException{
         sender = new Sender(API_KEY);
-        Message msg = new Message.Builder().timeToLive(0)
+        Message msg = new Message.Builder().timeToLive(86400)
                 .collapseKey("0")
-                .delayWhileIdle(false).setData(message).build();
+                .delayWhileIdle(true).setData(message).build();
         sender.send(msg, regId, 5);
     }
 
     private void send(ArrayList<String> regIdArray,Map<String, String>  message) throws  IOException{
         sender = new Sender(API_KEY);
-        Message msg = new Message.Builder().timeToLive(0)
+        Message msg = new Message.Builder().timeToLive(86400)
                 .collapseKey("0")
-                .delayWhileIdle(false).setData(message).build();
+                .delayWhileIdle(true).setData(message).build();
         sender.send(msg, regIdArray, 5);
     }
 
