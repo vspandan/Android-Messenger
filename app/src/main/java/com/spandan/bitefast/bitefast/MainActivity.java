@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -38,9 +39,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         cd=new CheckInternetConnectivity(getApplicationContext());
         if(cd.isConnectingToInternet()) {
-            String regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
-            if (regId.isEmpty()||regId==null)
-                register();
+            register();
             new BackgroundSplashTask().execute();
         }
         else{
@@ -144,6 +143,10 @@ public class MainActivity extends Activity {
                     i = new Intent(MainActivity.this, UserListActivity.class);
                 }
                 else {
+                    //Updating registration details and
+                    String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                    /*new GcmDataSavingAsyncTask().registerDevice(regId,phn);*/
+                    new GcmDataSavingAsyncTask().updateUserRegid(androidId,new RegistrationDetails().getRegistrationId(getApplicationContext()));
                     i = new Intent(MainActivity.this, ChatActivity.class);
                     i.putExtra("SENDTO","BITEFAST_ADMIN");
                 }

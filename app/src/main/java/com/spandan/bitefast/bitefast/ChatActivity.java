@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.text.InputType;
@@ -24,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.spandan.bitefast.gcmbackend.messaging.model.UserDetails;
 
 import org.json.simple.JSONValue;
 
@@ -44,11 +46,13 @@ public class ChatActivity extends ActionBarActivity {
     private String sendTo;
     private MessageSender messageSender;
     private Context context=null;
-
+    private String androidId = null;
+    private String androidIdReceiver = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         context=getApplicationContext();
+        androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
         isAdmin=new RegistrationDetails().isAdmin(getApplicationContext());
         Log.d(TAG, "Is Admin: " + isAdmin);
@@ -102,6 +106,7 @@ public class ChatActivity extends ActionBarActivity {
     private boolean sendChatMessage(){
 
         HashMap<String,String> dataBundle = new HashMap<String,String>();
+        dataBundle.put("DEVICEID",androidId);
         dataBundle.put("ACTION", "CHAT");
         dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
         //added this for debugging purpose
@@ -122,6 +127,7 @@ public class ChatActivity extends ActionBarActivity {
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, " Chat onReceive: " + intent.getStringExtra("CHATMESSAGE"));
             chatArrayAdapter.add(new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim()));
+            androidIdReceiver=intent.getStringExtra("DEVICEID");
         }
     };
     @Override
@@ -189,9 +195,21 @@ public class ChatActivity extends ActionBarActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     String orderId=getRandomOrderId();
                     String amount=input.getText().toString();
-                    chatText.setText("Thanks for Ordering.\nYour Bill Amount: "+amount+"\nOrder Id: "+ orderId);
+                    chatText.setText("Thanks for Ordering.\nYour Bill Amount: " + amount + "\nOrder Id: " + orderId);
                     sendChatMessage();
-                    new GcmDataSavingAsyncTask().saveOrder(orderId,sendTo,amount);
+                    new GcmDataSavingAsyncTask().saveOrder(orderId, sendTo, amount);
+                    UserDetails details=new GcmDataSavingAsyncTask().fetchDetails("bdf6738b9d3da939");
+                    if (details!=null) {
+                        chatText.setText("Your Order (" + orderId + ") will be delivered to: \n" + details.getName() + "\n" + details.getAddr() + "\n" + details.getStreet() + "\n" + details.getLandmark() + "\n" + details.getCity());
+                        sendChatMessage();
+                        chatText.setText("If there is a change let us know");
+                        sendChatMessage();
+                    }
+                    else {
+                        chatText.setText("Share delivery address or We can call you");
+                        sendChatMessage();
+                    }
+
                 }
             });
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

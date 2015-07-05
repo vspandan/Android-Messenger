@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.widget.Button;
@@ -64,9 +65,10 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
 
                         String phn=phone.getText().toString().trim();
                         String regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
+                        String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                        Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device ANDROID_ID details:" + androidId);
                         new RegistrationDetails().storeUserInfo(getApplicationContext(), phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString());
-                        new GcmDataSavingAsyncTask().registerDevice(regId,phn);
-                        new GcmDataSavingAsyncTask().insertUser(regId, phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString(), false);
+                        new GcmDataSavingAsyncTask().insertUser(androidId, regId, phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString(), false);
                         Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:" + regId);
                         Intent i= new Intent(this, Otp_Form.class);
                         startActivity(i);
