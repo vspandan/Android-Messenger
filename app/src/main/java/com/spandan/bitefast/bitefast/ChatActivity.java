@@ -206,7 +206,7 @@ public class ChatActivity extends ActionBarActivity {
             startActivity(i);
         } else {
             AlertDialog alertDialog=new AlertDialog.Builder(this).create();
-            alertDialog.setMessage("Exit?");
+            alertDialog.setMessage("See You Soon");
             alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     System.exit(0);
@@ -223,7 +223,7 @@ public class ChatActivity extends ActionBarActivity {
             getMenuInflater().inflate(R.menu.menu_chat_admin, menu);
         }
         else {
-            getMenuInflater().inflate(R.menu.menu_chat, menu);
+            /*getMenuInflater().inflate(R.menu.menu_chat, menu);*/
         }
         return true;
     }

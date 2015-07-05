@@ -1,11 +1,5 @@
 package com.spandan.bitefast.bitefast;
 
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.spandan.bitefast.bitefast.util.SystemUiHider;
-import com.spandan.bitefast.bitefast.util.Utilities;
-import com.spandan.bitefast.gcmbackend.messaging.Messaging;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,14 +7,21 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.ActionBar;
-import android.view.View;
-import android.widget.Button;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.io.IOException;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.spandan.bitefast.bitefast.util.SystemUiHider;
+import com.spandan.bitefast.bitefast.util.Utilities;
+import com.spandan.bitefast.gcmbackend.messaging.Messaging;
+import com.spandan.bitefast.gcmbackend.messaging.model.User;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,9 +32,9 @@ import java.util.logging.Logger;
  *
  * @see SystemUiHider
  */
-public class BitefastSignUp extends ActionBarActivity implements View.OnClickListener{
-    private Button signupbutton=null;
-    private boolean successful=true;
+public class BitefastSignUp extends ActionBarActivity implements View.OnClickListener {
+    private Button signupbutton = null;
+    private boolean successful = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +42,11 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
-
         setContentView(R.layout.activity_bf_sign_up);
         signupbutton = (Button) findViewById(R.id.confirm);
         signupbutton.setOnClickListener(this);
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -55,111 +56,88 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
                     Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
                             new AndroidJsonFactory(), null);
                     builder.setApplicationName("BiteFast");
-                    EditText phone = (EditText) findViewById(R.id.phoneValue);
-                    EditText name = (EditText) findViewById(R.id.nameValue);
-                    EditText email = (EditText) findViewById(R.id.emailValue);
-                    EditText addr1 = (EditText) findViewById(R.id.addressLine1);
-                    EditText street = (EditText) findViewById(R.id.streetValue);
-                    EditText landmark = (EditText) findViewById(R.id.landmark);
-                    Spinner city = (Spinner) findViewById(R.id.cityValue);
-                    try{
-
-                        String phn=phone.getText().toString().trim();
-                        String nameval=name.getText().toString().trim();
-                        String emailVal=email.getText().toString().trim();;
-                        String addrVal=addr1.getText().toString().trim();;
-                        String streetval=street.getText().toString().trim();
-                        String landMarkVal= landmark.getText().toString().trim();
-                        String regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
-                        String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-                        if(!Utilities.isPhnNoValid(phn)){
-                            alertDialog.setMessage("Invalid Phone Num");
-                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                            alertDialog.show();
-
+                    final EditText phone = (EditText) findViewById(R.id.phoneValue);
+                    final EditText name = (EditText) findViewById(R.id.nameValue);
+                    final EditText email = (EditText) findViewById(R.id.emailValue);
+                    phone.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            if (actionId == 0 || actionId == EditorInfo.IME_ACTION_DONE) {
+                                name.requestFocus();
+                            }
+                            return false;
                         }
-                        else if(nameval.isEmpty()){
-                            alertDialog.setMessage("Please Enter Name");
-                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                            alertDialog.show();
+                    });
+                    name.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            if (actionId == 0 || actionId == EditorInfo.IME_ACTION_DONE) {
+                                email.requestFocus();
+                            }
+                            return false;
                         }
-                        else if(!Utilities.isEmailValid(emailVal)){
-                            alertDialog.setMessage("InValid Email");
-                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                            alertDialog.show();
+                    });
+                    email.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            if (actionId == 0 || actionId == EditorInfo.IME_ACTION_DONE) {
+                                signupbutton.requestFocus();
+                            }
+                            return false;
                         }
-                        else if(addrVal.isEmpty()){
-                            alertDialog.setMessage("Please Enter Address");
-                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
+                    });
 
-                                }
-                            });
-                            alertDialog.show();
-                        }
-                        else if(streetval.isEmpty()){
-                            alertDialog.setMessage("Please Street Name");
-                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                            alertDialog.show();
-                        }
-                        else if(landMarkVal.isEmpty()){
-                            alertDialog.setMessage("Please Land Mark");
-                            alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                            alertDialog.show();
-                        }
-
-                        else {
-                            Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device ANDROID_ID details:" + androidId);
-                            new RegistrationDetails().storeUserInfo(getApplicationContext(), phn, nameval, emailVal, addrVal, streetval, landMarkVal, city.getSelectedItem().toString());
-                            new GcmDataSavingAsyncTask().insertUser(androidId, regId, phn, name.getText().toString(), email.getText().toString(), addr1.getText().toString(), street.getText().toString(), landmark.getText().toString(), city.getSelectedItem().toString(), false);
-                            Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:" + regId);
-                            Intent i = new Intent(this, Otp_Form.class);
-                            startActivity(i);
-                        }
-                    } catch(Exception e) {
-                        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-                        alertDialog.setMessage("UnSuccessful");
-                        alertDialog.setButton("Please Retry", new DialogInterface.OnClickListener() {
+                    String phn = phone.getText().toString().trim();
+                    String nameval = name.getText().toString().trim();
+                    String emailVal = email.getText().toString().trim();
+                    ;
+                    AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                    if (!Utilities.isPhnNoValid(phn)) {
+                        alertDialog.setMessage("Invalid Phone Num");
+                        alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
                             }
                         });
                         alertDialog.show();
+                        phone.requestFocus();
 
+                    } else if (nameval.isEmpty()) {
+                        alertDialog.setMessage("Please Enter Name");
+                        alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                        alertDialog.show();
+                        name.requestFocus();
+                    } else if (!Utilities.isEmailValid(emailVal)) {
+                        alertDialog.setMessage("InValid Email");
+                        alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                        alertDialog.show();
+                        email.requestFocus();
+                    } else {
+                        Intent i = new Intent(BitefastSignUp.this, BitefastSignUp_2.class);
+                        i.putExtra("Phone", phn);
+                        i.putExtra("Name", nameval);
+                        i.putExtra("Email", emailVal);
+                        startActivity(i);
                     }
-                }
-                catch (Exception e){
-
+                } catch (Exception e) {
+                    Logger.getLogger("BitefastSignUp").log(Level.INFO, e.getMessage());
                 }
                 break;
             default:
                 break;
         }
     }
+
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
 
     }
 

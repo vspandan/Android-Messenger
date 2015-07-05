@@ -5,7 +5,8 @@
     android:id="@+id/rootRL"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    >
 
 
     <TextView
@@ -18,59 +19,71 @@
         android:layout_marginTop="20dp"
         android:textColor="#ffabc1ff" />
 
-    <EditText
+        <EditText
+        android:layout_alignParentBottom="@+id/emailValue"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:inputType="phone"
         android:ems="10"
-        android:id="@+id/phoneValue"
+        android:id="@+id/addressLine1"
+        android:singleLine="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:hint="@string/enter_phn_no"
-        android:maxLength="10"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:nextFocusDown="@+id/nameValue"
-        android:layout_weight="1" />
-
-    <EditText
-        android:layout_width="fill_parent"
-        android:layout_alignParentBottom="@+id/phoneValue"
-        android:layout_height="50dp"
-        android:inputType="text"
-        android:ems="10"
-        android:id="@+id/nameValue"
+        android:hint="@string/enter_addr"
         android:maxLength="30"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:hint="@string/enter_name"
-        android:layout_centerHorizontal="true"
-        android:singleLine="true"
         android:layout_marginTop="10dp"
-        android:nextFocusDown="@+id/emailValue"
+        android:nextFocusDown="@+id/streetValue"
         android:layout_weight="1" />
 
     <EditText
-        android:layout_alignParentBottom="@+id/nameValue"
+        android:layout_alignParentBottom="@+id/addressLine1"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:inputType="textEmailAddress"
         android:ems="10"
-        android:id="@+id/emailValue"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:hint="@string/enter_email"
         android:singleLine="true"
+        android:id="@+id/streetValue"
+        android:hint="@string/enter_addr1"
+        android:maxLength="30"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:nextFocusDown="@+id/addressLine1"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:nextFocusDown="@+id/landmark"
+        android:layout_weight="1" />
+    <EditText
+        android:layout_alignParentBottom="@+id/streetValue"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:singleLine="true"
+        android:id="@+id/landmark"
+        android:hint="@string/enter_landmark"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="25dp"
+        android:maxLength="30"
+        android:layout_marginRight="25dp"
         android:layout_weight="1" />
 
-        <Button
+    <EditText
+        android:layout_alignParentBottom="@+id/landmark"
+        android:text="Hyderabad"
+        android:id="@+id/cityValue"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="25dp"
+        android:singleLine="true"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:nextFocusDown="@+id/confirm"/>
+
+    <Button
         android:layout_alignParentBottom="@+id/cityValue"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:text="Next"
+        android:text="Confirm"
         android:id="@+id/confirm"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
