@@ -101,6 +101,20 @@ public class MessagingEndpoint {
         customer.setProperty("Msessage",message);
         datastore.put(customer);
     }
+
+    @ApiMethod(name = "saveOrder")
+    public void saveOrder(@Named("order") String order, @Named("usr") String usr, @Named("message") String message)
+    {
+        Entity customer = new Entity("Orders");
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        customer.setProperty("Order Id", order);
+        customer.setProperty("TimeStamp", new Date());
+        customer.setProperty("User Phone Num",usr);
+        customer.setProperty("Msessage",message);
+        datastore.put(customer);
+    }
+
+
     private boolean findUser(String phoneNo) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Query.Filter heightMinFilter =
@@ -138,7 +152,15 @@ public class MessagingEndpoint {
         Message msg = new Message.Builder().timeToLive(0)
                 .collapseKey("0")
                 .delayWhileIdle(false).setData(message).build();
-        sender.send(msg, new ArrayList<String>(), 5);
+        sender.send(msg, regId, 5);
+    }
+
+    private void send(ArrayList<String> regIdArray,Map<String, String>  message) throws  IOException{
+        sender = new Sender(API_KEY);
+        Message msg = new Message.Builder().timeToLive(0)
+                .collapseKey("0")
+                .delayWhileIdle(false).setData(message).build();
+        sender.send(msg, regIdArray, 5);
     }
 
     private static String createJsonMessage(String messageId,
@@ -199,6 +221,7 @@ public class MessagingEndpoint {
         return users;
     }
 
+
     private void handleIncomingDataMessage(Map<String, String> jsonObject) throws IOException {
         @SuppressWarnings("unchecked")
 
@@ -212,9 +235,7 @@ public class MessagingEndpoint {
             jsonObject.put("USERLIST", extractUsers());
             for(String admin:admins){
                 HashSet<String> regIds=retreiveKey(admin);
-                for(String regId : regIds) {
-                    send(regId, jsonObject);
-                }
+                send(new ArrayList<String>(regIds), jsonObject);
             }
         } else if ("CHAT".equals(action)) {
             jsonObject.put("SM", "CHAT");
@@ -224,13 +245,15 @@ public class MessagingEndpoint {
 
             if (toUser.equals("BITEFAST_ADMIN")) {
                 HashSet<String> admins = findAdminUsers();
-                send(retreiveKey_(toUser), jsonObject);
+                HashSet<String> regIds=new HashSet<String>();
+                for (String admin: admins) {
+                    regIds.addAll(retreiveKey(admin));
+                }
+                send(new ArrayList<String>(regIds), jsonObject);
             }
             else {
                 HashSet<String> regIds=retreiveKey(toUser);
-                for(String regId : regIds) {
-                    send(regId, jsonObject);
-                }
+                send(new ArrayList<String>(regIds), jsonObject);
             }
 
         }

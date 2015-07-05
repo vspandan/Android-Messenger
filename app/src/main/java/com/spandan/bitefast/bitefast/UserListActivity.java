@@ -1,7 +1,6 @@
 package com.spandan.bitefast.bitefast;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -111,7 +109,7 @@ public class UserListActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_list_act, menu);
+        getMenuInflater().inflate(R.menu.menu_chat_admin, menu);
         return true;
     }
 
@@ -127,15 +125,7 @@ public class UserListActivity extends ActionBarActivity {
             //TODO
             return true;
         }
-        if (id == R.id.action_refresh) {
-            //TODO
-            return true;
-        }
 
-        if (id == R.id.action_upload) {
-            //TODO
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 

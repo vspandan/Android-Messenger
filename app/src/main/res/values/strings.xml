@@ -15,7 +15,8 @@
     <string name="title_activity_messaging">Chat to Order!!</string>
     <string name="action_sign_out">Sign Out</string>
     <string name="action_search">Search Near By</string>
-    <string name="action_menu">Food Menu</string>
+    <string name="action_menu">Confirm Order</string>
+    <string name="action_menu1">Food Menu</string>
     <string name="action_no_menu">Looking for New Menu</string>
     <string name="Upload">Upload Menu</string>
     <string name="Refresh">Refresh</string>

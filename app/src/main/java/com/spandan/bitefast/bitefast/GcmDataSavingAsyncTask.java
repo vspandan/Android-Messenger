@@ -51,6 +51,37 @@ public class GcmDataSavingAsyncTask {
         };
         sendTask.execute(null, null, null);
     }
+
+    public void saveOrder(final String order, final String usr, final String message) {
+        sendTask = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                if (msgService == null) {
+                    Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
+                            new AndroidJsonFactory(), null);
+                    builder.setApplicationName("BiteFast");
+                    msgService = builder.build();
+                }
+                String msg="";
+                Logger.getLogger("Messaging:SaveMessage:DATA:").log(Level.INFO, "");
+                try {
+                    msgService.saveOrder(order, usr, message).execute();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    msg += "SaveMessage Error: " + ex.getMessage();
+                }
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+                Logger.getLogger("Messaging:SaveMessage:POST:").log(Level.INFO, msg);
+            }
+        };
+        sendTask.execute(null, null, null);
+    }
+
+
     public void insertUser(final String regId, final String phn, final String name, final String email, final String addr, final String street, final String landmark, final String city, final boolean isAdmin) {
 
         sendTask = new AsyncTask<Void, Void, String>() {

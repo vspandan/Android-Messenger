@@ -141,7 +141,9 @@ public class MainActivity extends Activity {
                 Logger.getLogger("LaunchActivity").log(Level.INFO, "Retrieved User: " + values[0]);
                 if(values[0]) {
                     new RegistrationDetails().setAdmin(getApplicationContext());
-                    i = new Intent(MainActivity.this, UserListActivity.class);
+                    /*i = new Intent(MainActivity.this, UserListActivity.class);*/
+                    i = new Intent(MainActivity.this, ChatActivity.class);
+                    i.putExtra("SENDTO", "8886799788");
                 }
                 else {
                     i = new Intent(MainActivity.this, ChatActivity.class);

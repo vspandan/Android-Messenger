@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -103,9 +104,9 @@ public class ChatActivity extends ActionBarActivity {
         HashMap<String,String> dataBundle = new HashMap<String,String>();
         dataBundle.put("ACTION", "CHAT");
         dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
-        //TODO remove this ;;added jsut for debugging purpose
-        dataBundle.put("SENDTO", new RegistrationDetails().getPhoneNum(getApplicationContext()));
-        /*dataBundle.put("SENDTO", sendTo);*/
+        //added this for debugging purpose
+        /*dataBundle.put("SENDTO", new RegistrationDetails().getPhoneNum(getApplicationContext()));*/
+        dataBundle.put("SENDTO", sendTo);
         dataBundle.put("CHATMESSAGE", chatText.getText().toString());
         new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
         new GcmDataSavingAsyncTask().saveMessage(regId,new RegistrationDetails().getPhoneNum(getApplicationContext()), sendTo,chatText.getText().toString());
@@ -153,7 +154,12 @@ public class ChatActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        if(isAdmin) {
+            getMenuInflater().inflate(R.menu.menu_chat_admin, menu);
+        }
+        else {
+            getMenuInflater().inflate(R.menu.menu_chat, menu);
+        }
         return true;
     }
 
@@ -164,9 +170,37 @@ public class ChatActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == R.id.action_menu1) {
+            //TODO
+            return true;
+        }
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_menu) {
-            //TODO
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Order Amount");
+
+            final EditText input = new EditText(this);
+            input.setInputType(InputType.TYPE_CLASS_PHONE);
+            builder.setView(input);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String orderId=getRandomOrderId();
+                    String amount=input.getText().toString();
+                    chatText.setText("Thanks for Ordering.\nYour Bill Amount: "+amount+"\nOrder Id: "+ orderId);
+                    sendChatMessage();
+                    new GcmDataSavingAsyncTask().saveOrder(orderId,sendTo,amount);
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
             return true;
         }
         if (id == R.id.action_more) {
@@ -190,5 +224,8 @@ public class ChatActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    private String getRandomOrderId() {
+        return Long.toString(random.nextLong());
     }
 }
