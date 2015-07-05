@@ -1,14 +1,20 @@
 package com.spandan.bitefast.bitefast;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class GCMNotificationIntentService extends IntentService {
@@ -30,30 +36,29 @@ public class GCMNotificationIntentService extends IntentService {
 
         String messageType = gcm.getMessageType(intent);
 
-        if (extras != null) {
+        if (extras != null && messageType !=null) {
             if (!extras.isEmpty()) {
                 if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR
                         .equals(messageType)) {
-                    sendNotification("Send error: " + extras.toString());
+                    sendNotification("Send error","Error");
                 } else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED
                         .equals(messageType)) {
-                    sendNotification("Deleted messages on server: "
-                            + extras.toString());
+                    sendNotification("Deleted messages on server","Expired Message on Server");
                 } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE
                         .equals(messageType)) {
 
                     if("USERLIST".equals(extras.get("SM"))){
                         Intent userListIntent = new Intent("com.spandan.bitefast.bitefast.userlist");
                         String userList = extras.get("USERLIST").toString();
-                        userListIntent.putExtra("USERLIST",userList);
+                        userListIntent.putExtra("USERLIST", userList);
                         sendBroadcast(userListIntent);
                     } else if("CHAT".equals(extras.get("SM"))){
-
                         Intent chatIntent = new Intent("com.spandan.bitefast.bitefast.chatmessage");
                         chatIntent.putExtra("CHATMESSAGE",extras.get("CHATMESSAGE").toString());
+                        chatIntent.putExtra("FROM",extras.get("FROM").toString());
+                        sendNotification(extras.get("CHATMESSAGE").toString(), extras.get("FROM").toString());
                         sendBroadcast(chatIntent);
                     }
-
 
                 }
             }
@@ -61,23 +66,27 @@ public class GCMNotificationIntentService extends IntentService {
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    private void sendNotification(String msg) {
 
-        mNotificationManager = (NotificationManager) this
-                .getSystemService(Context.NOTIFICATION_SERVICE);
+    private void sendNotification(String message,String title) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
+        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                this)
-                .setContentTitle("GCM XMPP Message")
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
-                .setContentText(msg);
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        Notification notification = new Notification(R.drawable.ic_launcher,
+                "New Message", System.currentTimeMillis());
+        notification.sound=defaultSoundUri;
+        notification.setLatestEventInfo(this, title,
+                message, pendingIntent);
 
+
+
+        notificationManager.notify(9999 /* ID of notification */, notification);
     }
 }
 

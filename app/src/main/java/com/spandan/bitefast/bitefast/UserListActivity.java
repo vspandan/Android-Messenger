@@ -10,8 +10,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,8 +20,11 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.json.simple.JSONValue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,54 +36,62 @@ public class UserListActivity extends ActionBarActivity {
     private GoogleCloudMessaging gcm;
     private Context context = null;
     private String regId=null;
+    private List<String> senderList=null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle("BiteFast");
+        senderList=new ArrayList<String>();
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
 
         setContentView(R.layout.activity_user_list);
+
+        Set<String> temp=new RegistrationDetails().retrieveChatUserList(getApplicationContext());
+        if(temp!=null&&temp.size()!=0)
+            updateUI(temp);
         context=getApplicationContext();
         regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
         intent = new Intent(this, GCMNotificationIntentService.class);
-        registerReceiver(broadcastReceiver, new IntentFilter("com.spandan.bitefast.bitefast.userlist"));
+        registerReceiver(broadcastReceiver, new IntentFilter("com.spandan.bitefast.bitefast.chatmessage"));
         messageSender = new MessageSender();
         gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
         HashMap dataBundle =new HashMap();
         dataBundle.put("ACTION", "USERLIST");
         new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
-        /*Button refreshButton = (Button) findViewById(R.id.refreshButton);
 
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                *//*HashMap dataBundle =new HashMap();
-                dataBundle.put("ACTION", "USERLIST");
-                new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);*//*
-            }
-        });*/
     }
 
+    private String msg;
+    private String from;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Logger.getLogger("Received").log(Level.INFO,intent.getStringExtra("USERLIST") );
-            updateUI(intent.getStringExtra("USERLIST"));
+            msg=intent.getExtras().getString("CHATMESSAGE");
+            from=intent.getExtras().getString("FROM");
+            Logger.getLogger("UserListActivity:BroadCastReceiver:DATA:").log(Level.INFO, from + ":" + msg);
+            updateUI(from, msg);
         }
     };
 
-    private void updateUI(String userList) {
+    private void updateUI(Set<String> list) {
+        updateUIActivity(new ArrayList<String>(list));
+    }
 
-        String[] userListArr = userList.split(":");
+    private void updateUI(String from, String message) {
+        if (senderList.contains(from))
+            senderList.remove(from);
+        senderList.add(from);
+        new RegistrationDetails().storeChatUserList(getApplicationContext(),new LinkedHashSet<String>(senderList));
+        updateUIActivity(senderList);
+    }
 
-        List<String> list = new ArrayList<String>();
-        for (String s : userListArr) {
-            if (s != null && s.length() > 0) {
-                list.add(s);
-            }
-        }
-        userListArr = list.toArray(new String[list.size()]);
+    public void updateUIActivity(List<String> senderList){
+
+        Collections.reverse(senderList);
+
+        String[] userListArr = senderList.toArray(new String[senderList.size()]);
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, userListArr);
@@ -102,31 +111,6 @@ public class UserListActivity extends ActionBarActivity {
                 finish();
             }
         });
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_chat_admin, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_menu) {
-            //TODO
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

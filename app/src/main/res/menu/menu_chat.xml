@@ -4,14 +4,14 @@
     tools:context="com.spandan.bitefast.bitefast.ChatActivity">
     <item android:id="@+id/action_menu1" android:title="@string/action_menu1"
         android:orderInCategory="100" app:showAsAction="withText" />
-    <item android:id="@+id/action_help" android:title="@string/action_help"
+    <item android:id="@+id/action_orders" android:title="@string/action_orders"
         android:orderInCategory="100" app:showAsAction="withText" />
-    <item android:id="@+id/action_more" android:title="@string/action_no_menu"
+    <!--<item android:id="@+id/action_help" android:title="@string/action_help"
         android:orderInCategory="100" app:showAsAction="withText" />
-    <item android:id="@+id/action_more_help" android:title="@string/action_more_help"
-        android:orderInCategory="100" app:showAsAction="withText" />
-    <item android:id="@+id/action_signout" android:title="@string/action_sign_out"
-        android:orderInCategory="100" app:showAsAction="withText" />
-    <item android:id="@+id/action_search" android:title="@string/action_search"
-        android:orderInCategory="100" app:showAsAction="withText" />
+    --><!--<item android:id="@+id/action_more" android:title="@string/action_no_menu"
+        android:orderInCategory="100" app:showAsAction="withText" />-->
+    <!--<item android:id="@+id/action_more_help" android:title="@string/action_more_help"
+        android:orderInCategory="100" app:showAsAction="withText" />-->
+    <!--<item android:id="@+id/action_search" android:title="@string/action_search"
+        android:orderInCategory="100" app:showAsAction="withText" />-->
 </menu>

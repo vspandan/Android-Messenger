@@ -104,7 +104,9 @@ public class ChatActivity extends ActionBarActivity {
 	}
 
     private boolean sendChatMessage(){
-
+        String message=chatText.getText().toString();
+        if(message==null||message.isEmpty())
+            return false;
         HashMap<String,String> dataBundle = new HashMap<String,String>();
         dataBundle.put("DEVICEID",androidId);
         dataBundle.put("ACTION", "CHAT");
@@ -114,7 +116,7 @@ public class ChatActivity extends ActionBarActivity {
         dataBundle.put("SENDTO", sendTo);
         dataBundle.put("CHATMESSAGE", chatText.getText().toString());
         new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
-        new GcmDataSavingAsyncTask().saveMessage(regId,new RegistrationDetails().getPhoneNum(getApplicationContext()), sendTo,chatText.getText().toString());
+        new GcmDataSavingAsyncTask().saveMessage(regId,new RegistrationDetails().getPhoneNum(getApplicationContext()), sendTo,message);
 
         chatArrayAdapter.add(new ChatMessage(false, chatText.getText().toString().trim()));
         chatText.setText("");
@@ -177,11 +179,16 @@ public class ChatActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_menu1) {
-            //TODO
+            //TODO display a full screen dialog with menu
             return true;
         }
 
-        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_orders) {
+            //TODO fetch orders from orders table
+            return true;
+        }
+
+
         if (id == R.id.action_menu) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Order Amount");
@@ -198,7 +205,7 @@ public class ChatActivity extends ActionBarActivity {
                     chatText.setText("Thanks for Ordering.\nYour Bill Amount: " + amount + "\nOrder Id: " + orderId);
                     sendChatMessage();
                     new GcmDataSavingAsyncTask().saveOrder(orderId, sendTo, amount);
-                    UserDetails details=new GcmDataSavingAsyncTask().fetchDetails("bdf6738b9d3da939");
+                    UserDetails details=new GcmDataSavingAsyncTask().fetchDetails(androidIdReceiver);
                     if (details!=null) {
                         chatText.setText("Your Order (" + orderId + ") will be delivered to: \n" + details.getName() + "\n" + details.getAddr() + "\n" + details.getStreet() + "\n" + details.getLandmark() + "\n" + details.getCity());
                         sendChatMessage();
@@ -219,26 +226,6 @@ public class ChatActivity extends ActionBarActivity {
             });
 
             builder.show();
-            return true;
-        }
-        if (id == R.id.action_more) {
-            //TODO
-            return true;
-        }
-        if (id == R.id.action_more_help) {
-            //TODO
-            return true;
-        }
-        if (id == R.id.action_help) {
-            //TODO
-            return true;
-        }
-        if (id == R.id.action_signout) {
-            //TODO
-            return true;
-        }
-        if (id == R.id.action_search) {
-            //TODO
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -4,6 +4,11 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * Created by spandanv on 6/26/2015.
  */
@@ -27,6 +32,19 @@ public class RegistrationDetails extends Application{
     }
 
 
+    public void storeChatUserList(Context context,LinkedHashSet<String> users){
+        final SharedPreferences prefs = getGCMPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putStringSet("userList", users);
+        editor.commit();
+    }
+
+    public Set<String> retrieveChatUserList(Context context){
+
+        final SharedPreferences prefs = getGCMPreferences(context);
+        return (Set<String>)prefs.getStringSet("userList",new LinkedHashSet<String>());
+    }
+
     public void storeUserInfo(Context context,String phoneNum, String userName,
                               String email,
                               String addr,
@@ -45,6 +63,8 @@ public class RegistrationDetails extends Application{
         editor.putString("city", city);
         editor.commit();
     }
+
+
     public boolean isLoggedIn(Context context) {
         final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(REG_ID, "");

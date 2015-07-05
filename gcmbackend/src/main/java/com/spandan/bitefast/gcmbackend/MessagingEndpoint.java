@@ -68,7 +68,7 @@ public class MessagingEndpoint {
         customer.setProperty("Street", street);
         customer.setProperty("LandMark", landmark);
         customer.setProperty("City", city);
-        customer.setProperty("TimeStamp",new Date());
+        customer.setProperty("TimeStamp", new Date());
         datastore.put(customer);
     }
 
