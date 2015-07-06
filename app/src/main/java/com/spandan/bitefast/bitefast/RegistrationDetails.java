@@ -71,9 +71,7 @@ public class RegistrationDetails extends Application{
         if(registrationId.isEmpty() || prefs.getString("userName","").isEmpty() ||
             prefs.getString("email", "").isEmpty() ||
             prefs.getString("addr", "").isEmpty() ||
-            prefs.getString("street", "").isEmpty()||
-            prefs.getString("landMark", "").isEmpty()||
-                prefs.getString("phoneNum", "").isEmpty()||
+            prefs.getString("phoneNum", "").isEmpty()||
             prefs.getString("city", "").isEmpty()){
             return false;
         }
