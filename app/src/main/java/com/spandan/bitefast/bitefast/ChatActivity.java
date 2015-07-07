@@ -178,17 +178,7 @@ public class ChatActivity extends ActionBarActivity {
             ChatMessage chatMessage=new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim());
             Chat chat=new Chat(sendTo,chatMessage.message,1,sendTo);
             chatDataSource.createChat(chat);
-
-
             chatArrayAdapter.add(chatMessage);
-            Set<String> storedLocalMessages_value = new RegistrationDetails().fetchMessagesForUserValues(getApplicationContext(), sendTo);
-            Set<String> storedLocalMessages_left = new RegistrationDetails().fetchMessagesForUserLeftValues(getApplicationContext(), sendTo);
-
-            int i=storedLocalMessages_left.size();
-            storedLocalMessages_value.add(i+"_"+chatMessage.message);
-            storedLocalMessages_left.add(i+"_"+chatMessage.left);
-            new RegistrationDetails().saveMessagesForUserValues(getApplicationContext(), sendTo, storedLocalMessages_value);
-            new RegistrationDetails().saveMessagesForUserLeftValues(getApplicationContext(), sendTo, storedLocalMessages_left);
             androidIdReceiver=intent.getStringExtra("DEVICEID");
         }
     };

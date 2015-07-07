@@ -53,9 +53,9 @@ public class UserListActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_user_list);
 
-        Set<String> temp=new RegistrationDetails().retrieveChatUserList(getApplicationContext());
-        if(temp!=null&&temp.size()!=0)
-            updateUI(temp);
+        /*Set<String> temp=new RegistrationDetails().retrieveChatUserList(getApplicationContext());*/
+        /*if(temp!=null&&temp.size()!=0)
+            updateUI(temp);*/
         context=getApplicationContext();
         regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
         intent = new Intent(this, GCMNotificationIntentService.class);
@@ -89,7 +89,7 @@ public class UserListActivity extends ActionBarActivity {
             senderList.remove(from);
         senderList.add(from);
 
-        new RegistrationDetails().storeChatUserList(getApplicationContext(), new LinkedHashSet<String>(senderList));
+        /*new RegistrationDetails().storeChatUserList(getApplicationContext(), new LinkedHashSet<String>(senderList));*/
         updateUIActivity(senderList);
         //refresh colors
     }

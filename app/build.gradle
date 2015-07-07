@@ -10,6 +10,7 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -28,4 +29,5 @@ dependencies {
     compile files('src/json-simple-1.1.1.jar')
     compile project(path: ':gcmbackend', configuration: 'android-endpoints')
     compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:multidex:1.0.0'
 }

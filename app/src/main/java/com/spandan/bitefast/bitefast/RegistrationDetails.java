@@ -31,20 +31,6 @@ public class RegistrationDetails extends Application{
         editor.commit();
     }
 
-
-    public void storeChatUserList(Context context,LinkedHashSet<String> users){
-        final SharedPreferences prefs = getGCMPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putStringSet("userList", users);
-        editor.commit();
-    }
-
-    public Set<String> retrieveChatUserList(Context context){
-
-        final SharedPreferences prefs = getGCMPreferences(context);
-        return (Set<String>)prefs.getStringSet("userList",new LinkedHashSet<String>());
-    }
-
     public void storeUserInfo(Context context,String phoneNum, String userName,
                               String email,
                               String addr,
@@ -78,7 +64,7 @@ public class RegistrationDetails extends Application{
         return true;
     }
     public void storeAsOtpVerified(Context context){
-
+        //TODO forfuture
         final SharedPreferences prefs = getGCMPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("verified", true);
@@ -86,6 +72,7 @@ public class RegistrationDetails extends Application{
     }
 
     public boolean otpVerified(Context context){
+        //TODO forfuture
         final SharedPreferences prefs = getGCMPreferences(context);
         return prefs.getBoolean("verified", false);
     }
@@ -108,35 +95,5 @@ public class RegistrationDetails extends Application{
         editor.putBoolean("admin", true);
         editor.commit();
     }
-
-    public Set<String> fetchMessagesForUserValues(Context context, String sendTo) {
-        final SharedPreferences prefs = getGCMPreferences(context);
-        return (Set<String>)prefs.getStringSet(sendTo + "_values", new LinkedHashSet<String>());
-
-    }
-
-    public Set<String> fetchMessagesForUserLeftValues(Context context, String sendTo) {
-        final SharedPreferences prefs = getGCMPreferences(context);
-        return (Set<String>)prefs.getStringSet(sendTo + "_left_values", new LinkedHashSet<String>());
-
-    }
-
-
-    public void saveMessagesForUserValues(Context applicationContext, String sendTo, Set<String> storedLocalMessages) {
-        final SharedPreferences prefs = getGCMPreferences(applicationContext);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear();
-        editor.putStringSet(sendTo+"_values",storedLocalMessages);
-        editor.commit();
-    }
-
-    public void saveMessagesForUserLeftValues(Context applicationContext, String sendTo, Set<String> storedLocalMessages) {
-        final SharedPreferences prefs = getGCMPreferences(applicationContext);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear();
-        editor.putStringSet(sendTo+"_left_values",storedLocalMessages);
-        editor.commit();
-    }
-
 
 }

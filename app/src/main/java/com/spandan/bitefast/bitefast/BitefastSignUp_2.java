@@ -126,7 +126,7 @@ public class BitefastSignUp_2 extends ActionBarActivity implements View.OnClickL
                                 landMarkVal="Optional";
                             new GcmDataSavingAsyncTask().insertUser(androidId, regId, phn, nameval, emailVal, addrVal, streetval, landMarkVal, city.getText().toString(), false);
                             Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:" + regId);
-                            new RegistrationDetails().otpVerified(getApplicationContext());
+
                             final String phoneNum =new RegistrationDetails().getPhoneNum(getApplicationContext());
                             final boolean values[] = new boolean[1];
                             try {

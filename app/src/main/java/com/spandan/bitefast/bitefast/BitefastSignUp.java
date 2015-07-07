@@ -1,11 +1,12 @@
 package com.spandan.bitefast.bitefast;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.support.multidex.MultiDex;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
@@ -20,7 +21,6 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.spandan.bitefast.bitefast.util.SystemUiHider;
 import com.spandan.bitefast.bitefast.util.Utilities;
 import com.spandan.bitefast.gcmbackend.messaging.Messaging;
-import com.spandan.bitefast.gcmbackend.messaging.model.User;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -141,4 +141,9 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
 
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        MultiDex.install(newBase);
+        super.attachBaseContext(newBase);
+    }
 }
