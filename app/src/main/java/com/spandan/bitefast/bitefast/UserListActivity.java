@@ -33,7 +33,7 @@ public class UserListActivity extends ActionBarActivity {
     private UserListArrayAdapter userListArrayAdapter;
     private ListView listView = null;
     private UserDataSource userDataSource;
-
+    private String iam=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +41,9 @@ public class UserListActivity extends ActionBarActivity {
         this.setTitle("BiteFast");
         senderList=new ArrayList<String>();
         ActionBar bar = getSupportActionBar();
-
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         setContentView(R.layout.activity_user_list);
-
+        iam=new RegistrationDetails().getPhoneNum(getApplicationContext());
         intent = new Intent(this, GCMNotificationIntentService.class);
         registerReceiver(broadcastReceiver, new IntentFilter("com.spandan.bitefast.bitefast.chatmessage"));
         userDataSource=new UserDataSource(getApplicationContext());
@@ -86,7 +85,7 @@ public class UserListActivity extends ActionBarActivity {
         listView.setAdapter(userListArrayAdapter);
 
         userListArrayAdapter.clear();
-        List<UserListBean> chatMessages=userDataSource.getSortedChatMessages();
+        List<UserListBean> chatMessages=userDataSource.getSortedChatMessages(iam);
         Iterator<UserListBean> itr=chatMessages.iterator();
         while(itr.hasNext()){
             UserListBean chatMessage=itr.next();
@@ -111,7 +110,7 @@ public class UserListActivity extends ActionBarActivity {
             if(pos>=0) {
                 boolean status=userDataSource.deleteChat(from);
             }
-            UserListBean bean=new UserListBean(from,""+ false);
+            UserListBean bean=new UserListBean(from,""+ false,iam);
             userDataSource.createChat(bean);
             updateUI();
         }

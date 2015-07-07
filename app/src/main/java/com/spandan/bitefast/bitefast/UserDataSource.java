@@ -21,7 +21,7 @@ public class UserDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper2 dbHelper;
     private String[] allColumns = { MySQLiteHelper2.COLUMN_ID,
-            MySQLiteHelper2.COLUMN_NAME,MySQLiteHelper2.COLUMN_READ, MySQLiteHelper2.COLUMN_TIMESTAMP};
+            MySQLiteHelper2.COLUMN_NAME,MySQLiteHelper2.COLUMN_READ, MySQLiteHelper2.COLUMN_TIMESTAMP, MySQLiteHelper2.COLUMN_REGPHN};
 
     public UserDataSource(Context context) {
         dbHelper = new MySQLiteHelper2(context);
@@ -40,6 +40,7 @@ public class UserDataSource {
         values.put(MySQLiteHelper2.COLUMN_NAME, deviceUserBean.name);
         values.put(MySQLiteHelper2.COLUMN_READ, deviceUserBean.read);
         values.put(MySQLiteHelper2.COLUMN_TIMESTAMP, deviceUserBean.timestamp);
+        values.put(MySQLiteHelper2.COLUMN_REGPHN, deviceUserBean.regPhn);
         long id=database.insert(MySQLiteHelper2.TABLE_USER, null,
                 values);
         Cursor cursor = database.query(MySQLiteHelper2.TABLE_USER,
@@ -65,11 +66,13 @@ public class UserDataSource {
         return id > 0;
     }
 
-    public List<UserListBean> getAllChats() {
+    public List<UserListBean> getAllChats(String phn) {
         List<UserListBean> chats = new ArrayList<UserListBean>();
 
         Cursor cursor = database.query(MySQLiteHelper2.TABLE_USER,
-                allColumns, null, null, null, null, null);
+                allColumns, MySQLiteHelper2.COLUMN_REGPHN + " = \'" + phn + "\'", null, null, null, null);
+
+
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -82,13 +85,13 @@ public class UserDataSource {
         return chats;
     }
 
-    public Set<UserListBean> getSortedChats(){
-        return new TreeSet<UserListBean>(getAllChats());
+    public Set<UserListBean> getSortedChats(String phn){
+        return new TreeSet<UserListBean>(getAllChats(phn));
     }
 
-    public List<UserListBean> getSortedChatMessages(){
+    public List<UserListBean> getSortedChatMessages(String phn){
         List<UserListBean> beanList= new ArrayList<UserListBean>();
-        Set<UserListBean> beans=getSortedChats();
+        Set<UserListBean> beans=getSortedChats(phn);
         Iterator<UserListBean> itr=beans.iterator();
         boolean left=false;
         while(itr.hasNext()){
@@ -98,7 +101,7 @@ public class UserDataSource {
     }
 
     private UserListBean cursorToComment(Cursor cursor) {
-        UserListBean deviceUserBean = new UserListBean(cursor.getLong(0),cursor.getString(1),cursor.getString(2),cursor.getLong(3));
+        UserListBean deviceUserBean = new UserListBean(cursor.getLong(0),cursor.getString(1),cursor.getString(2),cursor.getLong(3),cursor.getString(4));
         return deviceUserBean;
     }
 }

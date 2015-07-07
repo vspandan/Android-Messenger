@@ -13,6 +13,7 @@ public class MySQLiteHelper2 extends SQLiteOpenHelper {
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_READ = "read";
     public static final String COLUMN_TIMESTAMP= "timestamp";
+    public static final String COLUMN_REGPHN="regPhn";
 
     private static final String DATABASE_NAME = "user.db";
     private static final int DATABASE_VERSION = 1;
@@ -22,6 +23,7 @@ public class MySQLiteHelper2 extends SQLiteOpenHelper {
             + " integer primary key autoincrement, " + COLUMN_NAME
             + " text not null, "+ COLUMN_READ
             + " text not null, "+ COLUMN_TIMESTAMP
+            + " text not null, "+ COLUMN_REGPHN
             + " text not null );";
 
     public MySQLiteHelper2(Context context) {
