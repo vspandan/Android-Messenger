@@ -51,9 +51,7 @@ public class ChatDataSource {
         cursor.moveToFirst();
         chat = cursorToComment(cursor);
         cursor.close();
-        if(chat!=null)
-            return true;
-        return false;
+        return chat != null;
     }
 
 

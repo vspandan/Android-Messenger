@@ -35,6 +35,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ChatActivity extends ActionBarActivity {
     private static final String TAG = "ChatActivity";
@@ -161,11 +163,7 @@ public class ChatActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, " Chat onReceive: " + intent.getStringExtra("CHATMESSAGE"));
-
             ChatMessage chatMessage=new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim());
-            /*Chat chat=new Chat(sendTo,chatMessage.message,1,sendTo);
-            chatDataSource.createChat(chat);
-            */
             chatArrayAdapter.add(chatMessage);
             androidIdReceiver=intent.getStringExtra("DEVICEID");
         }
@@ -213,7 +211,7 @@ public class ChatActivity extends ActionBarActivity {
             getMenuInflater().inflate(R.menu.menu_chat_admin, menu);
         }
         else {
-            /*getMenuInflater().inflate(R.menu.menu_chat, menu);*/
+            getMenuInflater().inflate(R.menu.menu_chat, menu);
         }
         return true;
     }
@@ -252,6 +250,7 @@ public class ChatActivity extends ActionBarActivity {
                     chatText.setText("Thanks for Ordering.\nYour Bill Amount: " + amount + "\nOrder Id: " + orderId);
                     sendChatMessage();
                     new GcmDataSavingAsyncTask().saveOrder(orderId, sendTo, amount);
+                    Logger.getLogger("ChatActivity:Confirm Order:DEVICEID.:").log(Level.INFO, androidIdReceiver);
                     UserDetails details=new GcmDataSavingAsyncTask().fetchDetails(androidIdReceiver);
                     if (details!=null) {
                         chatText.setText("Your Order (" + orderId + ") will be delivered to: \n" + details.getName() + "\n" + details.getAddr() + "\n" + details.getStreet() + "\n" + details.getLandmark() + "\n" + details.getCity());
@@ -278,12 +277,11 @@ public class ChatActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
     private String getRandomOrderId() {
-        return Long.toString(random.nextLong());
+        return Long.toString(Math.abs(random.nextLong()));
     }
     @Override
     protected void attachBaseContext(Context newBase) {
         MultiDex.install(newBase);
         super.attachBaseContext(newBase);
     }
-
 }

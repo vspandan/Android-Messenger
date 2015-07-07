@@ -67,6 +67,7 @@ public class GcmDataSavingAsyncTask {
                         msgService = builder.build();
                     }
                     try {
+                        Logger.getLogger("Messaging:FetchDetails:DEVICEID.:").log(Level.INFO, androidId);
                         UserDetails userdetails1 = msgService.fetchAddress(androidId).execute();
                         userDetails[0] = userdetails1;
                         Logger.getLogger("Messaging:FetchDetails:DATAFETCHED:").log(Level.INFO, userDetails[0].toString());

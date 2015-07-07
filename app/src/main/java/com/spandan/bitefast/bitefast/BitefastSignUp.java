@@ -90,7 +90,6 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
                     String phn = phone.getText().toString().trim();
                     String nameval = name.getText().toString().trim();
                     String emailVal = email.getText().toString().trim();
-                    ;
                     AlertDialog alertDialog = new AlertDialog.Builder(this).create();
                     if (!Utilities.isPhnNoValid(phn)) {
                         alertDialog.setMessage("Invalid Phone Num");

@@ -48,17 +48,13 @@ public class UserDataSource {
         cursor.moveToFirst();
         deviceUserBean = cursorToComment(cursor);
         cursor.close();
-        if(deviceUserBean!=null)
-            return true;
-        return false;
+        return deviceUserBean != null;
     }
 
     public boolean deleteChat(String  name) {
         long id=database.delete(MySQLiteHelper2.TABLE_USER, MySQLiteHelper2.COLUMN_NAME + " = " + name,
                 null);
-        if(id>0)
-            return true;
-        return false;
+        return id > 0;
     }
 
     public boolean updateChat(String  name, String readStat) {
@@ -66,9 +62,7 @@ public class UserDataSource {
         contentValues.put(MySQLiteHelper2.COLUMN_READ,readStat);
         long id=database.update(MySQLiteHelper2.TABLE_USER, contentValues, MySQLiteHelper2.COLUMN_NAME + " = " + name,
                 null);
-        if(id>0)
-            return true;
-        return false;
+        return id > 0;
     }
 
     public List<UserListBean> getAllChats() {

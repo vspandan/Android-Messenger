@@ -63,7 +63,7 @@ public class GCMNotificationIntentService extends IntentService {
 
                         chatDataSource.createChat(chat);
                         chatDataSource.close();
-
+                        Logger.getLogger("NotificationService:").log(Level.INFO, extras.toString());
                         sendBroadcast(chatIntent);
                     }
 

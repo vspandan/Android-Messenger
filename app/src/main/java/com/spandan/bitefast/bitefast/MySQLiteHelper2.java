@@ -16,7 +16,6 @@ public class MySQLiteHelper2 extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "user.db";
     private static final int DATABASE_VERSION = 1;
-    ;
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "
             + TABLE_USER + "(" + COLUMN_ID

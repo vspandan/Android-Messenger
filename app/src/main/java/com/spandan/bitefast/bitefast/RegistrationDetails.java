@@ -56,14 +56,11 @@ public class RegistrationDetails extends Application{
     public boolean isLoggedIn(Context context) {
         final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(REG_ID, "");
-        if(registrationId.isEmpty() || prefs.getString("userName","").isEmpty() ||
-            prefs.getString("email", "").isEmpty() ||
-            prefs.getString("addr", "").isEmpty() ||
-            prefs.getString("phoneNum", "").isEmpty()||
-            prefs.getString("city", "").isEmpty()){
-            return false;
-        }
-        return true;
+        return !(registrationId.isEmpty() || prefs.getString("userName", "").isEmpty() ||
+                prefs.getString("email", "").isEmpty() ||
+                prefs.getString("addr", "").isEmpty() ||
+                prefs.getString("phoneNum", "").isEmpty() ||
+                prefs.getString("city", "").isEmpty());
     }
     public void storeAsOtpVerified(Context context){
         //TODO forfuture

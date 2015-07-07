@@ -58,7 +58,7 @@ public class UserListActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int itemPosition = position;
 
-                UserListItem itemValue = (UserListItem) userListArrayAdapter.getItem(position);
+                UserListItem itemValue = userListArrayAdapter.getItem(position);
                 view.setBackgroundColor(Color.CYAN);
                 Intent i = new Intent(getApplicationContext(),
                         ChatActivity.class);

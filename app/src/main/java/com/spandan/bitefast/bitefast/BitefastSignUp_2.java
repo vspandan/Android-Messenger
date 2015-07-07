@@ -98,10 +98,10 @@ public class BitefastSignUp_2 extends ActionBarActivity implements View.OnClickL
                     });
                     try{
 
-                        String phn=(String)getIntent().getStringExtra("Phone");;
-                        String nameval=(String)getIntent().getStringExtra("Name");
-                        String emailVal=(String)getIntent().getStringExtra("Email");
-                        String addrVal=addr1.getText().toString().trim();;
+                        String phn= getIntent().getStringExtra("Phone");
+                        String nameval= getIntent().getStringExtra("Name");
+                        String emailVal= getIntent().getStringExtra("Email");
+                        String addrVal=addr1.getText().toString().trim();
                         String streetval=street.getText().toString().trim();
                         String landMarkVal= landmark.getText().toString().trim();
                         String regId=new RegistrationDetails().getRegistrationId(getApplicationContext());

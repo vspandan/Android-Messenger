@@ -173,9 +173,7 @@ public class MessagingEndpoint {
         Query q = new Query("UserAppDetails").setFilter(heightMinFilter);
         PreparedQuery pq = datastore.prepare(q);
         List<Entity> results=pq.asList(FetchOptions.Builder.withLimit(1));
-        if (!results.isEmpty())
-            return true;
-        return false;
+        return !results.isEmpty();
     }
 
 
