@@ -13,8 +13,8 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.spandan.bitefast.gcmbackend.RegistrationEndpoint,
-                com.spandan.bitefast.gcmbackend.MessagingEndpoint
+            <param-value>com.bitefast.RegistrationEndpoint,
+                com.bitefast.MessagingEndpoint
             </param-value>
         </init-param>
     </servlet>
