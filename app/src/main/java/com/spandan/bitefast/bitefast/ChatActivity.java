@@ -10,6 +10,7 @@ import android.database.DataSetObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.multidex.MultiDex;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.text.InputType;
@@ -56,7 +57,7 @@ public class ChatActivity extends ActionBarActivity {
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
-
+        random=new Random();
 		super.onCreate(savedInstanceState);
         context=getApplicationContext();
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -190,12 +191,8 @@ public class ChatActivity extends ActionBarActivity {
     public void onBackPressed()
     {
         if(isAdmin) {
-            HashMap dataBundle =new HashMap();
-            dataBundle.put("ACTION", "USERLIST");
-            new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle),regId);
             Intent i = new Intent(this,
                     UserListActivity.class);
-            i.putExtra("UserType", isAdmin);
             startActivity(i);
         } else {
             AlertDialog alertDialog=new AlertDialog.Builder(this).create();
@@ -283,4 +280,10 @@ public class ChatActivity extends ActionBarActivity {
     private String getRandomOrderId() {
         return Long.toString(random.nextLong());
     }
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        MultiDex.install(newBase);
+        super.attachBaseContext(newBase);
+    }
+
 }

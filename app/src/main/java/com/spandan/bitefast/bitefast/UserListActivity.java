@@ -13,30 +13,19 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-
-import org.json.simple.JSONValue;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class UserListActivity extends ActionBarActivity {
 
-    private final HashMap<String,Boolean> msgReadStatus=new HashMap<String, Boolean>();
     private static final String TAG = "UserListActivity";
     private Intent intent;
     private String regId=null;
@@ -54,15 +43,35 @@ public class UserListActivity extends ActionBarActivity {
         ActionBar bar = getSupportActionBar();
 
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
-
         setContentView(R.layout.activity_user_list);
 
         intent = new Intent(this, GCMNotificationIntentService.class);
         registerReceiver(broadcastReceiver, new IntentFilter("com.spandan.bitefast.bitefast.chatmessage"));
+        userDataSource=new UserDataSource(getApplicationContext());
+        userDataSource.open();
 
         listView = (ListView) findViewById(R.id.list);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int itemPosition = position;
+
+                UserListItem itemValue = (UserListItem) userListArrayAdapter.getItem(position);
+                view.setBackgroundColor(Color.CYAN);
+                Intent i = new Intent(getApplicationContext(),
+                        ChatActivity.class);
+                boolean status=userDataSource.updateChat(itemValue.message,""+true);
+                Logger.getLogger("UserListActivity:Update:").log(Level.INFO, "" + status);
+                i.putExtra("SENDTO", itemValue.message);
+                startActivity(i);
+            }
+        });
+        updateUI();
+    }
+
+    private void updateUI(){
         userListArrayAdapter = new UserListArrayAdapter(
                 getApplicationContext(), android.R.layout.simple_list_item_1);
 
@@ -76,29 +85,14 @@ public class UserListActivity extends ActionBarActivity {
 
         listView.setAdapter(userListArrayAdapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int itemPosition = position;
-
-                UserListItem itemValue = (UserListItem) userListArrayAdapter.getItem(position);
-                view.setBackgroundColor(Color.CYAN);
-                Intent i = new Intent(getApplicationContext(),
-                        ChatActivity.class);
-                msgReadStatus.put(itemValue.message, true);
-                i.putExtra("SENDTO", itemValue.message);
-                startActivity(i);
-                finish();
-            }
-        });
-
-        userDataSource=new UserDataSource(getApplicationContext());
-        userDataSource.open();
+        userListArrayAdapter.clear();
         List<UserListBean> chatMessages=userDataSource.getSortedChatMessages();
         Iterator<UserListBean> itr=chatMessages.iterator();
         while(itr.hasNext()){
             UserListBean chatMessage=itr.next();
-            userListArrayAdapter.add(new UserListItem(Boolean.getBoolean(chatMessage.read),chatMessage.name));
+            boolean stat=Boolean.parseBoolean(chatMessage.read);
+            Logger.getLogger("UserListActivity:UPDATEUI:DATA:").log(Level.INFO, chatMessage.name + ":" + chatMessage.read+":"+stat);
+            userListArrayAdapter.add(new UserListItem(stat,chatMessage.name));
         }
     }
 
@@ -116,15 +110,10 @@ public class UserListActivity extends ActionBarActivity {
             Logger.getLogger("UserListActivity:Position:").log(Level.INFO, "" + pos);
             if(pos>=0) {
                 boolean status=userDataSource.deleteChat(from);
-                Logger.getLogger("UserListActivity:Delete Status:").log(Level.INFO, "" + status);
-                userListArrayAdapter.remove(userListArrayAdapter.getItem(pos));
             }
-            userListArrayAdapter.add(userListItem);
-            UserListBean bean=new UserListBean();
-            bean.name=from;
-            bean.read=""+false;
+            UserListBean bean=new UserListBean(from,""+ false);
             userDataSource.createChat(bean);
-            listView.setAdapter(userListArrayAdapter);
+            updateUI();
         }
     };
 
@@ -135,6 +124,7 @@ public class UserListActivity extends ActionBarActivity {
         alertDialog.setMessage("See You Soon");
         alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+                finish();
                 System.exit(0);
             }
         });

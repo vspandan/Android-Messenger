@@ -7,8 +7,11 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by rubbernecker on 7/7/15.
@@ -18,7 +21,7 @@ public class UserDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper2 dbHelper;
     private String[] allColumns = { MySQLiteHelper2.COLUMN_ID,
-            MySQLiteHelper2.COLUMN_NAME,MySQLiteHelper2.COLUMN_READ};
+            MySQLiteHelper2.COLUMN_NAME,MySQLiteHelper2.COLUMN_READ, MySQLiteHelper2.COLUMN_TIMESTAMP};
 
     public UserDataSource(Context context) {
         dbHelper = new MySQLiteHelper2(context);
@@ -36,7 +39,7 @@ public class UserDataSource {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper2.COLUMN_NAME, deviceUserBean.name);
         values.put(MySQLiteHelper2.COLUMN_READ, deviceUserBean.read);
-        values.put(MySQLiteHelper2.COLUMN_READ, deviceUserBean.read);
+        values.put(MySQLiteHelper2.COLUMN_TIMESTAMP, deviceUserBean.timestamp);
         long id=database.insert(MySQLiteHelper2.TABLE_USER, null,
                 values);
         Cursor cursor = database.query(MySQLiteHelper2.TABLE_USER,
@@ -58,6 +61,15 @@ public class UserDataSource {
         return false;
     }
 
+    public boolean updateChat(String  name, String readStat) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MySQLiteHelper2.COLUMN_READ,readStat);
+        long id=database.update(MySQLiteHelper2.TABLE_USER, contentValues, MySQLiteHelper2.COLUMN_NAME + " = " + name,
+                null);
+        if(id>0)
+            return true;
+        return false;
+    }
 
     public List<UserListBean> getAllChats() {
         List<UserListBean> chats = new ArrayList<UserListBean>();
@@ -76,9 +88,13 @@ public class UserDataSource {
         return chats;
     }
 
+    public Set<UserListBean> getSortedChats(){
+        return new TreeSet<UserListBean>(getAllChats());
+    }
+
     public List<UserListBean> getSortedChatMessages(){
         List<UserListBean> beanList= new ArrayList<UserListBean>();
-        List<UserListBean> beans=getAllChats();
+        Set<UserListBean> beans=getSortedChats();
         Iterator<UserListBean> itr=beans.iterator();
         boolean left=false;
         while(itr.hasNext()){
@@ -88,7 +104,7 @@ public class UserDataSource {
     }
 
     private UserListBean cursorToComment(Cursor cursor) {
-        UserListBean deviceUserBean = new UserListBean(cursor.getLong(0),cursor.getString(1),cursor.getString(2));
+        UserListBean deviceUserBean = new UserListBean(cursor.getLong(0),cursor.getString(1),cursor.getString(2),cursor.getLong(3));
         return deviceUserBean;
     }
 }

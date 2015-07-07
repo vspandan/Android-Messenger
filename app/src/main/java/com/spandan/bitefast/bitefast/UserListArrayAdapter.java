@@ -42,7 +42,7 @@ public class UserListArrayAdapter extends ArrayAdapter<UserListItem> {
     }
 
     public UserListItem getItem(int index) {
-        return this.userListItemList.get(index);
+        return this.userListItemList.get(getCount() - index - 1);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UserListArrayAdapter extends ArrayAdapter<UserListItem> {
         UserListItem itemValue = getItem(position);
         TextView item=(TextView) row.findViewById(android.R.id.text1);
         item.setText(itemValue.message);
-        item.setBackgroundColor(itemValue.readStatus ? Color.LTGRAY : Color.CYAN);
+        item.setBackgroundColor(itemValue.readStatus ? Color.LTGRAY : Color.GRAY);
         return row;
     }
 
