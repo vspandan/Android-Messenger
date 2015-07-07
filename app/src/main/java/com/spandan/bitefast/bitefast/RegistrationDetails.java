@@ -44,8 +44,10 @@ public class RegistrationDetails extends Application{
         editor.putString("userName", userName);
         editor.putString("email", email);
         editor.putString("addr", addr);
-        editor.putString("street", street);
-        editor.putString("landMark", landMark);
+        if(!street.isEmpty())
+            editor.putString("street", street);
+        if(!landMark.isEmpty())
+            editor.putString("landMark", landMark);
         editor.putString("city", city);
         editor.commit();
     }

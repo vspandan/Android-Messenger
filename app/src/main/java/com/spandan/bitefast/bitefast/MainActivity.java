@@ -1,8 +1,6 @@
 package com.spandan.bitefast.bitefast;
 
 
-
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -12,7 +10,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.provider.Settings;
-import android.util.Log;
+import android.support.multidex.MultiDex;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -100,7 +98,6 @@ public class MainActivity extends Activity {
         }
 
 
-
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
@@ -110,7 +107,7 @@ public class MainActivity extends Activity {
                 final boolean values[] = new boolean[1];
                 try {
 
-                    final String phoneNum =new RegistrationDetails().getPhoneNum(getApplicationContext());
+                    final String phoneNum = new RegistrationDetails().getPhoneNum(getApplicationContext());
                     Thread t = new Thread(new Runnable() {
                         public void run() {
                             Messaging msgService = null;
@@ -159,6 +156,18 @@ public class MainActivity extends Activity {
             finish();
         }
 
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        MultiDex.install(newBase);
+        super.attachBaseContext(newBase);
+    }
+
+    @Override
+    protected void onPause() {
+
+        super.onPause();
     }
 
 }
