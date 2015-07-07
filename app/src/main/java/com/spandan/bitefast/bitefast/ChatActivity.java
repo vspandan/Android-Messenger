@@ -123,20 +123,6 @@ public class ChatActivity extends ActionBarActivity {
 
     }
 
-    private void update(Set<String> storedLocalMessages_value, Set<String> storedLocalMessages_left) {
-        int size = storedLocalMessages_left.size();
-        ChatMessage chatMessage=null;
-        Object[] storedLocalMessages_Value_Strs=storedLocalMessages_value.toArray();
-        Object[] storedLocalMessages_left_Strs=storedLocalMessages_left.toArray();
-
-        for (int i=0; i < size; i++){
-            String tempBool=((String)storedLocalMessages_left_Strs[i]).substring(2);
-            String tempVal=((String)storedLocalMessages_Value_Strs[i]).substring(2);
-            chatMessage=new ChatMessage(Boolean.getBoolean(tempBool),tempVal);
-            chatArrayAdapter.add(chatMessage);
-        }
-    }
-
     private boolean sendChatMessage(){
         String message=chatText.getText().toString();
         if(message==null||message.isEmpty())
@@ -176,8 +162,9 @@ public class ChatActivity extends ActionBarActivity {
             Log.d(TAG, " Chat onReceive: " + intent.getStringExtra("CHATMESSAGE"));
 
             ChatMessage chatMessage=new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim());
-            Chat chat=new Chat(sendTo,chatMessage.message,1,sendTo);
+            /*Chat chat=new Chat(sendTo,chatMessage.message,1,sendTo);
             chatDataSource.createChat(chat);
+            */
             chatArrayAdapter.add(chatMessage);
             androidIdReceiver=intent.getStringExtra("DEVICEID");
         }
@@ -190,7 +177,6 @@ public class ChatActivity extends ActionBarActivity {
 
     @Override
     protected void onPause() {
-        chatDataSource.close();
         super.onPause();
     }
 
@@ -198,6 +184,7 @@ public class ChatActivity extends ActionBarActivity {
     protected void onDestroy(){
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+        chatDataSource.close();
     }
     @Override
     public void onBackPressed()

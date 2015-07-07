@@ -9,8 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created by rubbernecker on 7/7/15.
@@ -20,7 +18,7 @@ public class UserDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper2 dbHelper;
     private String[] allColumns = { MySQLiteHelper2.COLUMN_ID,
-            MySQLiteHelper2.COLUMN_PHN,MySQLiteHelper2.COLUMN_NAME,MySQLiteHelper2.COLUMN_EMAIL, MySQLiteHelper2.COLUMN_ADDR1, MySQLiteHelper2.COLUMN_ADDR2, MySQLiteHelper2.COLUMN_CITY };
+            MySQLiteHelper2.COLUMN_NAME,MySQLiteHelper2.COLUMN_READ};
 
     public UserDataSource(Context context) {
         dbHelper = new MySQLiteHelper2(context);
@@ -34,19 +32,15 @@ public class UserDataSource {
         dbHelper.close();
     }
 
-    public boolean createChat(DeviceLoginBean deviceUserBean) {
+    public boolean createChat(UserListBean deviceUserBean) {
         ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper2.COLUMN_ID, deviceUserBean.androidId);
-        values.put(MySQLiteHelper2.COLUMN_PHN, deviceUserBean.phone);
         values.put(MySQLiteHelper2.COLUMN_NAME, deviceUserBean.name);
-        values.put(MySQLiteHelper2.COLUMN_EMAIL,deviceUserBean.email);
-        values.put(MySQLiteHelper2.COLUMN_ADDR1,deviceUserBean.addr1);
-        values.put(MySQLiteHelper2.COLUMN_ADDR1,deviceUserBean.addr2);
-        values.put(MySQLiteHelper2.COLUMN_CITY,deviceUserBean.city);
-        database.insert(MySQLiteHelper2.TABLE_USER, null,
+        values.put(MySQLiteHelper2.COLUMN_READ, deviceUserBean.read);
+        values.put(MySQLiteHelper2.COLUMN_READ, deviceUserBean.read);
+        long id=database.insert(MySQLiteHelper2.TABLE_USER, null,
                 values);
         Cursor cursor = database.query(MySQLiteHelper2.TABLE_USER,
-                allColumns, MySQLiteHelper2.COLUMN_ID + " = " + deviceUserBean.androidId, null,
+                allColumns, MySQLiteHelper2.COLUMN_ID + " = " + id, null,
                 null, null, null);
         cursor.moveToFirst();
         deviceUserBean = cursorToComment(cursor);
@@ -56,16 +50,24 @@ public class UserDataSource {
         return false;
     }
 
+    public boolean deleteChat(String  name) {
+        long id=database.delete(MySQLiteHelper2.TABLE_USER, MySQLiteHelper2.COLUMN_NAME + " = " + name,
+                null);
+        if(id>0)
+            return true;
+        return false;
+    }
 
-    public List<DeviceLoginBean> getAllChats(String id) {
-        List<DeviceLoginBean> chats = new ArrayList<DeviceLoginBean>();
+
+    public List<UserListBean> getAllChats() {
+        List<UserListBean> chats = new ArrayList<UserListBean>();
 
         Cursor cursor = database.query(MySQLiteHelper2.TABLE_USER,
-                allColumns, MySQLiteHelper2.COLUMN_ID + " = \'" + id + "\'", null, null, null, null);
+                allColumns, null, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            DeviceLoginBean deviceUserBean = cursorToComment(cursor);
+            UserListBean deviceUserBean = cursorToComment(cursor);
             chats.add(deviceUserBean);
             cursor.moveToNext();
         }
@@ -74,20 +76,19 @@ public class UserDataSource {
         return chats;
     }
 
-    public DeviceLoginBean getSortedChatMessages(String phn){
-        DeviceLoginBean bean= null;
-        List<DeviceLoginBean> beans=getAllChats(phn);
-        Iterator<DeviceLoginBean> itr=beans.iterator();
+    public List<UserListBean> getSortedChatMessages(){
+        List<UserListBean> beanList= new ArrayList<UserListBean>();
+        List<UserListBean> beans=getAllChats();
+        Iterator<UserListBean> itr=beans.iterator();
         boolean left=false;
         while(itr.hasNext()){
-            bean=itr.next();
-            return bean;
+            beanList.add(itr.next());
         }
-        return bean;
+        return beanList;
     }
 
-    private DeviceLoginBean cursorToComment(Cursor cursor) {
-        DeviceLoginBean deviceUserBean = new DeviceLoginBean(cursor.getLong(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getString(7),cursor.getString(8));
+    private UserListBean cursorToComment(Cursor cursor) {
+        UserListBean deviceUserBean = new UserListBean(cursor.getLong(0),cursor.getString(1),cursor.getString(2));
         return deviceUserBean;
     }
 }

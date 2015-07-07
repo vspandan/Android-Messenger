@@ -71,7 +71,6 @@
             android:name=".ChatActivity"
             android:label="@string/title_activity_messaging"
             android:windowSoftInputMode="stateHidden"
-            android:noHistory="true"
             android:screenOrientation="portrait" >
         </activity>
 

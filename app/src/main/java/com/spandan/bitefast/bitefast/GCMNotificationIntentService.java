@@ -55,8 +55,15 @@ public class GCMNotificationIntentService extends IntentService {
                     } else if("CHAT".equals(extras.get("SM"))){
                         Intent chatIntent = new Intent("com.spandan.bitefast.bitefast.chatmessage");
                         chatIntent.putExtra("CHATMESSAGE",extras.get("CHATMESSAGE").toString());
-                        chatIntent.putExtra("FROM",extras.get("FROM").toString());
+                        chatIntent.putExtra("FROM", extras.get("FROM").toString());
                         sendNotification(extras.get("CHATMESSAGE").toString(), extras.get("FROM").toString());
+                        ChatDataSource chatDataSource = new ChatDataSource(getApplicationContext());
+                        chatDataSource.open();
+                        Chat chat=new Chat(extras.get("FROM").toString(),extras.get("CHATMESSAGE").toString(),1,extras.get("FROM").toString());
+
+                        chatDataSource.createChat(chat);
+                        chatDataSource.close();
+
                         sendBroadcast(chatIntent);
                     }
 

@@ -8,15 +8,10 @@ import android.util.Log;
 
 public class MySQLiteHelper2 extends SQLiteOpenHelper {
 
-    public static final String TABLE_USER = "UserLogin";
+    public static final String TABLE_USER = "UserList";
     public static final String COLUMN_ID = "id";
-    public static final String COLUMN_ANDRDOI_ID = "androidId";
     public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_EMAIL = "email";
-    public static final String COLUMN_ADDR1 = "addr1";
-    public static final String COLUMN_ADDR2 = "addr2";
-    public static final String COLUMN_CITY = "city";
-    public static final String COLUMN_PHN = "phonenum";
+    public static final String COLUMN_READ = "read";
 
 
     private static final String DATABASE_NAME = "user.db";
@@ -25,13 +20,8 @@ public class MySQLiteHelper2 extends SQLiteOpenHelper {
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "
             + TABLE_USER + "(" + COLUMN_ID
-            + " text primary key autoincrement, " + COLUMN_ANDRDOI_ID
-            + " text not null, "+ COLUMN_PHN
-            + " text not null, "+ COLUMN_NAME
-            + " text not null, "+ COLUMN_EMAIL
-            + " text not null, "+ COLUMN_ADDR1
-            + " text not null, "+ COLUMN_ADDR2
-            + " text not null, "+ COLUMN_CITY
+            + " integer primary key autoincrement, " + COLUMN_NAME
+            + " text not null, "+ COLUMN_READ
             + " text not null );";
 
     public MySQLiteHelper2(Context context) {
