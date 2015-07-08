@@ -1,0 +1,313 @@
+{
+ "kind": "discovery#rpcDescription",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/amDaSL-PDaeea6nImnF81cfIFOk\"",
+ "discoveryVersion": "v1",
+ "id": "messaging:v1",
+ "name": "messaging",
+ "version": "v1",
+ "description": "This is an API",
+ "ownerDomain": "gcmbackend.bitefast.spandan.com",
+ "ownerName": "gcmbackend.bitefast.spandan.com",
+ "icons": {
+  "x16": "http://www.google.com/images/icons/product/search-16.gif",
+  "x32": "http://www.google.com/images/icons/product/search-32.gif"
+ },
+ "protocol": "rpc",
+ "rootUrl": "https://expanded-symbol-98518.appspot.com/_ah/api/",
+ "rpcUrl": "https://expanded-symbol-98518.appspot.com/_ah/api/rpc",
+ "rpcPath": "/_ah/api/rpc",
+ "parameters": {
+  "alt": {
+   "type": "string",
+   "description": "Data format for the response.",
+   "default": "json",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query"
+  },
+  "fields": {
+   "type": "string",
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query"
+  },
+  "key": {
+   "type": "string",
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query"
+  },
+  "oauth_token": {
+   "type": "string",
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query"
+  },
+  "prettyPrint": {
+   "type": "boolean",
+   "description": "Returns response with indentations and line breaks.",
+   "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "location": "query"
+  },
+  "userIp": {
+   "type": "string",
+   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "location": "query"
+  }
+ },
+ "auth": {
+  "oauth2": {
+   "scopes": {
+    "https://www.googleapis.com/auth/userinfo.email": {
+     "description": "View your email address"
+    }
+   }
+  }
+ },
+ "schemas": {
+  "User": {
+   "id": "User",
+   "type": "object",
+   "properties": {
+    "admin": {
+     "type": "boolean"
+    },
+    "userNum": {
+     "type": "string"
+    }
+   }
+  },
+  "UserDetails": {
+   "id": "UserDetails",
+   "type": "object",
+   "properties": {
+    "addr": {
+     "type": "string"
+    },
+    "androidID": {
+     "type": "string"
+    },
+    "city": {
+     "type": "string"
+    },
+    "email": {
+     "type": "string"
+    },
+    "landmark": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "phoneNum": {
+     "type": "string"
+    },
+    "regId": {
+     "type": "string"
+    },
+    "street": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ "methods": {
+  "messaging.fetchAddress": {
+   "id": "messaging.fetchAddress",
+   "parameters": {
+    "androidId": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "androidId"
+   ],
+   "returns": {
+    "$ref": "UserDetails"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.insertUser": {
+   "id": "messaging.insertUser",
+   "parameters": {
+    "addr": {
+     "type": "string",
+     "required": true
+    },
+    "androidId": {
+     "type": "string",
+     "required": true
+    },
+    "city": {
+     "type": "string",
+     "required": true
+    },
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "isAdmin": {
+     "type": "boolean",
+     "required": true
+    },
+    "landmark": {
+     "type": "string",
+     "required": true
+    },
+    "name": {
+     "type": "string",
+     "required": true
+    },
+    "phoneNum": {
+     "type": "string",
+     "required": true
+    },
+    "regId": {
+     "type": "string",
+     "required": true
+    },
+    "street": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "androidId",
+    "regId",
+    "phoneNum",
+    "name",
+    "email",
+    "addr",
+    "street",
+    "landmark",
+    "city",
+    "isAdmin"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.isAdmin": {
+   "id": "messaging.isAdmin",
+   "parameters": {
+    "phoneNo": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "phoneNo"
+   ],
+   "returns": {
+    "$ref": "User"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.saveMessage": {
+   "id": "messaging.saveMessage",
+   "parameters": {
+    "from": {
+     "type": "string",
+     "required": true
+    },
+    "message": {
+     "type": "string",
+     "required": true
+    },
+    "regId": {
+     "type": "string",
+     "required": true
+    },
+    "to": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "regId",
+    "from",
+    "to",
+    "message"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.saveOrder": {
+   "id": "messaging.saveOrder",
+   "parameters": {
+    "message": {
+     "type": "string",
+     "required": true
+    },
+    "order": {
+     "type": "string",
+     "required": true
+    },
+    "usr": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "order",
+    "usr",
+    "message"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.sendMessage": {
+   "id": "messaging.sendMessage",
+   "parameters": {
+    "message": {
+     "type": "string",
+     "required": true
+    },
+    "redId": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "message",
+    "redId"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.updateUserRegid": {
+   "id": "messaging.updateUserRegid",
+   "parameters": {
+    "androidId": {
+     "type": "string",
+     "required": true
+    },
+    "regId": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "androidId",
+    "regId"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  }
+ }
+}

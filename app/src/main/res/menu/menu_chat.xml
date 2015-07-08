@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.spandan.bitefast.bitefast.ChatActivity">
+    tools:context="com.bitefast.activities.ChatActivity">
     <item android:id="@+id/action_menu1" android:title="@string/action_menu1"
         android:orderInCategory="100" app:showAsAction="withText" />
     <item android:id="@+id/action_orders" android:title="@string/action_orders"

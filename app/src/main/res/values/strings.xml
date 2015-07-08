@@ -29,4 +29,7 @@
     <string name="enter_phn_no">Phone Number</string>
     <string name="enter_text1">Register </string>
     <string name="enter_password">Password</string>
+    <string name="title_activity_slider">Slider</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
