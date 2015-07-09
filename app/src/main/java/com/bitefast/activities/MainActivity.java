@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.provider.Settings;
 import android.support.multidex.MultiDex;
 
+import com.bitefast.util.Config;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -31,7 +32,7 @@ public class MainActivity extends Activity {
     private CheckInternetConnectivity cd = null;
     private GoogleCloudMessaging gcm;
     private AsyncTask<Void, Void, String> sendTask;
-    private static final String SENDER_ID = "281575560274";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class MainActivity extends Activity {
                     if (gcm == null) {
                         gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
                     }
-                    String regId = gcm.register(SENDER_ID);
+                    String regId = gcm.register(Config.GOOGLE_SENDER_ID);
                     msg = "Device registered, registration ID=" + regId;
                     new RegistrationDetails().storeRegistrationId(getApplicationContext(),regId);
                 } catch (IOException ex) {

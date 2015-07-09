@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/amDaSL-PDaeea6nImnF81cfIFOk\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/6fh2efydyUmKys-JJEyPU_4cbS0\"",
  "discoveryVersion": "v1",
  "id": "messaging:v1",
  "name": "messaging",
@@ -13,9 +13,9 @@
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
  "protocol": "rest",
- "baseUrl": "https://expanded-symbol-98518.appspot.com/_ah/api/messaging/v1/",
+ "baseUrl": "https://bitefastmobileapp.appspot.com/_ah/api/messaging/v1/",
  "basePath": "/_ah/api/messaging/v1/",
- "rootUrl": "https://expanded-symbol-98518.appspot.com/_ah/api/",
+ "rootUrl": "https://bitefastmobileapp.appspot.com/_ah/api/",
  "servicePath": "messaging/v1/",
  "batchPath": "batch",
  "parameters": {

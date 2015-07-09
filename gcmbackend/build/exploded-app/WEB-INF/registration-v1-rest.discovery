@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/ApFGAc_1Hvqb7YXrZP_Y7dOpnog\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/TiBbAstP6DO0DlbkZSSy2nql1-0\"",
  "discoveryVersion": "v1",
  "id": "registration:v1",
  "name": "registration",
@@ -13,9 +13,9 @@
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
  "protocol": "rest",
- "baseUrl": "https://expanded-symbol-98518.appspot.com/_ah/api/registration/v1/",
+ "baseUrl": "https://bitefastmobileapp.appspot.com/_ah/api/registration/v1/",
  "basePath": "/_ah/api/registration/v1/",
- "rootUrl": "https://expanded-symbol-98518.appspot.com/_ah/api/",
+ "rootUrl": "https://bitefastmobileapp.appspot.com/_ah/api/",
  "servicePath": "registration/v1/",
  "batchPath": "batch",
  "parameters": {
