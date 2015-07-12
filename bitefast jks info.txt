@@ -1,0 +1,5 @@
+C:\Development\Android\bitefast.jks
+password- biteFast123$
+alias - bitefast
+password - biteFast123$
+Organization- Bitefast
