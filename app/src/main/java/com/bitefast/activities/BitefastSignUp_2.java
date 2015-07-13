@@ -120,14 +120,14 @@ public class BitefastSignUp_2 extends ActionBarActivity implements View.OnClickL
                             addr1.requestFocus();
                         }
                         else {
-                            Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device ANDROID_ID details:" + androidId);
+                            /*Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device ANDROID_ID details:" + androidId);*/
                             new RegistrationDetails().storeUserInfo(getApplicationContext(), phn, nameval, emailVal, addrVal, streetval, landMarkVal, city.getText().toString());
                             if (streetval.trim().length()==0)
                                 streetval="Optional";
                             if (landMarkVal.trim().length()==0)
                                 landMarkVal="Optional";
                             new GcmDataSavingAsyncTask().insertUser(androidId, regId, phn, nameval, emailVal, addrVal, streetval, landMarkVal, city.getText().toString(), false);
-                            Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:" + regId);
+                            /*Logger.getLogger("BitefastSignUp").log(Level.INFO, "Saving device regid details:" + regId);*/
 
                             final String phoneNum =new RegistrationDetails().getPhoneNum(getApplicationContext());
                             final boolean values[] = new boolean[1];
@@ -149,7 +149,7 @@ public class BitefastSignUp_2 extends ActionBarActivity implements View.OnClickL
                                             System.exit(1);
                                             ex.printStackTrace();
                                         }
-                                        Logger.getLogger("LaunchActivity").log(Level.INFO, phoneNum + ":" + usr.toString());
+                                        /*Logger.getLogger("LaunchActivity").log(Level.INFO, phoneNum + ":" + usr.toString());*/
                                     }
                                 });
                                 t.start();

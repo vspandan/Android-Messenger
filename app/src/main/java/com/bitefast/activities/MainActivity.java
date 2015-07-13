@@ -66,7 +66,12 @@ public class MainActivity extends Activity {
                     if (gcm == null) {
                         gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
                     }
-                    String regId = gcm.register(Config.GOOGLE_SENDER_ID);
+                    String regId="";
+                    int retry=0;
+                    while (retry < 10 && regId.length() == 0) {
+                        regId = gcm.register(Config.GOOGLE_SENDER_ID);
+                        ++retry;
+                    }
                     msg = "Device registered, registration ID=" + regId;
                     new RegistrationDetails().storeRegistrationId(getApplicationContext(),regId);
                 } catch (IOException ex) {
@@ -128,7 +133,7 @@ public class MainActivity extends Activity {
                                 System.exit(1);
                                 ex.printStackTrace();
                             }
-                            Logger.getLogger("LaunchActivity").log(Level.INFO, phoneNum + ":" + usr.toString());
+                            /*Logger.getLogger("LaunchActivity").log(Level.INFO, phoneNum + ":" + usr.toString());*/
                         }
                     });
                     t.start();

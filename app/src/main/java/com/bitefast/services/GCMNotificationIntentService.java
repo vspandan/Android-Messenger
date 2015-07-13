@@ -73,7 +73,7 @@ public class GCMNotificationIntentService extends IntentService {
                         Chat chat=new Chat(from,receivedMsg,1,from,true,msgTS);
                         chatDataSource.createChat(chat);
                         chatDataSource.close();
-                        Logger.getLogger("NotificationService:").log(Level.INFO, extras.toString());
+                        /*Logger.getLogger("NotificationService:").log(Level.INFO, extras.toString());*/
                         sendBroadcast(chatIntent);
 
                         //TODO ques: do we need to store id of recieved msg along with timestamp
@@ -88,11 +88,11 @@ public class GCMNotificationIntentService extends IntentService {
                         dataBundle.put("MSGTIMESTAMP", "" + msgTS);
 
                         new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle));
-                        Logger.getLogger("NotificationService:").log(Level.INFO, JSONValue.toJSONString(dataBundle));
+                        /*Logger.getLogger("NotificationService:").log(Level.INFO, JSONValue.toJSONString(dataBundle));*/
 
                     }
                     else if("ACK".equals(extras.get("SM"))){
-                        Logger.getLogger("NotificationService: ACK:").log(Level.INFO, extras.toString());
+                        /*Logger.getLogger("NotificationService: ACK:").log(Level.INFO, extras.toString());*/
                         String from=extras.get("FROM").toString();
                         String msgID=extras.get("ID").toString();
                         String msgTS=extras.get("MSGTIMESTAMP").toString();

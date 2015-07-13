@@ -45,7 +45,7 @@ public class ChatDataSource {
 
     public String createChat(Chat chat) {
         String id = chat.getPhn()+Long.toString(Math.abs(new Random().nextLong()));
-        Logger.getLogger("ChatDataSource:").log(Level.INFO, chat.toString());
+        /*Logger.getLogger("ChatDataSource:").log(Level.INFO, chat.toString());*/
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_MSG_ID,id );
         values.put(MySQLiteHelper.COLUMN_TO, chat.getTo());
@@ -77,7 +77,7 @@ public class ChatDataSource {
         while (!cursor.isAfterLast()) {
             Chat chat = cursorToComment(cursor);
             chats.add(chat);
-            Logger.getLogger("ChatDataSource: ALl chats:").log(Level.INFO, chat.toString());
+            /*Logger.getLogger("ChatDataSource: ALl chats:").log(Level.INFO, chat.toString());*/
             cursor.moveToNext();
         }
         // make sure to close the cursor

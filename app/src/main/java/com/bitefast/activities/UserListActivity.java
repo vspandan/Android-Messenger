@@ -110,7 +110,7 @@ public class UserListActivity extends ActionBarActivity {
         public void onReceive(Context context, Intent intent) {
             msg=intent.getExtras().getString("CHATMESSAGE");
             from=intent.getExtras().getString("FROM");
-            Logger.getLogger("UserListActivity:BroadCastReceiver:DATA:").log(Level.INFO, from + ":" + msg);
+            /*Logger.getLogger("UserListActivity:BroadCastReceiver:DATA:").log(Level.INFO, from + ":" + msg);*/
 
             UserListItem userListItem=new UserListItem(false,from);
             int pos=userListArrayAdapter.getPosition(userListItem);

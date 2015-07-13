@@ -140,7 +140,7 @@ public class ChatActivity extends ActionBarActivity {
 
         chatDataSource=new ChatDataSource(getApplicationContext());
         chatDataSource.open();
-        Logger.getLogger("ChatActivity:Fetching details for user:").log(Level.INFO, sendTo);
+        /*Logger.getLogger("ChatActivity:Fetching details for user:").log(Level.INFO, sendTo);*/
         List<ChatMessage> chatMessages=chatDataSource.getSortedChatMessages(sendTo);
         Iterator<ChatMessage> itr=chatMessages.iterator();
         while(itr.hasNext()){
@@ -219,9 +219,11 @@ public class ChatActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, " Chat onReceive: " + intent.getStringExtra("CHATMESSAGE"));
-            ChatMessage chatMessage=new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim());
-            chatArrayAdapter.add(chatMessage);
-            androidIdReceiver=intent.getStringExtra("DEVICEID");
+            if(intent.getStringExtra("FROM").equals(sendTo)) {
+                ChatMessage chatMessage = new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim());
+                chatArrayAdapter.add(chatMessage);
+                androidIdReceiver = intent.getStringExtra("DEVICEID");
+            }
         }
     };
     @Override
@@ -306,7 +308,7 @@ public class ChatActivity extends ActionBarActivity {
                     chatText.setText("Thanks for Ordering.\nYour Bill Amount: " + amount + "\nOrder Id: " + orderId);
                     sendChatMessage();
                     new GcmDataSavingAsyncTask().saveOrder(orderId, sendTo, amount);
-                    Logger.getLogger("ChatActivity:Confirm Order:DEVICEID.:").log(Level.INFO, androidIdReceiver);
+                    /*Logger.getLogger("ChatActivity:Confirm Order:DEVICEID.:").log(Level.INFO, androidIdReceiver);*/
                     UserDetails details = new GcmDataSavingAsyncTask().fetchDetails(androidIdReceiver);
                     if (details!=null) {
                         chatText.setText("Your Order (" + orderId + ") will be delivered to: \n" + details.getName() + "\n" + details.getAddr() + "\n" + details.getStreet() + "\n" + details.getLandmark() + "\n" + details.getCity());

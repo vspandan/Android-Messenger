@@ -29,10 +29,10 @@ public class GcmDataSavingAsyncTask {
                         msgService = builder.build();
                     }
                     try {
-                        Logger.getLogger("Messaging:FetchDetails:DEVICEID.:").log(Level.INFO, androidId);
+                        /*Logger.getLogger("Messaging:FetchDetails:DEVICEID.:").log(Level.INFO, androidId);*/
                         UserDetails userdetails1 = msgService.fetchAddress(androidId).execute();
                         userDetails[0] = userdetails1;
-                        Logger.getLogger("Messaging:FetchDetails:DATAFETCHED:").log(Level.INFO, userDetails[0].toString());
+                        /*Logger.getLogger("Messaging:FetchDetails:DATAFETCHED:").log(Level.INFO, userDetails[0].toString());*/
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -152,7 +152,7 @@ public class GcmDataSavingAsyncTask {
                     msgService = builder.build();
                 }
                 String msg = "";
-                Logger.getLogger("Messaging:SendMessage:DATA:").log(Level.INFO, jsondata);
+                /*Logger.getLogger("Messaging:SendMessage:DATA:").log(Level.INFO, jsondata);*/
                 try {
                     msgService.sendMessage(jsondata).execute();
                 } catch (IOException ex) {
