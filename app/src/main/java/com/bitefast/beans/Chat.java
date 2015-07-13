@@ -114,4 +114,18 @@ public class Chat implements Comparable<Chat>{
     public void setPhn(String phn) {
         this.phn = phn;
     }
+
+    @Override
+    public String toString() {
+        return "Chat{" +
+                "id=" + id +
+                ", to='" + to + '\'' +
+                ", message='" + message + '\'' +
+                ", left=" + left +
+                ", timestamp=" + timestamp +
+                ", phn='" + phn + '\'' +
+                ", sent=" + sent +
+                ", delivered=" + delivered +
+                '}';
+    }
 }

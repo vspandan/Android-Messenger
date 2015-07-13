@@ -6,8 +6,11 @@ package com.bitefast.datasource;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,8 +28,8 @@ public class ChatDataSource {
     // Database fields
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
-    private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
-            MySQLiteHelper.COLUMN_TO,MySQLiteHelper.COLUMN_MESSAGE,MySQLiteHelper.COLUMN_TIMESTAMP, MySQLiteHelper.COLUMN_LEFT, MySQLiteHelper.COLUMN_SENT_STATUS };
+    private String[] allColumns = {
+            MySQLiteHelper.COLUMN_TO,MySQLiteHelper.COLUMN_MESSAGE,MySQLiteHelper.COLUMN_TIMESTAMP, MySQLiteHelper.COLUMN_LEFT, MySQLiteHelper.COLUMN_SENT_STATUS,MySQLiteHelper.COLUMN_MSG_ID };
 
     public ChatDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
@@ -40,30 +43,26 @@ public class ChatDataSource {
         dbHelper.close();
     }
 
-    public long createChat(Chat chat) {
+    public String createChat(Chat chat) {
+        String id = chat.getPhn()+Long.toString(Math.abs(new Random().nextLong()));
+        Logger.getLogger("ChatDataSource:").log(Level.INFO, chat.toString());
         ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.COLUMN_MSG_ID,id );
         values.put(MySQLiteHelper.COLUMN_TO, chat.getTo());
         values.put(MySQLiteHelper.COLUMN_MESSAGE, chat.getMessage());
         values.put(MySQLiteHelper.COLUMN_TIMESTAMP, chat.getTimestamp());
-        values.put(MySQLiteHelper.COLUMN_LEFT,chat.getLeft());
+        values.put(MySQLiteHelper.COLUMN_LEFT, chat.getLeft());
         values.put(MySQLiteHelper.COLUMN_PHN,chat.getPhn());
-        values.put(MySQLiteHelper.COLUMN_SENT_STATUS,chat.isSent());
+        values.put(MySQLiteHelper.COLUMN_SENT_STATUS, chat.isSent());
         long insertId = database.insert(MySQLiteHelper.TABLE_CHAT, null,
                 values);
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_CHAT,
-                allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
-                null, null, null);
-        cursor.moveToFirst();
-        chat = cursorToComment(cursor);
-        cursor.close();
-
-        return insertId;
+        return id;
     }
 
     public boolean updateChat(String  msgId, String readStat) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MySQLiteHelper.COLUMN_SENT_STATUS, readStat);
-        long id=database.update(MySQLiteHelper.TABLE_CHAT, contentValues, MySQLiteHelper.COLUMN_ID + " = " + msgId,
+        long id=database.update(MySQLiteHelper.TABLE_CHAT, contentValues, MySQLiteHelper.COLUMN_MSG_ID + " = '" + msgId+"'",
                 null);
         return id > 0;
     }
@@ -78,10 +77,12 @@ public class ChatDataSource {
         while (!cursor.isAfterLast()) {
             Chat chat = cursorToComment(cursor);
             chats.add(chat);
+            Logger.getLogger("ChatDataSource: ALl chats:").log(Level.INFO, chat.toString());
             cursor.moveToNext();
         }
         // make sure to close the cursor
         cursor.close();
+
         return chats;
     }
 
@@ -109,11 +110,12 @@ public class ChatDataSource {
 
     private Chat cursorToComment(Cursor cursor) {
         Chat chat = new Chat();
-        chat.setId(cursor.getLong(0));
-        chat.setTo(cursor.getString(1));
-        chat.setMessage(cursor.getString(2));
-        chat.setTimestamp(cursor.getLong(3));
-        chat.setLeft(cursor.getInt(4));
+        chat.setTo(cursor.getString(0));
+        chat.setMessage(cursor.getString(1));
+        chat.setTimestamp(cursor.getLong(2));
+        chat.setLeft(cursor.getInt(3));
+        chat.setSent(Boolean.parseBoolean(cursor.getString(4)));
+        chat.setId(cursor.getInt(5));
         return chat;
     }
 }

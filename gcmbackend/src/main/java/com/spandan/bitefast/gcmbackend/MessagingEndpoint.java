@@ -102,10 +102,6 @@ public class MessagingEndpoint {
         Entity customer = datastore.get(KeyFactory.createKey("UserAppDetails", androidId));
         customer.setProperty("RegId", regId);
         datastore.put(customer);
-        if(findAdminUsers().contains(phoneNum))
-            reSendMessages("BITEFAST_ADMIN");
-        else
-            reSendMessages(phoneNum);
     }
 
     @ApiMethod(name = "reSendMessages")
@@ -267,6 +263,7 @@ public class MessagingEndpoint {
             dataBundle.put("ID", ""+msgId);
             dataBundle.put("MSGTIMESTAMP", "" + msgTS);
             send(from,dataBundle);
+
 
         }
         send(toUser,jsonObject);

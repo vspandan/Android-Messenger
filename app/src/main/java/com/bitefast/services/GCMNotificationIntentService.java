@@ -92,6 +92,7 @@ public class GCMNotificationIntentService extends IntentService {
 
                     }
                     else if("ACK".equals(extras.get("SM"))){
+                        Logger.getLogger("NotificationService: ACK:").log(Level.INFO, extras.toString());
                         String from=extras.get("FROM").toString();
                         String msgID=extras.get("ID").toString();
                         String msgTS=extras.get("MSGTIMESTAMP").toString();
@@ -100,7 +101,7 @@ public class GCMNotificationIntentService extends IntentService {
                         chatDataSource.open();
                         chatDataSource.updateChat(msgID, "" + true);
                         chatDataSource.close();
-                        Logger.getLogger("NotificationService: ACK:").log(Level.INFO, extras.toString());
+
                     }
 
                 }
@@ -129,7 +130,7 @@ public class GCMNotificationIntentService extends IntentService {
 
 
 
-        notificationManager.notify(9999 /* ID of notification */, notification);
+        /*notificationManager.notify(9999 *//* ID of notification *//*, notification);*/
     }
 }
 

@@ -11,7 +11,7 @@ import android.util.Log;
 public class MySQLiteHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_CHAT = "Chat";
-    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_MSG_ID = "msgId";
     public static final String COLUMN_TO = "sendto";
     public static final String COLUMN_MESSAGE = "message";
     public static final String COLUMN_LEFT = "left";
@@ -26,14 +26,15 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "
-            + TABLE_CHAT + "(" + COLUMN_ID
-            + " integer primary key autoincrement, " + COLUMN_TO
+            + TABLE_CHAT + "("  + COLUMN_TO
             + " text not null, "+ COLUMN_MESSAGE
+            + " text not null, "+ COLUMN_MSG_ID
             + " text not null, "+ COLUMN_TIMESTAMP
             + " text not null, "+ COLUMN_LEFT
             + " text not null, "+ COLUMN_PHN
             + " text not null, "+ COLUMN_SENT_STATUS
             + " text not null );";
+
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

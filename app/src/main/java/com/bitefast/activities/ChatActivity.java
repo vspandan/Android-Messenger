@@ -140,6 +140,7 @@ public class ChatActivity extends ActionBarActivity {
 
         chatDataSource=new ChatDataSource(getApplicationContext());
         chatDataSource.open();
+        Logger.getLogger("ChatActivity:Fetching details for user:").log(Level.INFO, sendTo);
         List<ChatMessage> chatMessages=chatDataSource.getSortedChatMessages(sendTo);
         Iterator<ChatMessage> itr=chatMessages.iterator();
         while(itr.hasNext()){
@@ -187,13 +188,17 @@ public class ChatActivity extends ActionBarActivity {
         //Saving message to LocalDB
         ChatMessage chatMessage = new ChatMessage(false, message);
         Chat chat= new Chat(sendTo, chatMessage.message,0,sendTo,false);
-        long id=chatDataSource.createChat(chat);
+        String id=chatDataSource.createChat(chat);
 
         //Sending Msg to GC
         HashMap<String,String> dataBundle = new HashMap<String,String>();
         dataBundle.put("DEVICEID", androidId);
         dataBundle.put("ACTION", "CHAT");
-        dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
+
+        if(isAdmin)
+            dataBundle.put("FROM", "BITEFAST_ADMIN");
+        else
+            dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
         dataBundle.put("SENDTO", sendTo);
         dataBundle.put("CHATMESSAGE", message);
         dataBundle.put("MSGTIMESTAMP", ""+chat.getTimestamp());
