@@ -87,11 +87,13 @@ public class MainActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            /*
             try {
                 Thread.sleep(SPLASH_SHOW_TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            */
             return null;
         }
 

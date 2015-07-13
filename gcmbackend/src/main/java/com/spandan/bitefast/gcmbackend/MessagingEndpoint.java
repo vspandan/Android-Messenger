@@ -7,6 +7,7 @@
 package com.spandan.bitefast.gcmbackend;
 
 import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.MulticastResult;
 import com.google.android.gcm.server.Sender;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -231,10 +232,10 @@ public class MessagingEndpoint {
 
 
     @ApiMethod(name = "sendMessage")
-    public void sendMessage(@Named("message") String message) throws IOException, ParseException, EntityNotFoundException {
+    public MulticastResult sendMessage(@Named("message") String message) throws IOException, ParseException, EntityNotFoundException {
         if (message == null || message.length() == 0) {
             log.warning("Not sending message because it is empty");
-            return;
+            return null;
         }
         Map<String, String> jsonObject = (Map<String, String>) JSONValue
                 .parseWithException(message);
@@ -266,13 +267,13 @@ public class MessagingEndpoint {
             dataBundle.put("SENDTO", from);
             dataBundle.put("ID", ""+msgId);
             dataBundle.put("MSGTIMESTAMP", "" + msgTS);
-            send(from,dataBundle);
+            return send(from,dataBundle);
 
         }
-        send(toUser,jsonObject);
+        return send(toUser,jsonObject);
     }
 
-    private void send(String toUser, Map<String, String> jsonObject) throws IOException {
+    private MulticastResult send(String toUser, Map<String, String> jsonObject) throws IOException {
         sender = new Sender(API_KEY);
         HashSet<String> regIds = new HashSet<String>();
         if (toUser.equals("BITEFAST_ADMIN")) {
@@ -286,7 +287,8 @@ public class MessagingEndpoint {
         Message msg = new Message.Builder().timeToLive(86400)
                 .collapseKey("0")
                 .delayWhileIdle(true).setData(jsonObject).build();
-        sender.send(msg, new ArrayList<String>(regIds), 5);
+        MulticastResult result=sender.send(msg, new ArrayList<String>(regIds), 5);
+        return result;
     }
 
 

@@ -9,7 +9,10 @@
         <!-- Support library compatibility -->
         <item name="windowActionBarOverlay">true</item>
 
+
+
     </style>
+
 
     <style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
         <item name="android:windowContentOverlay">@null</item>

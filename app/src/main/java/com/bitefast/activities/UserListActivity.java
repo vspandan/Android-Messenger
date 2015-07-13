@@ -53,7 +53,7 @@ public class UserListActivity extends ActionBarActivity {
         setContentView(R.layout.activity_user_list);
         iam=new RegistrationDetails().getPhoneNum(getApplicationContext());
         intent = new Intent(this, GCMNotificationIntentService.class);
-        registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.chatmessage"));
+        registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.beans.chatmessage"));
         userDataSource=new UserDataSource(getApplicationContext());
         userDataSource.open();
 

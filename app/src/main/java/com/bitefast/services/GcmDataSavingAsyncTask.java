@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.spandan.bitefast.gcmbackend.messaging.Messaging;
+import com.spandan.bitefast.gcmbackend.messaging.model.MulticastResult;
 import com.spandan.bitefast.gcmbackend.messaging.model.UserDetails;
 
 import java.io.IOException;
@@ -154,7 +155,10 @@ public class GcmDataSavingAsyncTask {
                 String msg = "";
                 Logger.getLogger("Messaging:SendMessage:DATA:").log(Level.INFO, jsondata);
                 try {
-                    msgService.sendMessage(jsondata).execute();
+                    MulticastResult result=msgService.sendMessage(jsondata).execute();
+                    if(result.getCanonicalIds()>0){
+
+                    }
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     msg = "SendMessage Error: " + ex.getMessage();
