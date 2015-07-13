@@ -9,8 +9,10 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 
+import com.bitefast.util.RegistrationDetails;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.bitefast.R;
 import com.bitefast.activities.MainActivity;
@@ -18,6 +20,9 @@ import com.bitefast.beans.Chat;
 import com.bitefast.datasource.ChatDataSource;
 import com.bitefast.receiver.GcmBroadcastReceiver;
 
+import org.json.simple.JSONValue;
+
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,13 +37,14 @@ public class GCMNotificationIntentService extends IntentService {
     }
 
     public static final String TAG = "GCMNotificationIntentService";
+    private String androidId =null;
 
     @Override
     protected void onHandleIntent(Intent intent) {
 
         Bundle extras = intent.getExtras();
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
-
+        androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         String messageType = gcm.getMessageType(intent);
 
         if (extras != null && messageType !=null) {
@@ -52,24 +58,49 @@ public class GCMNotificationIntentService extends IntentService {
                 } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE
                         .equals(messageType)) {
 
-                    if("USERLIST".equals(extras.get("SM"))){
-                        Intent userListIntent = new Intent("com.bitefast.userlist");
-                        String userList = extras.get("USERLIST").toString();
-                        userListIntent.putExtra("USERLIST", userList);
-                        sendBroadcast(userListIntent);
-                    } else if("CHAT".equals(extras.get("SM"))){
+                    if("CHAT".equals(extras.get("SM"))){
+                        String from=extras.get("FROM").toString();
+                        String receivedMsg=extras.get("CHATMESSAGE").toString();
+                        String msgID=extras.get("ID").toString();
+                        String msgTS=extras.get("MSGTIMESTAMP").toString();
+
                         Intent chatIntent = new Intent("com.bitefast.chatmessage");
-                        chatIntent.putExtra("CHATMESSAGE",extras.get("CHATMESSAGE").toString());
-                        chatIntent.putExtra("FROM", extras.get("FROM").toString());
-                        sendNotification(extras.get("CHATMESSAGE").toString(), extras.get("FROM").toString());
+                        chatIntent.putExtra("CHATMESSAGE",receivedMsg);
+                        chatIntent.putExtra("FROM", from);
+                        sendNotification(receivedMsg,from);
                         ChatDataSource chatDataSource = new ChatDataSource(getApplicationContext());
                         chatDataSource.open();
-                        Chat chat=new Chat(extras.get("FROM").toString(),extras.get("CHATMESSAGE").toString(),1,extras.get("FROM").toString());
-
+                        Chat chat=new Chat(from,receivedMsg,1,from,true,msgTS);
                         chatDataSource.createChat(chat);
                         chatDataSource.close();
                         Logger.getLogger("NotificationService:").log(Level.INFO, extras.toString());
                         sendBroadcast(chatIntent);
+
+                        //TODO ques: do we need to store id of recieved msg along with timestamp
+                        //TODO ACK the server saying message is delivered
+
+                        HashMap<String,String> dataBundle = new HashMap<String,String>();
+                        dataBundle.put("DEVICEID", androidId);
+                        dataBundle.put("ACTION", "ACK");
+                        dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
+                        dataBundle.put("SENDTO", from);
+                        dataBundle.put("ID", "" + msgID);
+                        dataBundle.put("MSGTIMESTAMP", "" + msgTS);
+
+                        new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle));
+                        Logger.getLogger("NotificationService:").log(Level.INFO, JSONValue.toJSONString(dataBundle));
+
+                    }
+                    else if("ACK".equals(extras.get("SM"))){
+                        String from=extras.get("FROM").toString();
+                        String msgID=extras.get("ID").toString();
+                        String msgTS=extras.get("MSGTIMESTAMP").toString();
+
+                        ChatDataSource chatDataSource = new ChatDataSource(getApplicationContext());
+                        chatDataSource.open();
+                        chatDataSource.updateChat(msgID, "" + true);
+                        chatDataSource.close();
+                        Logger.getLogger("NotificationService: ACK:").log(Level.INFO, extras.toString());
                     }
 
                 }

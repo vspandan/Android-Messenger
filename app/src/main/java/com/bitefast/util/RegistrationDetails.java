@@ -79,6 +79,12 @@ public class RegistrationDetails extends Application{
         final SharedPreferences prefs = getGCMPreferences(context);
         return prefs.getString("phoneNum", "");
     }
+
+    public String getUserName(Context context) {
+        final SharedPreferences prefs = getGCMPreferences(context);
+        return prefs.getString("userName", "");
+    }
+
     public boolean isAdmin(Context context) {
         final SharedPreferences prefs = getGCMPreferences(context);
         return prefs.getBoolean("admin", false);

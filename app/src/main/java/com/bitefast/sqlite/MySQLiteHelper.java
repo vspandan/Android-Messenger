@@ -17,6 +17,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_LEFT = "left";
     public static final String COLUMN_TIMESTAMP = "timestamp";
     public static final String COLUMN_PHN = "phonenum";
+    public static final String COLUMN_SENT_STATUS = "sent_status";
+    public static final String COLUMN_DELIVERED_STATUS="delivered_Status";
 
 
     private static final String DATABASE_NAME = "bitefast.db";
@@ -30,6 +32,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + " text not null, "+ COLUMN_TIMESTAMP
             + " text not null, "+ COLUMN_LEFT
             + " text not null, "+ COLUMN_PHN
+            + " text not null, "+ COLUMN_SENT_STATUS
             + " text not null );";
 
     public MySQLiteHelper(Context context) {

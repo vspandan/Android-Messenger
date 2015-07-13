@@ -12,26 +12,49 @@ public class Chat implements Comparable<Chat>{
     private int left;
     private long timestamp;
     private String phn;
+    private boolean sent;
+
+    //Future Use
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
+    }
+
+    private boolean delivered;
+
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
+    }
 
     public Chat() {
     }
 
-    public Chat(String to, String message, int left, String phn) {
+    public Chat(String to, String message, int left, String phn, boolean sent) {
         this.to = to;
         this.left=left;
         this.message = message;
         this.timestamp= new Date().getTime();
         this.phn=phn;
+        this.sent=sent;
     }
 
-    public Chat(long id, String to, String message, long timestamp,int left, String phn) {
-        this.id = id;
+    public Chat(String to, String message, int left, String phn, boolean sent, String timeStamp) {
         this.to = to;
-        this.left = left;
+        this.left=left;
         this.message = message;
-        this.timestamp = timestamp;
+        this.timestamp= Long.parseLong(timeStamp);
         this.phn=phn;
+        this.sent=sent;
     }
+
 
     public long getId() {
         return id;

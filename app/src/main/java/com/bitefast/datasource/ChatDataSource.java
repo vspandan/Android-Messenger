@@ -26,7 +26,7 @@ public class ChatDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
-            MySQLiteHelper.COLUMN_TO,MySQLiteHelper.COLUMN_MESSAGE,MySQLiteHelper.COLUMN_TIMESTAMP, MySQLiteHelper.COLUMN_LEFT };
+            MySQLiteHelper.COLUMN_TO,MySQLiteHelper.COLUMN_MESSAGE,MySQLiteHelper.COLUMN_TIMESTAMP, MySQLiteHelper.COLUMN_LEFT, MySQLiteHelper.COLUMN_SENT_STATUS };
 
     public ChatDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
@@ -40,13 +40,14 @@ public class ChatDataSource {
         dbHelper.close();
     }
 
-    public boolean createChat(Chat chat) {
+    public long createChat(Chat chat) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_TO, chat.getTo());
         values.put(MySQLiteHelper.COLUMN_MESSAGE, chat.getMessage());
         values.put(MySQLiteHelper.COLUMN_TIMESTAMP, chat.getTimestamp());
         values.put(MySQLiteHelper.COLUMN_LEFT,chat.getLeft());
         values.put(MySQLiteHelper.COLUMN_PHN,chat.getPhn());
+        values.put(MySQLiteHelper.COLUMN_SENT_STATUS,chat.isSent());
         long insertId = database.insert(MySQLiteHelper.TABLE_CHAT, null,
                 values);
         Cursor cursor = database.query(MySQLiteHelper.TABLE_CHAT,
@@ -55,9 +56,17 @@ public class ChatDataSource {
         cursor.moveToFirst();
         chat = cursorToComment(cursor);
         cursor.close();
-        return chat != null;
+
+        return insertId;
     }
 
+    public boolean updateChat(String  msgId, String readStat) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MySQLiteHelper.COLUMN_SENT_STATUS, readStat);
+        long id=database.update(MySQLiteHelper.TABLE_CHAT, contentValues, MySQLiteHelper.COLUMN_ID + " = " + msgId,
+                null);
+        return id > 0;
+    }
 
     public List<Chat> getAllChats(String phn) {
         List<Chat> chats = new ArrayList<Chat>();

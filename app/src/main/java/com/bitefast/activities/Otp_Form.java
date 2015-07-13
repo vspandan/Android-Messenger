@@ -84,7 +84,7 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
                         new RegistrationDetails().setAdmin(getApplicationContext());
                         HashMap<String,String> dataBundle =new HashMap<String,String>();
                         dataBundle.put("ACTION", "USERLIST");
-                        new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
+                        new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle));
                         Intent i = new Intent(Otp_Form.this, UserListActivity.class);
                         startActivity(i);
                     }

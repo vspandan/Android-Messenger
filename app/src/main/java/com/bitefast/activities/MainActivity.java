@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 
 public class MainActivity extends Activity {
-    private static final int SPLASH_SHOW_TIME = 3000;
+    private static final int SPLASH_SHOW_TIME = 1000;
     private CheckInternetConnectivity cd = null;
     private GoogleCloudMessaging gcm;
     private AsyncTask<Void, Void, String> sendTask;
@@ -146,7 +146,7 @@ public class MainActivity extends Activity {
                     //Updating registration details and
                     String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                     /*new GcmDataSavingAsyncTask().registerDevice(regId,phn);*/
-                    new GcmDataSavingAsyncTask().updateUserRegid(androidId,new RegistrationDetails().getRegistrationId(getApplicationContext()));
+                    new GcmDataSavingAsyncTask().updateUserRegid(androidId, new RegistrationDetails().getRegistrationId(getApplicationContext()), new RegistrationDetails().getPhoneNum(getApplicationContext()));
                     i = new Intent(MainActivity.this, ChatActivity.class);
                     i.putExtra("SENDTO","BITEFAST_ADMIN");
                 }

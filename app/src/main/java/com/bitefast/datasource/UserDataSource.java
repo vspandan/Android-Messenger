@@ -37,7 +37,7 @@ public class UserDataSource {
         dbHelper.close();
     }
 
-    public boolean createChat(UserListBean deviceUserBean) {
+    public boolean createUserListEntry(UserListBean deviceUserBean) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper2.COLUMN_NAME, deviceUserBean.name);
         values.put(MySQLiteHelper2.COLUMN_READ, deviceUserBean.read);

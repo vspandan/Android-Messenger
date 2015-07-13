@@ -14,37 +14,7 @@ import java.util.logging.Logger;
 
 public class GcmDataSavingAsyncTask {
     public Messaging msgService = null;
-    public Messaging regService = null;
     public AsyncTask<Void, Void, String> sendTask;
-
-    public void saveMessage(final String regId, final String from, final String to, final String message) {
-        sendTask = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                if (msgService == null) {
-                    Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
-                            new AndroidJsonFactory(), null);
-                    builder.setApplicationName("BiteFast");
-                    msgService = builder.build();
-                }
-                String msg = "";
-                Logger.getLogger("Messaging:SaveMessage:DATA:").log(Level.INFO, from + ":" + to + ":" + message);
-                try {
-                    msgService.saveMessage(regId, from, to, message).execute();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    msg += "SaveMessage Error: " + ex.getMessage();
-                }
-                return msg;
-            }
-
-            @Override
-            protected void onPostExecute(String msg) {
-                Logger.getLogger("Messaging:SaveMessage:POST:").log(Level.INFO, msg);
-            }
-        };
-        sendTask.execute(null, null, null);
-    }
 
     public UserDetails fetchDetails(final String androidId) {
         final UserDetails[] userDetails = new UserDetails[1];
@@ -139,7 +109,7 @@ public class GcmDataSavingAsyncTask {
     }
 
 
-    public void updateUserRegid(final String androidId, final String regId) {
+    public void updateUserRegid(final String androidId, final String regId, final String phoneNum) {
 
 
         sendTask = new AsyncTask<Void, Void, String>() {
@@ -154,7 +124,7 @@ public class GcmDataSavingAsyncTask {
                 String msg = "";
                 Logger.getLogger("Messaging:UpdateUserRegid:DATA").log(Level.INFO, ":");
                 try {
-                    msgService.updateUserRegid(androidId, regId).execute();
+                    msgService.updateUserRegid(androidId, regId,phoneNum).execute();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     msg += "UpdateUserRegid Error: " + ex.getMessage();
@@ -170,21 +140,21 @@ public class GcmDataSavingAsyncTask {
         sendTask.execute(null, null, null);
     }
 
-    public void sendMessage(final String jsondata, final String regId) {
+    public void sendMessage(final String jsondata) {
 
         sendTask = new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                if (regService == null) {
+                if (msgService == null) {
                     Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
                             new AndroidJsonFactory(), null);
                     builder.setApplicationName("BiteFast");
-                    regService = builder.build();
+                    msgService = builder.build();
                 }
                 String msg = "";
                 Logger.getLogger("Messaging:SendMessage:DATA:").log(Level.INFO, jsondata);
                 try {
-                    regService.sendMessage(jsondata, regId).execute();
+                    msgService.sendMessage(jsondata).execute();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     msg = "SendMessage Error: " + ex.getMessage();

@@ -1,6 +1,8 @@
 package com.bitefast.activities;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,8 +13,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.multidex.MultiDex;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,24 +24,31 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.bitefast.beans.Chat;
+import com.bitefast.layoutclasses.PreferencesFragment;
+import com.bitefast.R;
 import com.bitefast.adapters.ChatArrayAdapter;
-import com.bitefast.datasource.ChatDataSource;
+import com.bitefast.adapters.DrawerListAdapter;
+import com.bitefast.beans.Chat;
 import com.bitefast.beans.ChatMessage;
+import com.bitefast.beans.NavItem;
+import com.bitefast.datasource.ChatDataSource;
 import com.bitefast.services.GCMNotificationIntentService;
 import com.bitefast.services.GcmDataSavingAsyncTask;
 import com.bitefast.services.MessageSender;
-import com.bitefast.R;
 import com.bitefast.util.RegistrationDetails;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.spandan.bitefast.gcmbackend.messaging.model.UserDetails;
 
 import org.json.simple.JSONValue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -64,10 +74,15 @@ public class ChatActivity extends ActionBarActivity {
     private String androidId = null;
     private String androidIdReceiver = null;
     private ChatDataSource chatDataSource;
+    private ArrayList<NavItem> mNavItems;
+    private DrawerLayout mDrawerLayout;
+    private RelativeLayout mDrawerPane;
+    private ListView mDrawerList;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
         random=new Random();
+        mNavItems=new ArrayList<NavItem>();
 		super.onCreate(savedInstanceState);
         context=getApplicationContext();
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -82,7 +97,7 @@ public class ChatActivity extends ActionBarActivity {
         if (isAdmin)
             this.setTitle(sendTo);
         ActionBar bar = getSupportActionBar();
-
+        bar.setHomeButtonEnabled(true);
         //TODO retrieve from shared data and update localChatListUserWise;
 
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
@@ -132,35 +147,63 @@ public class ChatActivity extends ActionBarActivity {
             chatArrayAdapter.add(chatMessage);
         }
 
+        if (!isAdmin) {
+            //SLIDE MENU
+            TextView userProfileName = (TextView) findViewById(R.id.profileUserName);
+            userProfileName.setText(new RegistrationDetails().getUserName(getApplicationContext()).toUpperCase());
+
+            TextView userPhnNum = (TextView) findViewById(R.id.phnNum);
+            userPhnNum.setText(new RegistrationDetails().getPhoneNum(getApplicationContext()));
+
+
+            mNavItems.add(new NavItem("Menu", "Go through Item List"));
+            mNavItems.add(new NavItem("Order", "View Past Orders"));
+            mNavItems.add(new NavItem("Settings", "Update Your Profile"));
+
+            // DrawerLayout
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.chatActivity);
+
+            // Populate the Navigtion Drawer with options
+            mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
+            mDrawerList = (ListView) findViewById(R.id.navList);
+            DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
+            mDrawerList.setAdapter(adapter);
+
+            // Drawer Item click listeners
+            mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    selectItemFromDrawer(position);
+                }
+            });
+        }
     }
 
     private boolean sendChatMessage(){
-        String message=chatText.getText().toString();
+        String message=chatText.getText().toString().trim();
         if(message==null||message.isEmpty())
             return false;
+
+        //Saving message to LocalDB
+        ChatMessage chatMessage = new ChatMessage(false, message);
+        Chat chat= new Chat(sendTo, chatMessage.message,0,sendTo,false);
+        long id=chatDataSource.createChat(chat);
+
+        //Sending Msg to GC
         HashMap<String,String> dataBundle = new HashMap<String,String>();
         dataBundle.put("DEVICEID", androidId);
         dataBundle.put("ACTION", "CHAT");
         dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
-        //added this for debugging purpose
-        /*dataBundle.put("SENDTO", new RegistrationDetails().getPhoneNum(getApplicationContext()));*/
         dataBundle.put("SENDTO", sendTo);
-        dataBundle.put("CHATMESSAGE", chatText.getText().toString());
+        dataBundle.put("CHATMESSAGE", message);
+        dataBundle.put("MSGTIMESTAMP", ""+chat.getTimestamp());
+        dataBundle.put("ID", "" + id);
 
         Log.d(TAG, " ChatActivity: " + dataBundle);
 
-        new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle), regId);
-        new GcmDataSavingAsyncTask().saveMessage(regId, new RegistrationDetails().getPhoneNum(getApplicationContext()), sendTo, message);
-
-
-        ChatMessage chatMessage = new ChatMessage(false, chatText.getText().toString().trim());
+        new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle));
 
         chatArrayAdapter.add(chatMessage);
-
-        Chat chat=new Chat(sendTo,chatMessage.message,0,sendTo);
-        //chatDataSource.open();
-
-        chatDataSource.createChat(chat);
 
         chatText.setText("");
         return true;
@@ -219,7 +262,7 @@ public class ChatActivity extends ActionBarActivity {
             getMenuInflater().inflate(R.menu.menu_chat_admin, menu);
         }
         else {
-            getMenuInflater().inflate(R.menu.menu_chat, menu);
+            /*getMenuInflater().inflate(R.menu.menu_chat, menu);*/
         }
         return true;
     }
@@ -253,13 +296,13 @@ public class ChatActivity extends ActionBarActivity {
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    String orderId=getRandomOrderId();
-                    String amount=input.getText().toString();
+                    String orderId = getRandomOrderId();
+                    String amount = input.getText().toString();
                     chatText.setText("Thanks for Ordering.\nYour Bill Amount: " + amount + "\nOrder Id: " + orderId);
                     sendChatMessage();
                     new GcmDataSavingAsyncTask().saveOrder(orderId, sendTo, amount);
                     Logger.getLogger("ChatActivity:Confirm Order:DEVICEID.:").log(Level.INFO, androidIdReceiver);
-                    UserDetails details=new GcmDataSavingAsyncTask().fetchDetails(androidIdReceiver);
+                    UserDetails details = new GcmDataSavingAsyncTask().fetchDetails(androidIdReceiver);
                     if (details!=null) {
                         chatText.setText("Your Order (" + orderId + ") will be delivered to: \n" + details.getName() + "\n" + details.getAddr() + "\n" + details.getStreet() + "\n" + details.getLandmark() + "\n" + details.getCity());
                         sendChatMessage();
@@ -292,4 +335,16 @@ public class ChatActivity extends ActionBarActivity {
         MultiDex.install(newBase);
         super.attachBaseContext(newBase);
     }
+
+    private void selectItemFromDrawer(int position) {
+        Fragment fragment = new PreferencesFragment();
+
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction();
+
+        mDrawerList.setItemChecked(position, true);
+
+        mDrawerLayout.closeDrawer(mDrawerPane);
+    }
 }
+

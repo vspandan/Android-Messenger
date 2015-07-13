@@ -119,7 +119,7 @@ public class UserListActivity extends ActionBarActivity {
                 boolean status=userDataSource.deleteChat(from);
             }
             UserListBean bean=new UserListBean(from,""+ false,iam);
-            userDataSource.createChat(bean);
+            userDataSource.createUserListEntry(bean);
             updateUI();
         }
     };
