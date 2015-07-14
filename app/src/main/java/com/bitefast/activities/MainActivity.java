@@ -38,6 +38,15 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (!isTaskRoot())
+        {
+            final Intent intent = getIntent();
+            final String intentAction = intent.getAction();
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
+                finish();
+                return;
+            }
+        }
         cd=new CheckInternetConnectivity(getApplicationContext());
         if(cd.isConnectingToInternet()) {
             register();

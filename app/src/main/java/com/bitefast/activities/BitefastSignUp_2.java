@@ -46,6 +46,15 @@ public class BitefastSignUp_2 extends ActionBarActivity implements View.OnClickL
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
 
         setContentView(R.layout.activity_bf_sign_up2);
+        if (!isTaskRoot())
+        {
+            final Intent intent = getIntent();
+            final String intentAction = intent.getAction();
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
+                finish();
+                return;
+            }
+        }
         signupbutton = (Button) findViewById(R.id.confirm);
         signupbutton.setOnClickListener(this);
     }

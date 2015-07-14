@@ -22,6 +22,7 @@ import com.bitefast.receiver.GcmBroadcastReceiver;
 
 import org.json.simple.JSONValue;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,53 +58,55 @@ public class GCMNotificationIntentService extends IntentService {
                     sendNotification("Deleted messages on server","Expired Message on Server");
                 } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE
                         .equals(messageType)) {
+                    try {
+                        if ("CHAT".equals(extras.get("SM"))) {
+                            String from = extras.get("FROM").toString();
+                            String receivedMsg = extras.get("CHATMESSAGE").toString();
+                            String msgID = extras.get("ID").toString();
+                            String msgTS = extras.get("MSGTIMESTAMP").toString();
 
-                    if("CHAT".equals(extras.get("SM"))){
-                        String from=extras.get("FROM").toString();
-                        String receivedMsg=extras.get("CHATMESSAGE").toString();
-                        String msgID=extras.get("ID").toString();
-                        String msgTS=extras.get("MSGTIMESTAMP").toString();
-
-                        Intent chatIntent = new Intent("com.bitefast.chatmessage");
-                        chatIntent.putExtra("CHATMESSAGE",receivedMsg);
-                        chatIntent.putExtra("FROM", from);
-                        sendNotification(receivedMsg,from);
-                        ChatDataSource chatDataSource = new ChatDataSource(getApplicationContext());
-                        chatDataSource.open();
-                        Chat chat=new Chat(from,receivedMsg,1,from,true,msgTS);
-                        chatDataSource.createChat(chat);
-                        chatDataSource.close();
+                            Intent chatIntent = new Intent("com.bitefast.chatmessage");
+                            chatIntent.putExtra("CHATMESSAGE", receivedMsg);
+                            chatIntent.putExtra("FROM", from);
+                            sendNotification(receivedMsg, from);
+                            ChatDataSource chatDataSource = new ChatDataSource(getApplicationContext());
+                            chatDataSource.open();
+                            Chat chat = new Chat(from, receivedMsg, 1, from, true, msgTS);
+                            chatDataSource.createChat(chat);
+                            chatDataSource.close();
                         /*Logger.getLogger("NotificationService:").log(Level.INFO, extras.toString());*/
-                        sendBroadcast(chatIntent);
+                            sendBroadcast(chatIntent);
 
-                        //TODO ques: do we need to store id of recieved msg along with timestamp
-                        //TODO ACK the server saying message is delivered
+                            //TODO ques: do we need to store id of recieved msg along with timestamp
+                            //TODO ACK the server saying message is delivered
 
-                        HashMap<String,String> dataBundle = new HashMap<String,String>();
-                        dataBundle.put("DEVICEID", androidId);
-                        dataBundle.put("ACTION", "ACK");
-                        dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
-                        dataBundle.put("SENDTO", from);
-                        dataBundle.put("ID", "" + msgID);
-                        dataBundle.put("MSGTIMESTAMP", "" + msgTS);
+                            HashMap<String, String> dataBundle = new HashMap<String, String>();
+                            dataBundle.put("DEVICEID", androidId);
+                            dataBundle.put("ACTION", "ACK");
+                            dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
+                            dataBundle.put("SENDTO", from);
+                            dataBundle.put("ID", "" + msgID);
+                            dataBundle.put("MSGTIMESTAMP", "" + msgTS);
 
-                        new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle));
+                            new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle));
                         /*Logger.getLogger("NotificationService:").log(Level.INFO, JSONValue.toJSONString(dataBundle));*/
 
-                    }
-                    else if("ACK".equals(extras.get("SM"))){
+                        } else if ("ACK".equals(extras.get("SM"))) {
                         /*Logger.getLogger("NotificationService: ACK:").log(Level.INFO, extras.toString());*/
-                        String from=extras.get("FROM").toString();
-                        String msgID=extras.get("ID").toString();
-                        String msgTS=extras.get("MSGTIMESTAMP").toString();
+                            String from = extras.get("FROM").toString();
+                            String msgID = extras.get("ID").toString();
+                            String msgTS = extras.get("MSGTIMESTAMP").toString();
 
-                        ChatDataSource chatDataSource = new ChatDataSource(getApplicationContext());
-                        chatDataSource.open();
-                        chatDataSource.updateChat(msgID, "" + true);
-                        chatDataSource.close();
+                            ChatDataSource chatDataSource = new ChatDataSource(getApplicationContext());
+                            chatDataSource.open();
+                            chatDataSource.updateChat(msgID, "" + true);
+                            chatDataSource.close();
+
+                        }
+                    }
+                    catch (Error e){
 
                     }
-
                 }
             }
         }
@@ -126,11 +129,11 @@ public class GCMNotificationIntentService extends IntentService {
                 "New Message", System.currentTimeMillis());
         notification.sound=defaultSoundUri;
         notification.setLatestEventInfo(this, title,
-                "New Message", pendingIntent);
+                message, pendingIntent);
 
 
 
-        /*notificationManager.notify(9999 *//* ID of notification *//*, notification);*/
+        notificationManager.notify((int)new Date().getTime() , notification);
     }
 }
 

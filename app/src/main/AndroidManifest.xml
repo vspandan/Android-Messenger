@@ -100,10 +100,14 @@
             android:noHistory="true"
             android:screenOrientation="portrait" >
         </activity>
-        <activity
-            android:name=".activities.Slider"
-            android:label="@string/title_activity_slider" >
-        </activity>
+
+        <receiver android:name=".NetworkChangeReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

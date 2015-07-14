@@ -281,7 +281,6 @@ public class MessagingEndpoint {
             regIds.addAll(retreiveKey(toUser));
         }
         Message msg = new Message.Builder().timeToLive(86400)
-                .collapseKey("0")
                 .delayWhileIdle(true).setData(jsonObject).build();
         sender.send(msg, new ArrayList<String>(regIds), 5);
     }
