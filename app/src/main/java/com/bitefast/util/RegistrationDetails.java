@@ -11,7 +11,6 @@ public class RegistrationDetails extends Application{
     private static final String REG_ID = "regId";
     private static final String APP_VERSION = "appVersion";
 
-
     public String getRegistrationId(Context context) {
         final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(REG_ID, "");

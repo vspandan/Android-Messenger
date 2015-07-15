@@ -266,6 +266,7 @@ public class MessagingEndpoint {
 
 
         }
+        reSendMessages(from);
         send(toUser,jsonObject);
     }
 

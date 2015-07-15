@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.util.Log;
 
+import com.bitefast.services.GcmDataSavingAsyncTask;
+import com.bitefast.util.RegistrationDetails;
+
 /**
  * Created by rubbernecker on 14/7/15.
  */
@@ -23,11 +26,11 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
         if (wifi.isAvailable() || mobile.isAvailable()) {
-            Log.d("Netowk Available ", "Flag No 1");
+
         }
 
         if (!wifi.isAvailable() && !mobile.isAvailable()) {
-            //TODO resendMessages
+
         }
     }
 }

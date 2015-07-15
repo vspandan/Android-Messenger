@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 
+import com.bitefast.activities.ChatActivity;
 import com.bitefast.util.RegistrationDetails;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.bitefast.R;
@@ -34,7 +35,7 @@ public class GCMNotificationIntentService extends IntentService {
     NotificationCompat.Builder builder;
 
     public GCMNotificationIntentService() {
-        super("GcmIntentService");
+        super("GCMNotificationIntentService");
     }
 
     public static final String TAG = "GCMNotificationIntentService";
@@ -52,10 +53,10 @@ public class GCMNotificationIntentService extends IntentService {
             if (!extras.isEmpty()) {
                 if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR
                         .equals(messageType)) {
-                    sendNotification("Send error","Error");
+                    sendNotification("Send error","Error","Error");
                 } else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED
                         .equals(messageType)) {
-                    sendNotification("Deleted messages on server","Expired Message on Server");
+                    sendNotification("Deleted messages on server","Expired Message on Server","Expired Message on Server");
                 } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE
                         .equals(messageType)) {
                     try {
@@ -68,7 +69,7 @@ public class GCMNotificationIntentService extends IntentService {
                             Intent chatIntent = new Intent("com.bitefast.chatmessage");
                             chatIntent.putExtra("CHATMESSAGE", receivedMsg);
                             chatIntent.putExtra("FROM", from);
-                            sendNotification(receivedMsg, from);
+                            sendNotification(receivedMsg, from, from);
                             ChatDataSource chatDataSource = new ChatDataSource(getApplicationContext());
                             chatDataSource.open();
                             Chat chat = new Chat(from, receivedMsg, 1, from, true, msgTS);
@@ -114,11 +115,12 @@ public class GCMNotificationIntentService extends IntentService {
     }
 
 
-    private void sendNotification(String message,String title) {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void sendNotification(String message,String from,String title) {
+        Intent intent = new Intent(this, ChatActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("SENDTO", from);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_CANCEL_CURRENT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -129,11 +131,13 @@ public class GCMNotificationIntentService extends IntentService {
                 "New Message", System.currentTimeMillis());
         notification.sound=defaultSoundUri;
         notification.setLatestEventInfo(this, title,
-                message, pendingIntent);
+                "New Message", pendingIntent);
 
-
-
-        notificationManager.notify((int)new Date().getTime() , notification);
+        try {
+            notificationManager.notify(Integer.parseInt(from), notification);
+        }catch(NumberFormatException e){
+            notificationManager.notify(9999, notification);
+        }
     }
 }
 

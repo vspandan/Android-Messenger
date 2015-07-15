@@ -93,6 +93,7 @@
         </receiver>
 
         <service android:name=".services.GCMNotificationIntentService" />
+        <service android:name=".services.HeartBeatService" />
 
         <activity
             android:name=".activities.UserListActivity"

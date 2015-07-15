@@ -1,7 +1,9 @@
 package com.bitefast.services;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
+import com.bitefast.util.RegistrationDetails;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.spandan.bitefast.gcmbackend.messaging.Messaging;
@@ -124,7 +126,7 @@ public class GcmDataSavingAsyncTask {
                 String msg = "";
                 Logger.getLogger("Messaging:UpdateUserRegid:DATA").log(Level.INFO, ":");
                 try {
-                    msgService.updateUserRegid(androidId, regId,phoneNum).execute();
+                    msgService.updateUserRegid(androidId, regId, phoneNum).execute();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     msg += "UpdateUserRegid Error: " + ex.getMessage();
@@ -135,6 +137,36 @@ public class GcmDataSavingAsyncTask {
             @Override
             protected void onPostExecute(String msg) {
                 Logger.getLogger("Messaging:UpdateUserRegid:POST:").log(Level.INFO, msg);
+            }
+        };
+        sendTask.execute(null, null, null);
+    }
+
+    public void reqUndeliveredMessage(final String phn) {
+
+        sendTask = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                if (msgService == null) {
+                    Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
+                            new AndroidJsonFactory(), null);
+                    builder.setApplicationName("BiteFast");
+                    msgService = builder.build();
+                }
+                String msg = "";
+                /*Logger.getLogger("Messaging:SendMessage:DATA:").log(Level.INFO, jsondata);*/
+                try {
+                    msgService.reSendMessages(phn).execute();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    msg = "SendMessage Error: " + ex.getMessage();
+                }
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+                Logger.getLogger("Messaging:SendMessage:POST").log(Level.INFO, msg);
             }
         };
         sendTask.execute(null, null, null);

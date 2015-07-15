@@ -12,6 +12,8 @@ import java.util.logging.Logger;
  */
 public class HeartBeatService extends Service {
 
+    private GcmKeepAlive gcmKeepAlive;
+
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
@@ -19,9 +21,13 @@ public class HeartBeatService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Logger.getLogger("HeartBeatService:").log(Level.INFO, "HEARTBEAT_MSG");
-        getApplicationContext().sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
-        getApplicationContext().sendBroadcast(new Intent("com.google.android.intent.action.MCS_HEARTBEAT"));
-        return super.onStartCommand(intent, flags, startId);
+        gcmKeepAlive.start();
+        return START_STICKY;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        gcmKeepAlive = new GcmKeepAlive(this);
     }
 }

@@ -13,6 +13,7 @@ import android.support.multidex.MultiDex;
 
 import com.bitefast.R;
 import com.bitefast.services.GcmDataSavingAsyncTask;
+import com.bitefast.services.HeartBeatService;
 import com.bitefast.util.CheckInternetConnectivity;
 import com.bitefast.util.Config;
 import com.bitefast.util.RegistrationDetails;
@@ -36,6 +37,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        startService(new Intent(getBaseContext(), HeartBeatService.class));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (!isTaskRoot()) {
