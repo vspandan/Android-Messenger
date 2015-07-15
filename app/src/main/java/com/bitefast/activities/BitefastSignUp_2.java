@@ -3,6 +3,7 @@ package com.bitefast.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -43,7 +44,7 @@ public class BitefastSignUp_2 extends ActionBarActivity implements View.OnClickL
         Logger.getLogger("BitefastSignUp").log(Level.INFO, "loading");
         super.onCreate(savedInstanceState);
         ActionBar bar = getSupportActionBar();
-        bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
+        bar.setBackgroundDrawable(new ColorDrawable(Color.RED));
 
         setContentView(R.layout.activity_bf_sign_up2);
         signupbutton = (Button) findViewById(R.id.confirm);

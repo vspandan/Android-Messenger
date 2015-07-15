@@ -156,9 +156,7 @@ public class GcmDataSavingAsyncTask {
                 Logger.getLogger("Messaging:SendMessage:DATA:").log(Level.INFO, jsondata);
                 try {
                     MulticastResult result=msgService.sendMessage(jsondata).execute();
-                    if(result.getCanonicalIds()>0){
 
-                    }
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     msg = "SendMessage Error: " + ex.getMessage();

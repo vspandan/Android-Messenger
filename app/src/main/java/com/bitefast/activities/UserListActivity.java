@@ -49,7 +49,7 @@ public class UserListActivity extends ActionBarActivity {
         this.setTitle("BiteFast");
         senderList=new ArrayList<String>();
         ActionBar bar = getSupportActionBar();
-        bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
+        bar.setBackgroundDrawable(new ColorDrawable(Color.RED));
         setContentView(R.layout.activity_user_list);
         iam=new RegistrationDetails().getPhoneNum(getApplicationContext());
         intent = new Intent(this, GCMNotificationIntentService.class);

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.multidex.MultiDex;
@@ -42,7 +43,7 @@ public class BitefastSignUp extends ActionBarActivity implements View.OnClickLis
         Logger.getLogger("BitefastSignUp").log(Level.INFO, "loading");
         super.onCreate(savedInstanceState);
         ActionBar bar = getSupportActionBar();
-        bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
+        bar.setBackgroundDrawable(new ColorDrawable(Color.RED));
         setContentView(R.layout.activity_bf_sign_up);
         signupbutton = (Button) findViewById(R.id.confirm);
         signupbutton.setOnClickListener(this);

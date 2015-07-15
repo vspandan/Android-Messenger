@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -27,6 +28,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -63,7 +65,7 @@ public class ChatActivity extends ActionBarActivity {
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
-    private Button buttonSend;
+    private ImageButton buttonSend;
     private boolean isAdmin=false;
     private GoogleCloudMessaging gcm;
     private Intent intent;
@@ -100,8 +102,8 @@ public class ChatActivity extends ActionBarActivity {
         bar.setHomeButtonEnabled(true);
         //TODO retrieve from shared data and update localChatListUserWise;
 
-        bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
-        buttonSend = (Button) findViewById(R.id.buttonSend);
+        bar.setBackgroundDrawable(new ColorDrawable(Color.RED));
+        buttonSend = (ImageButton) findViewById(R.id.buttonSend);
         intent = new Intent(this, GCMNotificationIntentService.class);
         registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.chatmessage"));
 
