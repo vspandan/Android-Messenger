@@ -162,6 +162,7 @@ public class HeartBeatService extends Service {
                             dataBundle.put("MSGTIMESTAMP", "" + chat.getTimestamp());
                             dataBundle.put("ID", "" + chat.getMsgId());
                             try {
+                                /*Log.d("GcmKeepAlive", "resending message : " + dataBundle);*/
                                 msgService.sendMessage(JSONValue.toJSONString(dataBundle)).execute();
                             } catch (Exception ex){
                                 ex.printStackTrace();

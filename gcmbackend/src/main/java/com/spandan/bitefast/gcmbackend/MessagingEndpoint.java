@@ -245,11 +245,6 @@ public class MessagingEndpoint {
 
 
         if ("ACK".equals(action)) {
-            jsonObject.put("SM", "ACK");
-            //Reciever send ACK saying that he received message
-            //Update the msg status saying that message is delivered
-            updateMessageStatus(msgId);
-
             //Send Ack to sender that receiver received ur message
             //TODO If req make and entry in db
             HashMap<String,String> dataBundle = new HashMap<String,String>();
@@ -261,14 +256,15 @@ public class MessagingEndpoint {
             dataBundle.put("MSGTIMESTAMP", "" + msgTS);
             dataBundle.put("CHATMESSAGE","ACK");
             send(toUser, dataBundle);
+
+            //Reciever send ACK saying that he received message
+            //Update the msg status saying that message is delivered
+            updateMessageStatus(msgId);
+            jsonObject.put("SM", "ACK");
+
             return;
 
         } else if ("CHAT".equals(action)) {
-            jsonObject.put("SM", "CHAT");
-            //Sender sends the chat message
-            //Make an entry in database
-            saveMessage(devideId, from, toUser, msg, msgId, msgTS, false);
-
             //Sending ACK to sender that server has received
             //TODO If req make and entry in db
             HashMap<String,String> dataBundle = new HashMap<String,String>();
@@ -278,8 +274,13 @@ public class MessagingEndpoint {
             dataBundle.put("SENDTO", from);
             dataBundle.put("ID", ""+msgId);
             dataBundle.put("MSGTIMESTAMP", "" + msgTS);
-            dataBundle.put("CHATMESSAGE","ACK");
-            send(from,dataBundle);
+            dataBundle.put("CHATMESSAGE", "ACK");
+            send(from, dataBundle);
+
+            //Sender sends the chat message
+            //Make an entry in database
+            jsonObject.put("SM", "CHAT");
+            saveMessage(devideId, from, toUser, msg, msgId, msgTS, false);
         }
         send(toUser,jsonObject);
     }

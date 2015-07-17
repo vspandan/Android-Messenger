@@ -3,6 +3,8 @@ package com.bitefast.adapters;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -31,6 +33,7 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 
 	@Override
 	public void add(ChatMessage object) {
+		Logger.getLogger(this.getClass().getName() + ":ADDING TO ADAPTER:").log(Level.INFO, object.toString());
 		chatMessageList.add(object);
 		super.add(object);
 	}
@@ -59,14 +62,14 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 		imageView = (ImageView) row.findViewById(R.id.status);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)chatText.getLayoutParams();
         ChatMessage chatMessageObj = getItem(position);
-        chatText.setText(Html.fromHtml(chatMessageObj.getMessage()+" <sub><small>"+chatMessageObj.gettS()+"</small></sub>"));
+        chatText.setText(Html.fromHtml(chatMessageObj.getMessage()+"&nbsp&nbsp&nbsp<sub><small>"+chatMessageObj.gettS()+"</small></sub> "));
 		if (chatMessageObj.isLeft()) {
-            chatText.setPadding(25, 7, 15, 7);
+            chatText.setPadding(30, 10, 15, 10);
             params.setMargins(0, 10, 0, 4);
 			imageView.setVisibility(View.INVISIBLE);
         }
 		else {
-            chatText.setPadding(15, 7, 25, 7);
+            chatText.setPadding(20, 10, 25, 10);
             params.setMargins(10, 10, 0, 4);
         }
 		chatText.setBackgroundResource(chatMessageObj.isLeft() ? R.drawable.bubble_b : R.drawable.bubble_c);
@@ -86,8 +89,8 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
             ChatMessage prev = getItem(position - 1);
             if (prev != null) {
                 if (prev.isLeft() == chatMessageObj.isLeft()) {
-                    params.setMargins(10, 0, 5, 0);
-                    chatText.setPadding(15,7,15,7);
+                    params.setMargins(10, 0, 7, 0);
+                    chatText.setPadding(20,10,15,10);
                     chatText.setBackgroundResource(chatMessageObj.isLeft() ? R.drawable.bubble_b1 : R.drawable.bubble_c1);
                 }
             }

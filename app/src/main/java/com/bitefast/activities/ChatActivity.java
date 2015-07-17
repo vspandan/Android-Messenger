@@ -42,7 +42,6 @@ import com.bitefast.datasource.ChatDataSource;
 import com.bitefast.layoutclasses.PreferencesFragment;
 import com.bitefast.services.GCMNotificationIntentService;
 import com.bitefast.services.GcmDataSavingAsyncTask;
-import com.bitefast.services.MessageSender;
 import com.bitefast.util.RegistrationDetails;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.spandan.bitefast.gcmbackend.messaging.model.UserDetails;
@@ -71,7 +70,6 @@ public class ChatActivity extends ActionBarActivity {
     private Intent intent;
     private static Random random;
     private String sendTo;
-    private MessageSender messageSender;
     private Context context=null;
     private String androidId = null;
     private String androidIdReceiver = null;
@@ -114,8 +112,6 @@ public class ChatActivity extends ActionBarActivity {
         registerReceiver(broadcastReceiver1, new IntentFilter("com.bitefast.chatmessage.sentack"));
         registerReceiver(broadcastReceiver2, new IntentFilter("com.bitefast.chatmessage.deliveryack"));
 
-        messageSender = new MessageSender();
-		listView = (ListView) findViewById(R.id.listView1);
         gcm = GoogleCloudMessaging.getInstance(context);
 
         chatText = (EditText) findViewById(R.id.chatText);
@@ -139,19 +135,6 @@ public class ChatActivity extends ActionBarActivity {
         chatDataSource=new ChatDataSource(getApplicationContext());
         chatDataSource.open();
         updateUI();
-        listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-
-        listView.setAdapter(chatArrayAdapter);
-
-        chatArrayAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                listView.setSelection(chatArrayAdapter.getCount() - 1);
-            }
-        });
-
-
         if (!isAdmin) {
             TextView userProfileName = (TextView) findViewById(R.id.profileUserName);
             userProfileName.setText(new RegistrationDetails().getUserName(getApplicationContext()).toUpperCase());
@@ -183,8 +166,18 @@ public class ChatActivity extends ActionBarActivity {
             ChatMessage chatMessage=itr.next();
             chatArrayAdapter.add(chatMessage);
         }
+        listView = (ListView) findViewById(R.id.listView1);
+        listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
+        listView.setAdapter(chatArrayAdapter);
 
+        chatArrayAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                listView.setSelection(chatArrayAdapter.getCount() - 1);
+            }
+        });
     }
 
     private boolean sendChatMessage(){
@@ -241,10 +234,7 @@ public class ChatActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Logger.getLogger(this.getClass().getName() + ":SENTACT:").log(Level.INFO, "Received BroadCast");
-            String from=intent.getStringExtra("FROM");
-            if(from.equals(sendTo)) {
-                updateUI();
-            }
+            updateUI();
         }
     };
 
@@ -252,10 +242,7 @@ public class ChatActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Logger.getLogger(this.getClass().getName() + ":DELIVERYACK:").log(Level.INFO, "Received BroadCast");
-            String from=intent.getStringExtra("FROM");
-            if(from.equals(sendTo)) {
-                updateUI();
-            }
+            updateUI();
         }
     };
 

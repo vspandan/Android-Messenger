@@ -81,16 +81,16 @@ public class GCMNotificationIntentService extends IntentService implements Const
                             MySQLiteHelper dbHelper = new MySQLiteHelper(getApplicationContext());
                             database = dbHelper.getWritableDatabase();
 
-                            String id = from + Long.toString(Math.abs(new Random().nextLong()));
+
                             ContentValues values = new ContentValues();
-                            values.put(MySQLiteHelper.COLUMN_MSG_ID, id);
+                            values.put(MySQLiteHelper.COLUMN_MSG_ID, msgID);
                             values.put(MySQLiteHelper.COLUMN_TO, from);
                             values.put(MySQLiteHelper.COLUMN_MESSAGE, receivedMsg);
                             values.put(MySQLiteHelper.COLUMN_TIMESTAMP, new Date().getTime());
                             values.put(MySQLiteHelper.COLUMN_LEFT, 1);
                             values.put(MySQLiteHelper.COLUMN_PHN, from);
-                            values.put(MySQLiteHelper.COLUMN_SENT_STATUS, true);
-                            values.put(MySQLiteHelper.COLUMN_DELIVERED_STATUS, true);
+                            values.put(MySQLiteHelper.COLUMN_SENT_STATUS, 1);
+                            values.put(MySQLiteHelper.COLUMN_DELIVERED_STATUS, 1);
                             String Query = "Select * from " + MySQLiteHelper.TABLE_CHAT + " where " + MySQLiteHelper.COLUMN_MSG_ID + " = '" + msgID +"'";
                             Cursor cursor = database.rawQuery(Query, null);
                             long insertId =0;
@@ -164,8 +164,8 @@ public class GCMNotificationIntentService extends IntentService implements Const
                             database = dbHelper.getWritableDatabase();
 
                             ContentValues contentValues = new ContentValues();
-                            contentValues.put(MySQLiteHelper.COLUMN_DELIVERED_STATUS, true);
-                            contentValues.put(MySQLiteHelper.COLUMN_SENT_STATUS, true);
+                            contentValues.put(MySQLiteHelper.COLUMN_DELIVERED_STATUS, 1);
+                            contentValues.put(MySQLiteHelper.COLUMN_SENT_STATUS, 1);
                             database.update(MySQLiteHelper.TABLE_CHAT, contentValues, MySQLiteHelper.COLUMN_MSG_ID + " = '" + msgID + "'",
                                     null);
                             database.close();
@@ -183,7 +183,7 @@ public class GCMNotificationIntentService extends IntentService implements Const
                             database = dbHelper.getWritableDatabase();
 
                             ContentValues contentValues = new ContentValues();
-                            contentValues.put(MySQLiteHelper.COLUMN_SENT_STATUS, true);
+                            contentValues.put(MySQLiteHelper.COLUMN_SENT_STATUS, 1);
                             database.update(MySQLiteHelper.TABLE_CHAT, contentValues, MySQLiteHelper.COLUMN_MSG_ID + " = '" + msgID + "'",
                                     null);
                             database.close();

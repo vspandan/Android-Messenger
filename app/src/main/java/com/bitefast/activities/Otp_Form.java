@@ -13,7 +13,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.bitefast.services.GcmDataSavingAsyncTask;
-import com.bitefast.services.MessageSender;
 import com.bitefast.R;
 import com.bitefast.util.RegistrationDetails;
 import com.spandan.bitefast.gcmbackend.messaging.Messaging;
@@ -29,7 +28,6 @@ import java.util.logging.Logger;
 public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
     private Button signupbutton=null;
     private boolean confirmed=true;
-    private MessageSender messageSender=null;
     private GoogleCloudMessaging gcm = null;
     private Context context = null;
     private String regId=null;
@@ -41,7 +39,6 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         signupbutton.setOnClickListener(this);
-        messageSender=new MessageSender();
         context=getApplicationContext();
         regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
     }

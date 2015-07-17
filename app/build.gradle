@@ -8,7 +8,7 @@ android {
         applicationId "com.bitefast"
         minSdkVersion 11
         targetSdkVersion 22
-        versionCode 6
+        versionCode 8
         versionName "1.2"
         multiDexEnabled true
     }

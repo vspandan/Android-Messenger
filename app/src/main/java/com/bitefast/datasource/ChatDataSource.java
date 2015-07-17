@@ -68,8 +68,14 @@ public class ChatDataSource {
             values.put(MySQLiteHelper.COLUMN_LEFT, 0);
 
         values.put(MySQLiteHelper.COLUMN_MESSAGE, chat.getMessage());
-        values.put(MySQLiteHelper.COLUMN_DELIVERED_STATUS, chat.isSent());
-        values.put(MySQLiteHelper.COLUMN_SENT_STATUS, chat.isSent());
+        if(chat.isDelivered())
+            values.put(MySQLiteHelper.COLUMN_DELIVERED_STATUS, 1);
+        else
+            values.put(MySQLiteHelper.COLUMN_DELIVERED_STATUS, 0);
+        if(chat.isSent())
+            values.put(MySQLiteHelper.COLUMN_SENT_STATUS, 1);
+        else
+            values.put(MySQLiteHelper.COLUMN_SENT_STATUS, 0);
         long insertId = database.insert(MySQLiteHelper.TABLE_CHAT, null,
                 values);
         return id;
@@ -119,8 +125,16 @@ public class ChatDataSource {
             chat.setLeft(true);
         chat.setMessage(cursor.getString(4));
         chat.setTimestamp(cursor.getLong(5));
-        chat.setSent(Boolean.parseBoolean(cursor.getString(6)));
-        chat.setDelivered(Boolean.parseBoolean(cursor.getString(7)));
+        if(cursor.getInt(6)==0)
+            chat.setSent(false);
+        else
+            chat.setSent(true);
+
+        if(cursor.getInt(7)==0)
+            chat.setDelivered(false);
+        else
+            chat.setDelivered(true);
+
         return chat;
     }
 }

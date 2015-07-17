@@ -21,7 +21,7 @@
             android:paddingRight="5dip"
             android:text="Hello bubbles!"
             android:textColor="@android:color/tertiary_text_dark"
-            android:textSize="15dp" />
+            android:textSize="18dp" />
         <ImageView
             android:id="@+id/status"
             android:layout_width="10dip"
