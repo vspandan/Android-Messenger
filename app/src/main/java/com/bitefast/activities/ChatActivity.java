@@ -3,12 +3,14 @@ package com.bitefast.activities;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -31,14 +33,13 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bitefast.layoutclasses.PreferencesFragment;
 import com.bitefast.R;
 import com.bitefast.adapters.ChatArrayAdapter;
 import com.bitefast.adapters.DrawerListAdapter;
-import com.bitefast.beans.Chat;
 import com.bitefast.beans.ChatMessage;
 import com.bitefast.beans.NavItem;
 import com.bitefast.datasource.ChatDataSource;
+import com.bitefast.layoutclasses.PreferencesFragment;
 import com.bitefast.services.GCMNotificationIntentService;
 import com.bitefast.services.GcmDataSavingAsyncTask;
 import com.bitefast.services.MessageSender;
@@ -49,6 +50,7 @@ import com.spandan.bitefast.gcmbackend.messaging.model.UserDetails;
 import org.json.simple.JSONValue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -81,6 +83,7 @@ public class ChatActivity extends ActionBarActivity {
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
+
         random=new Random();
         mNavItems=new ArrayList<NavItem>();
 		super.onCreate(savedInstanceState);
@@ -92,24 +95,31 @@ public class ChatActivity extends ActionBarActivity {
         sendTo = getIntent().getStringExtra("SENDTO");
 		setContentView(R.layout.activity_chat);
 
-        chatArrayAdapter = new ChatArrayAdapter(context, R.layout.activity_chat_singlemessage);
+        NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if (isAdmin)
+        if (isAdmin) {
             this.setTitle(sendTo);
+            nMgr.cancel((int)(Long.parseLong("8886799788")/10));
+        }
+        else
+            nMgr.cancel(9999);
         ActionBar bar = getSupportActionBar();
         bar.setHomeButtonEnabled(true);
-        //TODO retrieve from shared data and update localChatListUserWise;
 
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         buttonSend = (Button) findViewById(R.id.buttonSend);
         intent = new Intent(this, GCMNotificationIntentService.class);
+
         registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.chatmessage"));
+        registerReceiver(broadcastReceiver1, new IntentFilter("com.bitefast.chatmessage.sentack"));
+        registerReceiver(broadcastReceiver2, new IntentFilter("com.bitefast.chatmessage.deliveryack"));
 
         messageSender = new MessageSender();
 		listView = (ListView) findViewById(R.id.listView1);
         gcm = GoogleCloudMessaging.getInstance(context);
 
         chatText = (EditText) findViewById(R.id.chatText);
+        chatText.setBackgroundColor(Color.WHITE);
         chatText.setOnKeyListener(new OnKeyListener() {
 
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -126,8 +136,11 @@ public class ChatActivity extends ActionBarActivity {
                 sendChatMessage();
             }
         });
-
+        chatDataSource=new ChatDataSource(getApplicationContext());
+        chatDataSource.open();
+        updateUI();
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+
         listView.setAdapter(chatArrayAdapter);
 
         chatArrayAdapter.registerDataSetObserver(new DataSetObserver() {
@@ -138,39 +151,21 @@ public class ChatActivity extends ActionBarActivity {
             }
         });
 
-        chatDataSource=new ChatDataSource(getApplicationContext());
-        chatDataSource.open();
-        /*Logger.getLogger("ChatActivity:Fetching details for user:").log(Level.INFO, sendTo);*/
-        List<ChatMessage> chatMessages=chatDataSource.getSortedChatMessages(sendTo);
-        Iterator<ChatMessage> itr=chatMessages.iterator();
-        while(itr.hasNext()){
-            ChatMessage chatMessage=itr.next();
-            chatArrayAdapter.add(chatMessage);
-        }
 
         if (!isAdmin) {
-            //SLIDE MENU
             TextView userProfileName = (TextView) findViewById(R.id.profileUserName);
             userProfileName.setText(new RegistrationDetails().getUserName(getApplicationContext()).toUpperCase());
 
             TextView userPhnNum = (TextView) findViewById(R.id.phnNum);
             userPhnNum.setText(new RegistrationDetails().getPhoneNum(getApplicationContext()));
-
-
             mNavItems.add(new NavItem("Menu", "Go through Item List"));
             mNavItems.add(new NavItem("Order", "View Past Orders"));
             mNavItems.add(new NavItem("Settings", "Update Your Profile"));
-
-            // DrawerLayout
             mDrawerLayout = (DrawerLayout) findViewById(R.id.chatActivity);
-
-            // Populate the Navigtion Drawer with options
             mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
             mDrawerList = (ListView) findViewById(R.id.navList);
             DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
             mDrawerList.setAdapter(adapter);
-
-            // Drawer Item click listeners
             mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -180,21 +175,30 @@ public class ChatActivity extends ActionBarActivity {
         }
     }
 
+    private void updateUI(){
+        chatArrayAdapter = new ChatArrayAdapter(context, R.layout.activity_chat_singlemessage);
+        List<ChatMessage> chatMessages=chatDataSource.getSortedChatMessages(sendTo);
+        Iterator<ChatMessage> itr=chatMessages.iterator();
+        while(itr.hasNext()){
+            ChatMessage chatMessage=itr.next();
+            chatArrayAdapter.add(chatMessage);
+        }
+
+
+    }
+
     private boolean sendChatMessage(){
         String message=chatText.getText().toString().trim();
         if(message==null||message.isEmpty())
             return false;
 
         //Saving message to LocalDB
-        ChatMessage chatMessage = new ChatMessage(false, message);
-        Chat chat= new Chat(sendTo, chatMessage.message,0,sendTo,false);
+        ChatMessage chat= new ChatMessage(sendTo, message,false,sendTo,false,false);
         String id=chatDataSource.createChat(chat);
 
-        //Sending Msg to GC
         HashMap<String,String> dataBundle = new HashMap<String,String>();
         dataBundle.put("DEVICEID", androidId);
         dataBundle.put("ACTION", "CHAT");
-
         if(isAdmin)
             dataBundle.put("FROM", "BITEFAST_ADMIN");
         else
@@ -204,12 +208,9 @@ public class ChatActivity extends ActionBarActivity {
         dataBundle.put("MSGTIMESTAMP", ""+chat.getTimestamp());
         dataBundle.put("ID", "" + id);
 
-        Log.d(TAG, " ChatActivity: " + dataBundle);
-
         new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle));
 
-        chatArrayAdapter.add(chatMessage);
-
+        chatArrayAdapter.add(chat);
         chatText.setText("");
         return true;
     }
@@ -219,13 +220,49 @@ public class ChatActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, " Chat onReceive: " + intent.getStringExtra("CHATMESSAGE"));
-            if(intent.getStringExtra("FROM").equals(sendTo)) {
-                ChatMessage chatMessage = new ChatMessage(true, intent.getStringExtra("CHATMESSAGE").trim());
-                chatArrayAdapter.add(chatMessage);
+            String from=intent.getStringExtra("FROM");
+            if(from.equals(sendTo)) {
                 androidIdReceiver = intent.getStringExtra("DEVICEID");
+                ChatMessage chatMessage = new ChatMessage();
+                chatMessage.setTo(from);
+                chatMessage.setPhn(new RegistrationDetails().getPhoneNum(getApplicationContext()));
+                chatMessage.setLeft(true);
+                chatMessage.setMessage(intent.getStringExtra("CHATMESSAGE"));
+                chatMessage.setTimestamp(intent.getLongExtra("MSGTIMESTAMP", new Date().getTime()));
+                chatMessage.setMsgId(intent.getStringExtra("ID"));
+                chatMessage.setDelivered(true);
+                chatMessage.setSent(true);
+                chatArrayAdapter.add(chatMessage);
             }
         }
     };
+
+    private BroadcastReceiver broadcastReceiver1 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Logger.getLogger(this.getClass().getName() + ":SENTACT:").log(Level.INFO, "Received BroadCast");
+            String from=intent.getStringExtra("FROM");
+            if(from.equals(sendTo)) {
+                updateUI();
+            }
+        }
+    };
+
+    private BroadcastReceiver broadcastReceiver2 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Logger.getLogger(this.getClass().getName() + ":DELIVERYACK:").log(Level.INFO, "Received BroadCast");
+            String from=intent.getStringExtra("FROM");
+            if(from.equals(sendTo)) {
+                updateUI();
+            }
+        }
+    };
+
+    //TODO onclick update the table saying that its not new message anymore
+    //TODO if activity is already open then this also has to be considered as read
+    //TODO going back should kill
+
     @Override
     protected void onResume() {
         chatDataSource.open();
@@ -233,22 +270,23 @@ public class ChatActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
     protected void onDestroy(){
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+        unregisterReceiver(broadcastReceiver1);
+        unregisterReceiver(broadcastReceiver2);
         chatDataSource.close();
     }
     @Override
     public void onBackPressed()
     {
+        super.onBackPressed();
+        getIntent().removeExtra("SENDTO");
         if(isAdmin) {
             Intent i = new Intent(this,
                     UserListActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         } else {
             AlertDialog alertDialog=new AlertDialog.Builder(this).create();
@@ -282,12 +320,10 @@ public class ChatActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_menu1) {
-            //TODO display a full screen dialog with menu
             return true;
         }
 
         if (id == R.id.action_orders) {
-            //TODO fetch orders from orders table
             return true;
         }
 

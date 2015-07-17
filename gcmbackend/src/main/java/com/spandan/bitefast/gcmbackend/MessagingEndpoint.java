@@ -70,10 +70,6 @@ public class MessagingEndpoint {
         customer.setProperty("City", city);
         customer.setProperty("TimeStamp", new Date());
         datastore.put(customer);
-        if(findAdminUsers().contains(phoneNum))
-            reSendMessages("BITEFAST_ADMIN");
-        else
-            reSendMessages(phoneNum);
     }
 
     @ApiMethod(name = "fetchAddress", httpMethod = ApiMethod.HttpMethod.POST)
@@ -123,7 +119,8 @@ public class MessagingEndpoint {
 
         Query q = new Query("MessageLog").setFilter(heightRangeFilter);
         PreparedQuery pq = datastore.prepare(q);
-        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1));
+        /*List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(pq.countEntities()));*/
+        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1000));
         log.warning(results.toString());
         HashMap<String, String> dataBundle=null;
         for(Entity entity:results) {
@@ -241,32 +238,49 @@ public class MessagingEndpoint {
         String msgId = jsonObject.get("ID");
         String msgTS = jsonObject.get("MSGTIMESTAMP");
         String toUser = jsonObject.get("SENDTO");
+        String msg=jsonObject.get("CHATMESSAGE");
 
         jsonObject.put("ID", msgId);
         jsonObject.put("MSGTIMESTAMP", msgTS);
 
+
         if ("ACK".equals(action)) {
             jsonObject.put("SM", "ACK");
-            /*saveMessage(devideId, from, toUser, "Ack Msg", msgId, msgTS, true);*/
-            //TODO Ack the toUser-DeliveryStatus double tip is updated to actual creator of message(touser);
+            //Reciever send ACK saying that he received message
+            //Update the msg status saying that message is delivered
             updateMessageStatus(msgId);
-        } else if ("CHAT".equals(action)) {
-            jsonObject.put("SM", "CHAT");
-            saveMessage(devideId, from, toUser, jsonObject.get("CHATMESSAGE"), msgId, msgTS, false);
 
-            //Sending ACK to received msg
+            //Send Ack to sender that receiver received ur message
+            //TODO If req make and entry in db
             HashMap<String,String> dataBundle = new HashMap<String,String>();
+            dataBundle.put("SM", "DELVIRARY_ACK");
             dataBundle.put("DEVICEID", devideId);
-            dataBundle.put("ACTION", "ACK");
             dataBundle.put("FROM", "GCM");
             dataBundle.put("SENDTO", from);
             dataBundle.put("ID", ""+msgId);
             dataBundle.put("MSGTIMESTAMP", "" + msgTS);
+            dataBundle.put("CHATMESSAGE","ACK");
+            send(toUser, dataBundle);
+            return;
+
+        } else if ("CHAT".equals(action)) {
+            jsonObject.put("SM", "CHAT");
+            //Sender sends the chat message
+            //Make an entry in database
+            saveMessage(devideId, from, toUser, msg, msgId, msgTS, false);
+
+            //Sending ACK to sender that server has received
+            //TODO If req make and entry in db
+            HashMap<String,String> dataBundle = new HashMap<String,String>();
+            dataBundle.put("SM", "SERVER_ACK");
+            dataBundle.put("DEVICEID", devideId);
+            dataBundle.put("FROM", "GCM");
+            dataBundle.put("SENDTO", from);
+            dataBundle.put("ID", ""+msgId);
+            dataBundle.put("MSGTIMESTAMP", "" + msgTS);
+            dataBundle.put("CHATMESSAGE","ACK");
             send(from,dataBundle);
-
-
         }
-        reSendMessages(from);
         send(toUser,jsonObject);
     }
 

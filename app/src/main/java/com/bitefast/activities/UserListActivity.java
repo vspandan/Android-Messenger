@@ -41,7 +41,10 @@ public class UserListActivity extends ActionBarActivity {
     private UserListArrayAdapter userListArrayAdapter;
     private ListView listView = null;
     private UserDataSource userDataSource;
-    private String iam=null;
+    private String phn =null;
+    private String msg;
+    private String from;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +54,9 @@ public class UserListActivity extends ActionBarActivity {
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         setContentView(R.layout.activity_user_list);
-        iam=new RegistrationDetails().getPhoneNum(getApplicationContext());
+        phn =new RegistrationDetails().getPhoneNum(getApplicationContext());
         intent = new Intent(this, GCMNotificationIntentService.class);
-        registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.chatmessage"));
+        registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.update.userlist"));
         userDataSource=new UserDataSource(getApplicationContext());
         userDataSource.open();
 
@@ -69,8 +72,10 @@ public class UserListActivity extends ActionBarActivity {
                 view.setBackgroundColor(Color.CYAN);
                 Intent i = new Intent(getApplicationContext(),
                         ChatActivity.class);
-                boolean status=userDataSource.updateChat(itemValue.message,""+true);
+                boolean status=userDataSource.updateUserListEntry(itemValue.message, "" + true);
                 Logger.getLogger("UserListActivity:Update:").log(Level.INFO, "" + status);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.putExtra("SENDTO", itemValue.message);
                 startActivity(i);
             }
@@ -93,7 +98,7 @@ public class UserListActivity extends ActionBarActivity {
         listView.setAdapter(userListArrayAdapter);
 
         userListArrayAdapter.clear();
-        List<UserListBean> chatMessages=userDataSource.getSortedChatMessages(iam);
+        List<UserListBean> chatMessages=userDataSource.getSortedEntriesList(phn);
         Iterator<UserListBean> itr=chatMessages.iterator();
         while(itr.hasNext()){
             UserListBean chatMessage=itr.next();
@@ -103,22 +108,18 @@ public class UserListActivity extends ActionBarActivity {
         }
     }
 
-    private String msg;
-    private String from;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             msg=intent.getExtras().getString("CHATMESSAGE");
             from=intent.getExtras().getString("FROM");
-            /*Logger.getLogger("UserListActivity:BroadCastReceiver:DATA:").log(Level.INFO, from + ":" + msg);*/
-
             UserListItem userListItem=new UserListItem(false,from);
             int pos=userListArrayAdapter.getPosition(userListItem);
             Logger.getLogger("UserListActivity:Position:").log(Level.INFO, "" + pos);
             if(pos>=0) {
-                boolean status=userDataSource.deleteChat(from);
+                boolean status=userDataSource.deleteEntry(from);
             }
-            UserListBean bean=new UserListBean(from,""+ false,iam);
+            UserListBean bean=new UserListBean(from,""+ false, phn);
             userDataSource.createUserListEntry(bean);
             updateUI();
         }

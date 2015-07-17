@@ -54,13 +54,13 @@ public class UserDataSource {
         return deviceUserBean != null;
     }
 
-    public boolean deleteChat(String  name) {
+    public boolean deleteEntry(String name) {
         long id=database.delete(MySQLiteHelper2.TABLE_USER, MySQLiteHelper2.COLUMN_NAME + " = " + name,
                 null);
         return id > 0;
     }
 
-    public boolean updateChat(String  name, String readStat) {
+    public boolean updateUserListEntry(String name, String readStat) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MySQLiteHelper2.COLUMN_READ,readStat);
         long id=database.update(MySQLiteHelper2.TABLE_USER, contentValues, MySQLiteHelper2.COLUMN_NAME + " = " + name,
@@ -68,8 +68,8 @@ public class UserDataSource {
         return id > 0;
     }
 
-    public List<UserListBean> getAllChats(String phn) {
-        List<UserListBean> chats = new ArrayList<UserListBean>();
+    public List<UserListBean> getAllEntries(String phn) {
+        List<UserListBean> userList = new ArrayList<UserListBean>();
 
         Cursor cursor = database.query(MySQLiteHelper2.TABLE_USER,
                 allColumns, MySQLiteHelper2.COLUMN_REGPHN + " = \'" + phn + "\'", null, null, null, null);
@@ -79,21 +79,21 @@ public class UserDataSource {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             UserListBean deviceUserBean = cursorToComment(cursor);
-            chats.add(deviceUserBean);
+            userList.add(deviceUserBean);
             cursor.moveToNext();
         }
         // make sure to close the cursor
         cursor.close();
-        return chats;
+        return userList;
     }
 
-    public Set<UserListBean> getSortedChats(String phn){
-        return new TreeSet<UserListBean>(getAllChats(phn));
+    public Set<UserListBean> getSortedEntries(String phn){
+        return new TreeSet<UserListBean>(getAllEntries(phn));
     }
 
-    public List<UserListBean> getSortedChatMessages(String phn){
+    public List<UserListBean> getSortedEntriesList(String phn){
         List<UserListBean> beanList= new ArrayList<UserListBean>();
-        Set<UserListBean> beans=getSortedChats(phn);
+        Set<UserListBean> beans= getSortedEntries(phn);
         Iterator<UserListBean> itr=beans.iterator();
         boolean left=false;
         while(itr.hasNext()){

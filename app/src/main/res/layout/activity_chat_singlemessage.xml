@@ -14,12 +14,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="15dip"
             android:background="@drawable/bubble_b"
-            android:paddingLeft="15dip"
+            android:paddingLeft="5dip"
+            android:paddingTop="5dip"
+            android:paddingBottom="5dip"
+            android:paddingRight="5dip"
             android:text="Hello bubbles!"
             android:textColor="@android:color/tertiary_text_dark"
-            android:textSize="18dp" />
+            android:textSize="15dp" />
+        <ImageView
+            android:id="@+id/status"
+            android:layout_width="10dip"
+            android:layout_height="10dip"
+            android:layout_gravity="bottom"
+            android:src="@drawable/msg_pending"/>
     </LinearLayout>
 
 </LinearLayout>

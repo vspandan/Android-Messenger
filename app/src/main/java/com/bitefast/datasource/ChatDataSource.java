@@ -3,15 +3,6 @@ package com.bitefast.datasource;
 /**
  * Created by Vj on 7/6/2015.
  */
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -19,8 +10,14 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.bitefast.beans.ChatMessage;
-import com.bitefast.beans.Chat;
 import com.bitefast.sqlite.MySQLiteHelper;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 public class ChatDataSource {
@@ -28,8 +25,12 @@ public class ChatDataSource {
     // Database fields
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
-    private String[] allColumns = {
-            MySQLiteHelper.COLUMN_TO,MySQLiteHelper.COLUMN_MESSAGE,MySQLiteHelper.COLUMN_TIMESTAMP, MySQLiteHelper.COLUMN_LEFT, MySQLiteHelper.COLUMN_SENT_STATUS,MySQLiteHelper.COLUMN_MSG_ID };
+
+    public String[] allColumns = {
+            MySQLiteHelper.COLUMN_MSG_ID,MySQLiteHelper.COLUMN_TO,MySQLiteHelper.COLUMN_PHN, MySQLiteHelper.COLUMN_LEFT, MySQLiteHelper.COLUMN_MESSAGE,MySQLiteHelper.COLUMN_TIMESTAMP, MySQLiteHelper.COLUMN_SENT_STATUS, MySQLiteHelper.COLUMN_DELIVERED_STATUS };
+
+    public ChatDataSource() {
+    }
 
     public ChatDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
@@ -43,79 +44,83 @@ public class ChatDataSource {
         dbHelper.close();
     }
 
-    public String createChat(Chat chat) {
+
+    private long msgId;
+    private String to;
+    private String phn;
+    private boolean left;
+    private String message;
+    private long timestamp;
+    private boolean delivered = false;
+    private boolean sent = false;
+
+
+    public String createChat(ChatMessage chat) {
         String id = chat.getPhn()+Long.toString(Math.abs(new Random().nextLong()));
-        /*Logger.getLogger("ChatDataSource:").log(Level.INFO, chat.toString());*/
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_MSG_ID,id );
         values.put(MySQLiteHelper.COLUMN_TO, chat.getTo());
-        values.put(MySQLiteHelper.COLUMN_MESSAGE, chat.getMessage());
+        values.put(MySQLiteHelper.COLUMN_PHN, chat.getPhn());
         values.put(MySQLiteHelper.COLUMN_TIMESTAMP, chat.getTimestamp());
-        values.put(MySQLiteHelper.COLUMN_LEFT, chat.getLeft());
-        values.put(MySQLiteHelper.COLUMN_PHN,chat.getPhn());
+        if(chat.isLeft())
+            values.put(MySQLiteHelper.COLUMN_LEFT, 1);
+        else
+            values.put(MySQLiteHelper.COLUMN_LEFT, 0);
+
+        values.put(MySQLiteHelper.COLUMN_MESSAGE, chat.getMessage());
+        values.put(MySQLiteHelper.COLUMN_DELIVERED_STATUS, chat.isSent());
         values.put(MySQLiteHelper.COLUMN_SENT_STATUS, chat.isSent());
         long insertId = database.insert(MySQLiteHelper.TABLE_CHAT, null,
                 values);
         return id;
     }
 
-    public boolean updateChat(String  msgId, String readStat) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MySQLiteHelper.COLUMN_SENT_STATUS, readStat);
-        long id=database.update(MySQLiteHelper.TABLE_CHAT, contentValues, MySQLiteHelper.COLUMN_MSG_ID + " = '" + msgId+"'",
-                null);
-        return id > 0;
-    }
-
-    public List<Chat> getAllChats(String phn) {
-        List<Chat> chats = new ArrayList<Chat>();
+    public List<ChatMessage> getAllChats(String phn) {
+        List<ChatMessage> chats = new ArrayList<ChatMessage>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_CHAT,
                 allColumns, MySQLiteHelper.COLUMN_PHN + " = \'" + phn + "\'", null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            Chat chat = cursorToComment(cursor);
+            ChatMessage chat = cursorToComment(cursor);
             chats.add(chat);
-            /*Logger.getLogger("ChatDataSource: ALl chats:").log(Level.INFO, chat.toString());*/
             cursor.moveToNext();
         }
-        // make sure to close the cursor
         cursor.close();
 
         return chats;
     }
 
-    public Set<Chat> getSortedChats(String phn){
-        return new TreeSet<Chat>(getAllChats(phn));
+    public Set<ChatMessage> getSortedChats(String phn){
+        return new TreeSet<ChatMessage>(getAllChats(phn));
     }
 
     public List<ChatMessage> getSortedChatMessages(String phn){
-        Set<Chat> chats=getSortedChats(phn);
-        Iterator<Chat> itr=chats.iterator();
+        Set<ChatMessage> chats=getSortedChats(phn);
+        Iterator<ChatMessage> itr=chats.iterator();
         List<ChatMessage> chatMessages=new ArrayList<ChatMessage>();
         boolean left=false;
         while(itr.hasNext()){
-            Chat chat=itr.next();
-            if(chat.getLeft()==0)
-                left=false;
-            if(chat.getLeft()==1)
-                left=true;
-
-            ChatMessage chatMessage=new ChatMessage(left,chat.getMessage());
-            chatMessages.add(chatMessage);
+            ChatMessage chat=itr.next();
+            chatMessages.add(chat);
         }
         return chatMessages;
     }
 
-    private Chat cursorToComment(Cursor cursor) {
-        Chat chat = new Chat();
-        chat.setTo(cursor.getString(0));
-        chat.setMessage(cursor.getString(1));
-        chat.setTimestamp(cursor.getLong(2));
-        chat.setLeft(cursor.getInt(3));
-        chat.setSent(Boolean.parseBoolean(cursor.getString(4)));
-        chat.setId(cursor.getInt(5));
+    public ChatMessage cursorToComment(Cursor cursor) {
+        ChatMessage chat = new ChatMessage();
+        chat.setMsgId(cursor.getString(0));
+        chat.setTo(cursor.getString(1));
+        chat.setPhn(cursor.getString(2));
+        if(cursor.getInt(3)==0)
+            chat.setLeft(false);
+        else
+            chat.setLeft(true);
+        chat.setMessage(cursor.getString(4));
+        chat.setTimestamp(cursor.getLong(5));
+        chat.setSent(Boolean.parseBoolean(cursor.getString(6)));
+        chat.setDelivered(Boolean.parseBoolean(cursor.getString(7)));
         return chat;
     }
 }

@@ -14,6 +14,8 @@
 
         <ListView
             android:id="@+id/listView1"
+            android:divider="@null"
+            android:dividerHeight="0dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:isScrollContainer="false"
@@ -26,6 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
+            android:paddingLeft="5dp"
+            android:paddingBottom="5dp"
             android:orientation="vertical">
 
             <EditText
@@ -37,11 +41,16 @@
                 android:layout_alignParentTop="true"
                 android:layout_toLeftOf="@+id/buttonSend"
                 android:layout_toStartOf="@+id/buttonSend"
+                android:background="@drawable/bubble_b1"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
                 android:ems="10"
                 android:gravity="bottom|left"
                 android:hint="Talk to BiteFast"
                 android:inputType="textMultiLine"
-                android:lines="6" />
+                android:lines="1" />
 
             <Button
                 android:id="@+id/buttonSend"
@@ -104,8 +113,7 @@
             android:layout_width="280dp"
             android:layout_height="match_parent"
             android:layout_below="@+id/profileBox"
-            android:choiceMode="singleChoice"
-            android:background="#ffffffff" />
+            android:choiceMode="singleChoice" />
 
     </RelativeLayout>
 

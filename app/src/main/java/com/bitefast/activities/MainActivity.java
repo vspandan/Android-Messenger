@@ -158,7 +158,6 @@ public class MainActivity extends Activity {
                         } else {
                             //Updating registration details and
                             String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                    /*new GcmDataSavingAsyncTask().registerDevice(regId,phn);*/
                             new GcmDataSavingAsyncTask().updateUserRegid(androidId, new RegistrationDetails().getRegistrationId(getApplicationContext()), new RegistrationDetails().getPhoneNum(getApplicationContext()));
                             i = new Intent(MainActivity.this, ChatActivity.class);
                             i.putExtra("SENDTO", "BITEFAST_ADMIN");
@@ -168,7 +167,6 @@ public class MainActivity extends Activity {
                         Logger.getLogger("MainActivity").log(Level.INFO, "registering");
                     }
                     startActivity(i);
-                    finish();
                 }
             }
     }

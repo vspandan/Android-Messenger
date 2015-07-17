@@ -29,10 +29,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + TABLE_CHAT + "("  + COLUMN_TO
             + " text not null, "+ COLUMN_MESSAGE
             + " text not null, "+ COLUMN_MSG_ID
-            + " text not null, "+ COLUMN_TIMESTAMP
+            + " text primary key, "+ COLUMN_TIMESTAMP
             + " text not null, "+ COLUMN_LEFT
             + " text not null, "+ COLUMN_PHN
             + " text not null, "+ COLUMN_SENT_STATUS
+            + " text not null, "+ COLUMN_DELIVERED_STATUS
             + " text not null );";
 
 

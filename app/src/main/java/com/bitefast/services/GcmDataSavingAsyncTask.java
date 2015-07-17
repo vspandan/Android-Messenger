@@ -142,36 +142,6 @@ public class GcmDataSavingAsyncTask {
         sendTask.execute(null, null, null);
     }
 
-    public void reqUndeliveredMessage(final String phn) {
-
-        sendTask = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                if (msgService == null) {
-                    Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
-                            new AndroidJsonFactory(), null);
-                    builder.setApplicationName("BiteFast");
-                    msgService = builder.build();
-                }
-                String msg = "";
-                /*Logger.getLogger("Messaging:SendMessage:DATA:").log(Level.INFO, jsondata);*/
-                try {
-                    msgService.reSendMessages(phn).execute();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    msg = "SendMessage Error: " + ex.getMessage();
-                }
-                return msg;
-            }
-
-            @Override
-            protected void onPostExecute(String msg) {
-                Logger.getLogger("Messaging:SendMessage:POST").log(Level.INFO, msg);
-            }
-        };
-        sendTask.execute(null, null, null);
-    }
-
     public void sendMessage(final String jsondata) {
 
         sendTask = new AsyncTask<Void, Void, String>() {

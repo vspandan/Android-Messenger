@@ -49,7 +49,7 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.confirm:
-                //TODO logic to verify otp
+                //TOD logic to verify otp
                 if(confirmed) {
                     new RegistrationDetails().otpVerified(getApplicationContext());
                     final String phoneNum =new RegistrationDetails().getPhoneNum(getApplicationContext());
@@ -97,7 +97,7 @@ public class Otp_Form extends ActionBarActivity implements View.OnClickListener{
                     }
                 }
                 else{
-                    //TODO Action for failure
+                    //TOD Action for failure
                     startActivity(new Intent(this, Otp_Form.class));
                 }
                 break;
