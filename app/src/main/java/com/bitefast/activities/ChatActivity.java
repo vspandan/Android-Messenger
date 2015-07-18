@@ -65,12 +65,12 @@ public class ChatActivity extends ActionBarActivity {
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
-    private boolean isAdmin=false;
+    private boolean isAdmin = false;
     private GoogleCloudMessaging gcm;
     private Intent intent;
     private static Random random;
     private String sendTo;
-    private Context context=null;
+    private Context context = null;
     private String androidId = null;
     private String androidIdReceiver = null;
     private ChatDataSource chatDataSource;
@@ -80,26 +80,25 @@ public class ChatActivity extends ActionBarActivity {
     private ListView mDrawerList;
 
     @Override
-	public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
 
-        random=new Random();
-        mNavItems=new ArrayList<NavItem>();
-		super.onCreate(savedInstanceState);
-        context=getApplicationContext();
+        random = new Random();
+        mNavItems = new ArrayList<NavItem>();
+        super.onCreate(savedInstanceState);
+        context = getApplicationContext();
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
-        isAdmin=new RegistrationDetails().isAdmin(getApplicationContext());
+        regId = new RegistrationDetails().getRegistrationId(getApplicationContext());
+        isAdmin = new RegistrationDetails().isAdmin(getApplicationContext());
         Log.d(TAG, "Is Admin: " + isAdmin);
         sendTo = getIntent().getStringExtra("SENDTO");
-		setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_chat);
 
         NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (isAdmin) {
             this.setTitle(sendTo);
-            nMgr.cancel((int)(Long.parseLong("8886799788")/10));
-        }
-        else
+            nMgr.cancel((int) (Long.parseLong("8886799788") / 10));
+        } else
             nMgr.cancel(9999);
         ActionBar bar = getSupportActionBar();
         bar.setHomeButtonEnabled(true);
@@ -132,38 +131,36 @@ public class ChatActivity extends ActionBarActivity {
                 sendChatMessage();
             }
         });
-        chatDataSource=new ChatDataSource(getApplicationContext());
+        chatDataSource = new ChatDataSource(getApplicationContext());
         chatDataSource.open();
         updateUI();
-        if (!isAdmin) {
-            TextView userProfileName = (TextView) findViewById(R.id.profileUserName);
-            userProfileName.setText(new RegistrationDetails().getUserName(getApplicationContext()).toUpperCase());
+        TextView userProfileName = (TextView) findViewById(R.id.profileUserName);
+        userProfileName.setText(new RegistrationDetails().getUserName(getApplicationContext()).toUpperCase());
 
-            TextView userPhnNum = (TextView) findViewById(R.id.phnNum);
-            userPhnNum.setText(new RegistrationDetails().getPhoneNum(getApplicationContext()));
-            mNavItems.add(new NavItem("Menu", "Go through Item List"));
-            mNavItems.add(new NavItem("Order", "View Past Orders"));
-            mNavItems.add(new NavItem("Settings", "Update Your Profile"));
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.chatActivity);
-            mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
-            mDrawerList = (ListView) findViewById(R.id.navList);
-            DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
-            mDrawerList.setAdapter(adapter);
-            mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    selectItemFromDrawer(position);
-                }
-            });
-        }
+        TextView userPhnNum = (TextView) findViewById(R.id.phnNum);
+        userPhnNum.setText(new RegistrationDetails().getPhoneNum(getApplicationContext()));
+        mNavItems.add(new NavItem("Menu", "Go through Item List"));
+        mNavItems.add(new NavItem("Order", "View Past Orders"));
+        mNavItems.add(new NavItem("Settings", "Update Your Profile"));
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.chatActivity);
+        mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
+        mDrawerList = (ListView) findViewById(R.id.navList);
+        DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
+        mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItemFromDrawer(position);
+            }
+        });
     }
 
-    private void updateUI(){
+    private void updateUI() {
         chatArrayAdapter = new ChatArrayAdapter(context, R.layout.activity_chat_singlemessage);
-        List<ChatMessage> chatMessages=chatDataSource.getSortedChatMessages(sendTo);
-        Iterator<ChatMessage> itr=chatMessages.iterator();
-        while(itr.hasNext()){
-            ChatMessage chatMessage=itr.next();
+        List<ChatMessage> chatMessages = chatDataSource.getSortedChatMessages(sendTo);
+        Iterator<ChatMessage> itr = chatMessages.iterator();
+        while (itr.hasNext()) {
+            ChatMessage chatMessage = itr.next();
             chatArrayAdapter.add(chatMessage);
         }
         listView = (ListView) findViewById(R.id.listView1);
@@ -180,25 +177,25 @@ public class ChatActivity extends ActionBarActivity {
         });
     }
 
-    private boolean sendChatMessage(){
-        String message=chatText.getText().toString().trim();
-        if(message==null||message.isEmpty())
+    private boolean sendChatMessage() {
+        String message = chatText.getText().toString().trim();
+        if (message == null || message.isEmpty())
             return false;
 
         //Saving message to LocalDB
-        ChatMessage chat= new ChatMessage(sendTo, message,false,sendTo,false,false);
-        String id=chatDataSource.createChat(chat);
+        ChatMessage chat = new ChatMessage(sendTo, message, false, sendTo, false, false);
+        String id = chatDataSource.createChat(chat);
 
-        HashMap<String,String> dataBundle = new HashMap<String,String>();
+        HashMap<String, String> dataBundle = new HashMap<String, String>();
         dataBundle.put("DEVICEID", androidId);
         dataBundle.put("ACTION", "CHAT");
-        if(isAdmin)
+        if (isAdmin)
             dataBundle.put("FROM", "BITEFAST_ADMIN");
         else
             dataBundle.put("FROM", new RegistrationDetails().getPhoneNum(getApplicationContext()));
         dataBundle.put("SENDTO", sendTo);
         dataBundle.put("CHATMESSAGE", message);
-        dataBundle.put("MSGTIMESTAMP", ""+chat.getTimestamp());
+        dataBundle.put("MSGTIMESTAMP", "" + chat.getTimestamp());
         dataBundle.put("ID", "" + id);
 
         new GcmDataSavingAsyncTask().sendMessage(JSONValue.toJSONString(dataBundle));
@@ -213,8 +210,8 @@ public class ChatActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, " Chat onReceive: " + intent.getStringExtra("CHATMESSAGE"));
-            String from=intent.getStringExtra("FROM");
-            if(from.equals(sendTo)) {
+            String from = intent.getStringExtra("FROM");
+            if (from.equals(sendTo)) {
                 androidIdReceiver = intent.getStringExtra("DEVICEID");
                 ChatMessage chatMessage = new ChatMessage();
                 chatMessage.setTo(from);
@@ -257,26 +254,26 @@ public class ChatActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
         unregisterReceiver(broadcastReceiver1);
         unregisterReceiver(broadcastReceiver2);
         chatDataSource.close();
     }
+
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         super.onBackPressed();
         getIntent().removeExtra("SENDTO");
-        if(isAdmin) {
+        if (isAdmin) {
             Intent i = new Intent(this,
                     UserListActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         } else {
-            AlertDialog alertDialog=new AlertDialog.Builder(this).create();
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setMessage("See You Soon");
             alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -287,13 +284,13 @@ public class ChatActivity extends ActionBarActivity {
         }
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if(isAdmin) {
+        if (isAdmin) {
             getMenuInflater().inflate(R.menu.menu_chat_admin, menu);
-        }
-        else {
+        } else {
             /*getMenuInflater().inflate(R.menu.menu_chat, menu);*/
         }
         return true;
@@ -333,13 +330,12 @@ public class ChatActivity extends ActionBarActivity {
                     new GcmDataSavingAsyncTask().saveOrder(orderId, sendTo, amount);
                     /*Logger.getLogger("ChatActivity:Confirm Order:DEVICEID.:").log(Level.INFO, androidIdReceiver);*/
                     UserDetails details = new GcmDataSavingAsyncTask().fetchDetails(androidIdReceiver);
-                    if (details!=null) {
+                    if (details != null) {
                         chatText.setText("Your Order (" + orderId + ") will be delivered to: \n" + details.getName() + "\n" + details.getAddr() + "\n" + details.getStreet() + "\n" + details.getLandmark() + "\n" + details.getCity());
                         sendChatMessage();
                         chatText.setText("If there is a change let us know");
                         sendChatMessage();
-                    }
-                    else {
+                    } else {
                         chatText.setText("Share delivery address or We can call you");
                         sendChatMessage();
                     }
@@ -357,9 +353,11 @@ public class ChatActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     private String getRandomOrderId() {
         return Long.toString(Math.abs(random.nextLong()));
     }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         MultiDex.install(newBase);
@@ -374,6 +372,15 @@ public class ChatActivity extends ActionBarActivity {
 
         mDrawerList.setItemChecked(position, true);
 
+        final RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.popup);
+        relativeLayout.setVisibility(View.VISIBLE);
+        Button close = (Button) findViewById(R.id.button_close);
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                relativeLayout.setVisibility(View.INVISIBLE);
+            }
+        });
         mDrawerLayout.closeDrawer(mDrawerPane);
     }
 }

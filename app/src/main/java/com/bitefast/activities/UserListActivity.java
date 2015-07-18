@@ -60,6 +60,10 @@ public class UserListActivity extends ActionBarActivity {
         userDataSource=new UserDataSource(getApplicationContext());
         userDataSource.open();
 
+        updateUI();
+    }
+
+    private void updateUI(){
         listView = (ListView) findViewById(R.id.list);
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
@@ -80,10 +84,7 @@ public class UserListActivity extends ActionBarActivity {
                 startActivity(i);
             }
         });
-        updateUI();
-    }
 
-    private void updateUI(){
         userListArrayAdapter = new UserListArrayAdapter(
                 getApplicationContext(), android.R.layout.simple_list_item_1);
 
@@ -95,9 +96,6 @@ public class UserListActivity extends ActionBarActivity {
             }
         });
 
-        listView.setAdapter(userListArrayAdapter);
-
-        userListArrayAdapter.clear();
         List<UserListBean> chatMessages=userDataSource.getSortedEntriesList(phn);
         Iterator<UserListBean> itr=chatMessages.iterator();
         while(itr.hasNext()){
@@ -106,11 +104,14 @@ public class UserListActivity extends ActionBarActivity {
             Logger.getLogger("UserListActivity:UPDATEUI:DATA:").log(Level.INFO, chatMessage.name + ":" + chatMessage.read+":"+stat);
             userListArrayAdapter.add(new UserListItem(stat,chatMessage.name));
         }
+        listView.setAdapter(userListArrayAdapter);
+
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            updateUI();
             msg=intent.getExtras().getString("CHATMESSAGE");
             from=intent.getExtras().getString("FROM");
             UserListItem userListItem=new UserListItem(false,from);
@@ -121,7 +122,7 @@ public class UserListActivity extends ActionBarActivity {
             }
             UserListBean bean=new UserListBean(from,""+ false, phn);
             userDataSource.createUserListEntry(bean);
-            updateUI();
+
         }
     };
 
