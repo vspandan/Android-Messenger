@@ -55,10 +55,20 @@ public class MessagingEndpoint {
         customer.setProperty("TimeStamp", new Date());
         if (!findUser(phoneNum))
             datastore.put(customer);
+        Entity device;
         if (findDeviceId(androidId))
-            customer = datastore.get(KeyFactory.createKey("UserAppDetails", androidId));
+            device = datastore.get(KeyFactory.createKey("DeviceRegDetails", androidId));
         else
-            customer = new Entity("UserAppDetails", androidId);
+            device = new Entity("DeviceRegDetails", androidId);
+        device.setProperty("AndroidId", androidId);
+        device.setProperty("RegId", regId);
+        device.setProperty("PhoneNum", phoneNum);
+        datastore.put(device);
+
+        if (findUserId(androidId))
+            customer = datastore.get(KeyFactory.createKey("UserAppDetails", phoneNum));
+        else
+            customer = new Entity("UserAppDetails", phoneNum);
         customer.setProperty("AndroidId", androidId);
         customer.setProperty("RegId", regId);
         customer.setProperty("PhoneNum", phoneNum);
@@ -72,14 +82,25 @@ public class MessagingEndpoint {
         datastore.put(customer);
     }
 
+    private boolean findUserId(String phn) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query.Filter heightMinFilter =
+                new Query.FilterPredicate("PhoneNum",
+                        Query.FilterOperator.EQUAL, phn
+                );
+        Query q = new Query("UserAppDetails").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1));
+        return !results.isEmpty();
+    }
+
     @ApiMethod(name = "fetchAddress", httpMethod = ApiMethod.HttpMethod.POST)
-    public UserDetails fetchDetails(@Named("androidId") String androidId) throws EntityNotFoundException {
+    public UserDetails fetchDetails(@Named("androidId") String phn) throws EntityNotFoundException {
 
         UserDetails user = new UserDetails();
         Entity customer = null;
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        if (findDeviceId(androidId))
-            customer = datastore.get(KeyFactory.createKey("UserAppDetails", androidId));
+        customer = datastore.get(KeyFactory.createKey("UserAppDetails",phn));
         user.setAndroidID((String) customer.getProperty("AndroidId"));
         user.setRegId((String) customer.getProperty("RegId"));
         user.setPhoneNum((String) customer.getProperty("PhoneNum"));
@@ -95,7 +116,7 @@ public class MessagingEndpoint {
     @ApiMethod(name = "updateUserRegid", httpMethod = ApiMethod.HttpMethod.POST)
     public void updateUserRegid(@Named("androidId") String androidId, @Named("regId") String regId, @Named("phoneNum") String phoneNum) throws EntityNotFoundException, IOException {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Entity customer = datastore.get(KeyFactory.createKey("UserAppDetails", androidId));
+        Entity customer = datastore.get(KeyFactory.createKey("DeviceRegDetails", androidId));
         customer.setProperty("RegId", regId);
         datastore.put(customer);
     }
@@ -216,7 +237,7 @@ public class MessagingEndpoint {
                 new Query.FilterPredicate("AndroidId",
                         Query.FilterOperator.EQUAL, androidId
                 );
-        Query q = new Query("UserAppDetails").setFilter(heightMinFilter);
+        Query q = new Query("DeviceRegDetails").setFilter(heightMinFilter);
         PreparedQuery pq = datastore.prepare(q);
         List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1));
         return !results.isEmpty();
@@ -308,7 +329,7 @@ public class MessagingEndpoint {
                 new Query.FilterPredicate("PhoneNum",
                         Query.FilterOperator.EQUAL, toUser
                 );
-        Query q = new Query("UserAppDetails").setFilter(heightMinFilter);
+        Query q = new Query("DeviceRegDetails").setFilter(heightMinFilter);
         PreparedQuery pq = datastore.prepare(q);
         Map<String, String> data = new HashMap<String, String>();
         HashSet<String> userRegIds = new HashSet<String>();

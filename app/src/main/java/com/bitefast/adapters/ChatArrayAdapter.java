@@ -30,6 +30,10 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 	private ImageView imageView;
 	private List<ChatMessage> chatMessageList = new ArrayList<ChatMessage>();
 	private LinearLayout singleMessageContainer;
+	private TextView timeView;
+	private LinearLayout.LayoutParams params;
+	private ChatMessage chatMessageObj;
+	private LinearLayout status_Time;
 
 	@Override
 	public void add(ChatMessage object) {
@@ -59,10 +63,13 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 
 		singleMessageContainer = (LinearLayout) row.findViewById(R.id.singleMessageContainer);
         chatText = (TextView) row.findViewById(R.id.singleMessage);
+		timeView=(TextView) row.findViewById(R.id.time);
 		imageView = (ImageView) row.findViewById(R.id.status);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)chatText.getLayoutParams();
-        ChatMessage chatMessageObj = getItem(position);
-        chatText.setText(Html.fromHtml(chatMessageObj.getMessage()+"&nbsp&nbsp&nbsp<sub><small>"+chatMessageObj.gettS()+"</small></sub> "));
+        params = (LinearLayout.LayoutParams)chatText.getLayoutParams();
+        chatMessageObj = getItem(position);
+        chatText.setText(chatMessageObj.getMessage());
+		timeView.setText(chatMessageObj.gettS());
+		status_Time=(LinearLayout)row.findViewById(R.id.statusTime);
 		if (chatMessageObj.isLeft()) {
             chatText.setPadding(30, 10, 15, 10);
             params.setMargins(0, 10, 0, 4);

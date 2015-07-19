@@ -130,11 +130,6 @@ public class GCMNotificationIntentService extends IntentService implements Const
                                             null);
                                     cursor.close();
                                 }
-                                Query = "Select * from " + MySQLiteHelper2.TABLE_USER + " where " + MySQLiteHelper2.COLUMN_NAME + " = " + from;
-                                cursor = database.rawQuery(Query, null);
-                                count=cursor.getCount();
-                                Logger.getLogger("Row Count2:").log(Level.INFO, ""+count);
-
                                 database.insert(MySQLiteHelper2.TABLE_USER, null,
                                         values1);
                                 database.close();

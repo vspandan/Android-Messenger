@@ -18,6 +18,7 @@ import android.support.multidex.MultiDex;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -175,6 +176,9 @@ public class ChatActivity extends ActionBarActivity {
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
+
+        listView.setSelection(listView.getCheckedItemCount() - 1);
+
     }
 
     private boolean sendChatMessage() {
@@ -328,10 +332,19 @@ public class ChatActivity extends ActionBarActivity {
                     chatText.setText("Thanks for Ordering.\nYour Bill Amount: " + amount + "\nOrder Id: " + orderId);
                     sendChatMessage();
                     new GcmDataSavingAsyncTask().saveOrder(orderId, sendTo, amount);
-                    /*Logger.getLogger("ChatActivity:Confirm Order:DEVICEID.:").log(Level.INFO, androidIdReceiver);*/
-                    UserDetails details = new GcmDataSavingAsyncTask().fetchDetails(androidIdReceiver);
+
+                    UserDetails details = new GcmDataSavingAsyncTask().fetchDetails(new RegistrationDetails().getPhoneNum(getApplicationContext()));
                     if (details != null) {
-                        chatText.setText("Your Order (" + orderId + ") will be delivered to: \n" + details.getName() + "\n" + details.getAddr() + "\n" + details.getStreet() + "\n" + details.getLandmark() + "\n" + details.getCity());
+                        String streetName=details.getStreet();
+                        String landmark=details.getLandmark();
+                        if("Optional".equals(streetName))
+                            streetName="";
+
+                        if("Optional".equals(landmark))
+                            landmark="";
+                        String text="Your Order (" + orderId + ") will be delivered to:" + details.getName().toUpperCase() + " " + details.getAddr().toUpperCase() + " " + streetName.toUpperCase() + landmark.toUpperCase() + details.getCity().toUpperCase();
+                        chatText.setText(Html.fromHtml(text));
+
                         sendChatMessage();
                         chatText.setText("If there is a change let us know");
                         sendChatMessage();
@@ -355,7 +368,7 @@ public class ChatActivity extends ActionBarActivity {
     }
 
     private String getRandomOrderId() {
-        return Long.toString(Math.abs(random.nextLong()));
+        return Integer.toString(Math.abs(random.nextInt()));
     }
 
     @Override

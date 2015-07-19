@@ -106,7 +106,9 @@ public class ChatMessage implements Comparable<ChatMessage> {
 
     public String gettS() {
         d.setTime(timestamp);
-        return d.getHours() + ":" + d.getMinutes();
+        int min=d.getMinutes();
+        int hours=d.getHours();
+        return (hours<10?"0"+hours:hours) + ":" + (min<10?"0"+min:min);
     }
 
     public void settS(String tS) {
