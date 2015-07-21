@@ -133,7 +133,6 @@ public class MainActivity extends Activity {
                                         user.add(msgService.profileInfo(phoneNum).execute());
                                         Logger.getLogger(this.getClass().getName()).log(Level.INFO, new RegistrationDetails().getPhoneNum(getApplicationContext()));
                                     } catch (Exception ex) {
-                                        System.exit(1);
                                         ex.printStackTrace();
                                     }
                                 }
@@ -144,21 +143,22 @@ public class MainActivity extends Activity {
                             e.printStackTrace();
                         }
                         Logger.getLogger(this.getClass().getName()).log(Level.INFO, user.toString());
-                        User usr=user.get(0);
-                        if(usr.getEmailId()==null||usr.getUserNum()==null) {
-                            i = new Intent(MainActivity.this, EmailInfoForm.class);
-                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "email registering");
+                        if(user.size()!=0) {
+                            User usr = user.get(0);
+                            new RegistrationDetails().setAdmin(getApplicationContext(),usr.getAdmin());
+                            if (usr.getEmailId() == null || usr.getUserNum() == null) {
+                                i = new Intent(MainActivity.this, EmailInfoForm.class);
 
-                        }else if (usr.getAdmin()) {
-                            new RegistrationDetails().setAdmin(getApplicationContext());
-                            i = new Intent(MainActivity.this, UserListActivity.class);
-                        } else {
-                            new RegistrationDetails().setUserName(getApplication(),usr.getUserName());
-                            new RegistrationDetails().setEmailId(getApplication(), usr.getEmailId());
-                            String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                            new GcmDataSavingAsyncTask().updateUserRegid(androidId, new RegistrationDetails().getRegistrationId(getApplicationContext()), new RegistrationDetails().getPhoneNum(getApplicationContext()));
-                            i = new Intent(MainActivity.this, ChatActivity.class);
-                            i.putExtra("SENDTO", "BITEFAST_ADMIN");
+                            } else if (usr.getAdmin()) {
+                                i = new Intent(MainActivity.this, UserListActivity.class);
+                            } else {
+                                new RegistrationDetails().setUserName(getApplication(), usr.getUserName());
+                                new RegistrationDetails().setEmailId(getApplication(), usr.getEmailId());
+                                String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                                new GcmDataSavingAsyncTask().updateUserRegid(androidId, new RegistrationDetails().getRegistrationId(getApplicationContext()), new RegistrationDetails().getPhoneNum(getApplicationContext()));
+                                i = new Intent(MainActivity.this, ChatActivity.class);
+                                i.putExtra("SENDTO", "BITEFAST_ADMIN");
+                            }
                         }
                     }
                     else {

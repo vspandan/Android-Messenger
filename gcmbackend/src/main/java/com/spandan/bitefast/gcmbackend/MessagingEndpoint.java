@@ -142,9 +142,16 @@ public class MessagingEndpoint {
     }
 
     @ApiMethod(name = "updateUserRegid", httpMethod = ApiMethod.HttpMethod.POST)
-    public void updateUserRegid(@Named("androidId") String androidId, @Named("regId") String regId, @Named("phoneNum") String phoneNum) throws EntityNotFoundException, IOException {
+    public void updateUserRegid(@Named("androidId") String androidId, @Named("regId") String regId, @Named("phoneNum") String phoneNum) throws IOException {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Entity customer = datastore.get(KeyFactory.createKey("DeviceRegDetails", androidId));
+        Entity customer = null;
+        try {
+            customer = datastore.get(KeyFactory.createKey("DeviceRegDetails", androidId));
+        } catch (EntityNotFoundException e) {
+            customer = new Entity("DeviceRegDetails", androidId);
+        }
+        customer.setProperty("AndroidId", androidId);
+        customer.setProperty("PhoneNum", phoneNum);
         customer.setProperty("RegId", regId);
         datastore.put(customer);
     }
@@ -215,10 +222,6 @@ public class MessagingEndpoint {
                 user.setAdmin((boolean) result.getProperty("Admin"));
             }
         }
-        if(user.isAdmin())
-            reSendMessages("BITEFAST_ADMIN");
-        else
-            reSendMessages(phoneNo);
         return user;
 
     }

@@ -54,10 +54,10 @@ public class RegistrationDetails extends Application{
         return prefs.getBoolean("admin", false);
     }
 
-    public void setAdmin(Context context){
+    public void setAdmin(Context context,boolean isadmin){
         final SharedPreferences prefs = getGCMPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("admin", true);
+        editor.putBoolean("admin", isadmin);
         editor.commit();
     }
 

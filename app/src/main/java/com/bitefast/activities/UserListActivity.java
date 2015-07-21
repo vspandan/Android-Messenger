@@ -55,12 +55,13 @@ public class UserListActivity extends ActionBarActivity {
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         setContentView(R.layout.activity_user_list);
         phn =new RegistrationDetails().getPhoneNum(getApplicationContext());
-        intent = new Intent(this, GCMNotificationIntentService.class);
-        registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.update.userlist"));
         userDataSource=new UserDataSource(getApplicationContext());
         userDataSource.open();
 
         updateUI();
+
+        intent = new Intent(this, GCMNotificationIntentService.class);
+        registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.update.userlist"));
     }
 
     private void updateUI(){
@@ -111,7 +112,7 @@ public class UserListActivity extends ActionBarActivity {
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateUI();
+
             msg=intent.getExtras().getString("CHATMESSAGE");
             from=intent.getExtras().getString("FROM");
             UserListItem userListItem=new UserListItem(false,from);
@@ -122,7 +123,7 @@ public class UserListActivity extends ActionBarActivity {
             }
             UserListBean bean=new UserListBean(from,""+ false, phn);
             userDataSource.createUserListEntry(bean);
-
+            updateUI();
         }
     };
 

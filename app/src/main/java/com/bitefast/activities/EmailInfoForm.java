@@ -122,7 +122,6 @@ public class EmailInfoForm extends ActionBarActivity implements View.OnClickList
                         new GcmDataSavingAsyncTask().insertUser(androidId, regId, phoneNum, nameval, emailVal, false);
 
                         if(new RegistrationDetails().isAdmin(getApplicationContext())) {
-                            new RegistrationDetails().setAdmin(getApplicationContext());
                             Intent i = new Intent(EmailInfoForm.this, UserListActivity.class);
                             startActivity(i);
                         }

@@ -14,12 +14,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.bitefast.util.RegistrationDetails;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.bitefast.R;
+import com.bitefast.util.RegistrationDetails;
 import com.bitefast.util.SystemUiHider;
 import com.bitefast.util.Utilities;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.spandan.bitefast.gcmbackend.messaging.Messaging;
 import com.spandan.bitefast.gcmbackend.messaging.model.User;
 
@@ -38,20 +38,19 @@ import java.util.logging.Logger;
 public class MobileInfoLogin extends ActionBarActivity implements View.OnClickListener {
     private Button signupbutton = null;
     private boolean successful = true;
-    private String regId=null;
+    private String regId = null;
     private String androidId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        regId=new RegistrationDetails().getRegistrationId(getApplicationContext());
+        regId = new RegistrationDetails().getRegistrationId(getApplicationContext());
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "loading");
         super.onCreate(savedInstanceState);
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         setContentView(R.layout.activity_mobileinfo);
-        if (!isTaskRoot())
-        {
+        if (!isTaskRoot()) {
             final Intent intent = getIntent();
             final String intentAction = intent.getAction();
             if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
@@ -88,7 +87,7 @@ public class MobileInfoLogin extends ActionBarActivity implements View.OnClickLi
                     } else {
                         new RegistrationDetails().setPhoneNum(getApplicationContext(), phn);
                         final String phoneNum = phn;
-                        final List<User> user= new ArrayList<User>();
+                        final List<User> user = new ArrayList<User>();
                         try {
                             Thread t = new Thread(new Runnable() {
                                 public void run() {
@@ -114,26 +113,33 @@ public class MobileInfoLogin extends ActionBarActivity implements View.OnClickLi
                             e.printStackTrace();
                         }
 
-                        User usr=user.get(0);
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, phoneNum + ":" + usr.toString());
-                        if(usr.getAdmin()) {
-                            new RegistrationDetails().setAdmin(getApplicationContext());
-                            Intent i = new Intent(MobileInfoLogin.this, UserListActivity.class);
-                            startActivity(i);
+                        if (user.size() != 0) {
+                            User usr = user.get(0);
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, phoneNum + ":" + usr.toString());
+                            new RegistrationDetails().setAdmin(getApplicationContext(),usr.getAdmin());
+                            if (usr.getUserNum() == null || usr.getEmailId() == null) {
+                                Intent i = new Intent(this,
+                                        EmailInfoForm.class);
+                                startActivity(i);
+                            } else if (usr.getAdmin()) {
+
+                                 Intent i = new Intent(MobileInfoLogin.this, UserListActivity.class);
+                                 startActivity(i);
+                             } else{
+                                new RegistrationDetails().setUserName(getApplication(), usr.getUserName());
+                                new RegistrationDetails().setEmailId(getApplication(), usr.getEmailId());
+                                Intent i = new Intent(this,
+                                        ChatActivity.class);
+                                i.putExtra("SENDTO", "BITEFAST_ADMIN");
+                                startActivity(i);
+                            }
                         }
-                        else if(usr.getUserNum()==null||usr.getEmailId()==null){
-                            Intent i = new Intent(this,
-                                    EmailInfoForm.class);
-                            startActivity(i);
+                        else{
+                                Intent i = new Intent(this,
+                                        EmailInfoForm.class);
+                                startActivity(i);
                         }
-                        else {
-                            new RegistrationDetails().setUserName(getApplication(),usr.getUserName());
-                            new RegistrationDetails().setEmailId(getApplication(),usr.getEmailId());
-                            Intent i = new Intent(this,
-                                    ChatActivity.class);
-                            i.putExtra("SENDTO", "BITEFAST_ADMIN");
-                            startActivity(i);
-                        }                    }
+                    }
                 } catch (Exception e) {
                     Logger.getLogger(this.getClass().getName()).log(Level.INFO, e.getMessage());
                 }
