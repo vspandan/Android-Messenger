@@ -89,7 +89,7 @@ public class ProfileView extends ActionBarActivity {
             protected void onPostExecute(String msg) {
                 try {
 
-                    TableLayout table = (TableLayout) findViewById(R.id.profileTable);
+                    final TableLayout table = (TableLayout) findViewById(R.id.profileTable);
                     List<HashMap<String, String>> value = (List<HashMap<String, String>>) JSONValue
                             .parseWithException(msg);
                     for (HashMap<String, String> val : value) {
@@ -109,10 +109,20 @@ public class ProfileView extends ActionBarActivity {
                                 alertDialog.setMessage("Delete Address?");
                                 alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
+                                        table.removeView(row);
+                                        Thread t = new Thread(new Runnable() {
+                                            public void run() {
+                                                try {
+                                                    msgService.removeAddress(((TextView) row.findViewById(R.id.Id)).getText().toString(), new RegistrationDetails().getPhoneNum(getApplicationContext())).execute();
+
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }});
+                                        t.start();
                                         try {
-                                            msgService.removeAddress(((TextView) row.findViewById(R.id.Id)).getText().toString());
-                                            row.setVisibility(View.INVISIBLE);
-                                        } catch (IOException e) {
+                                            t.join();
+                                        } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         }
 

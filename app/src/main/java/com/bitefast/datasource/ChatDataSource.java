@@ -81,6 +81,10 @@ public class ChatDataSource {
         return id;
     }
 
+    public void deleteChat(String phn){
+        database.delete(MySQLiteHelper.TABLE_CHAT, MySQLiteHelper.COLUMN_PHN + " = \'" + phn + "\'", null);
+    }
+
     public List<ChatMessage> getAllChats(String phn) {
         List<ChatMessage> chats = new ArrayList<ChatMessage>();
 

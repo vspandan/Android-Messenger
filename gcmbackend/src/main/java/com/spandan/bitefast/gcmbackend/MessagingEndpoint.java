@@ -105,12 +105,22 @@ public class MessagingEndpoint {
     }
 
     @ApiMethod(name = "removeAddress", httpMethod = ApiMethod.HttpMethod.POST)
-    public void removeAddress(@Named("id") String id) throws EntityNotFoundException {
+    public void removeAddress(@Named("id") String id,@Named("phone") String phn) throws EntityNotFoundException {
 
+        UserDetails addresses=new UserDetails();
+        List<HashMap<String,String>> userList=new ArrayList<HashMap<String,String>>();
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Key key = KeyFactory.createKey("UserAddrDetails", id);
-        datastore.delete(key);
-
+        Query.Filter heightMinFilter =
+                new Query.FilterPredicate("PhoneNum",
+                        Query.FilterOperator.EQUAL, phn
+                );
+        Query q = new Query("UserAddrDetails").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1000));
+        for(Entity customer:results) {
+            if(id.equals(""+customer.getKey().getId()))
+                datastore.delete(customer.getKey());
+        }
     }
 
     @ApiMethod(name = "fetchAddress", httpMethod = ApiMethod.HttpMethod.POST)

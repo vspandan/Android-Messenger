@@ -302,7 +302,7 @@ public class ChatActivity extends ActionBarActivity {
         if (isAdmin) {
             getMenuInflater().inflate(R.menu.menu_chat_admin, menu);
         } else {
-            /*getMenuInflater().inflate(R.menu.menu_chat, menu);*/
+            getMenuInflater().inflate(R.menu.menu_chat, menu);
         }
         return true;
     }
@@ -315,13 +315,17 @@ public class ChatActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_menu1) {
+            AlertDialog alertDialog = new AlertDialog.Builder(ChatActivity.this).create();
+            alertDialog.setMessage("Clear Chat? Can't be un done");
+            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    chatDataSource.deleteChat(sendTo);
+                    updateUI();
+                }
+            });
+            alertDialog.show();
             return true;
         }
-
-        if (id == R.id.action_orders) {
-            return true;
-        }
-
 
         if (id == R.id.action_menu) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
