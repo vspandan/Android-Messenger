@@ -139,6 +139,7 @@ public class ProfileView extends ActionBarActivity {
         Intent intent = new Intent(ProfileView.this,ChatActivity.class);
         if(! new RegistrationDetails().isAdmin(getApplicationContext()))
             intent.putExtra("SENDTO", "BITEFAST_ADMIN");
+        this.finish();
         startActivity(intent);
     }
 

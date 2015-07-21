@@ -280,14 +280,18 @@ public class ChatActivity extends ActionBarActivity {
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setMessage("See You Soon");
             alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
+                    if (alertDialog != null) {
+                        alertDialog.dismiss();
+                    }
                     System.exit(0);
                 }
             });
             alertDialog.show();
+            alertDialog.cancel();
         }
 
     }
