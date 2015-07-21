@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/4b40psCYggDA2eIlu6YZCqP2rGQ\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/njY_hWVpCSitjru95_E-Pn6n4Yk\"",
  "discoveryVersion": "v1",
  "id": "messaging:v1",
  "name": "messaging",
@@ -78,6 +78,12 @@
     "admin": {
      "type": "boolean"
     },
+    "emailId": {
+     "type": "string"
+    },
+    "userName": {
+     "type": "string"
+    },
     "userNum": {
      "type": "string"
     }
@@ -87,31 +93,7 @@
    "id": "UserDetails",
    "type": "object",
    "properties": {
-    "addr": {
-     "type": "string"
-    },
-    "androidID": {
-     "type": "string"
-    },
-    "city": {
-     "type": "string"
-    },
-    "email": {
-     "type": "string"
-    },
-    "landmark": {
-     "type": "string"
-    },
-    "name": {
-     "type": "string"
-    },
-    "phoneNum": {
-     "type": "string"
-    },
-    "regId": {
-     "type": "string"
-    },
-    "street": {
+    "jsonAddressListString": {
      "type": "string"
     }
    }
@@ -121,13 +103,13 @@
   "messaging.fetchAddress": {
    "id": "messaging.fetchAddress",
    "parameters": {
-    "androidId": {
+    "phn": {
      "type": "string",
      "required": true
     }
    },
    "parameterOrder": [
-    "androidId"
+    "phn"
    ],
    "returns": {
     "$ref": "UserDetails"
@@ -139,15 +121,7 @@
   "messaging.insertUser": {
    "id": "messaging.insertUser",
    "parameters": {
-    "addr": {
-     "type": "string",
-     "required": true
-    },
     "androidId": {
-     "type": "string",
-     "required": true
-    },
-    "city": {
      "type": "string",
      "required": true
     },
@@ -157,10 +131,6 @@
     },
     "isAdmin": {
      "type": "boolean",
-     "required": true
-    },
-    "landmark": {
-     "type": "string",
      "required": true
     },
     "name": {
@@ -174,10 +144,6 @@
     "regId": {
      "type": "string",
      "required": true
-    },
-    "street": {
-     "type": "string",
-     "required": true
     }
    },
    "parameterOrder": [
@@ -186,18 +152,49 @@
     "phoneNum",
     "name",
     "email",
-    "addr",
-    "street",
-    "landmark",
-    "city",
     "isAdmin"
    ],
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
-  "messaging.isAdmin": {
-   "id": "messaging.isAdmin",
+  "messaging.insertUserAddr": {
+   "id": "messaging.insertUserAddr",
+   "parameters": {
+    "addr": {
+     "type": "string",
+     "required": true
+    },
+    "city": {
+     "type": "string",
+     "required": true
+    },
+    "landmark": {
+     "type": "string",
+     "required": true
+    },
+    "phoneNum": {
+     "type": "string",
+     "required": true
+    },
+    "street": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "phoneNum",
+    "addr",
+    "street",
+    "landmark",
+    "city"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.profileInfo": {
+   "id": "messaging.profileInfo",
    "parameters": {
     "phoneNo": {
      "type": "string",
@@ -224,6 +221,21 @@
    },
    "parameterOrder": [
     "touser"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "messaging.removeAddress": {
+   "id": "messaging.removeAddress",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "id"
    ],
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"

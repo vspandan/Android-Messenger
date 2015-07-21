@@ -7,7 +7,7 @@
     <string name="enter_addr">Address Line 1</string>
     <string name="enter_email">Email Address</string>
     <string name="enter_addr1">Address Line 2 (optional)</string>
-    <string name="enter_landmark">Land Mark (optional)</string>
+    <string name="enter_landmark">Land Mark</string>
     <string name="enter_name">Full Name</string>
     <string name="enter_order">Place Your Order</string>
     <string name="title_activity_otp_form">Otp Form</string>
@@ -24,7 +24,7 @@
     <string name="action_help">Help</string>
     <string name="action_orders">Past Orders</string>
     <string name="action_more_help">How To</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_logout">Logout</string>
     <string name="title_activity_user_list">Customers</string>
     <string name="enter_phn_no">Phone Number</string>
     <string name="enter_text1">Register </string>
@@ -34,4 +34,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="hello_blank_fragment">Test_Spandan</string>
     <string name="title_activity_pop_up">PopUp</string>
+    <string name="title_activity_profile_view">Profile</string>
+    <string name="phone_label">Telephone :</string>
+    <string name="email_label">Email :</string>
+    <string name="title_activity_email_info">EmailInfo</string>
+    <string name="action_settings">Settings</string>
 </resources>

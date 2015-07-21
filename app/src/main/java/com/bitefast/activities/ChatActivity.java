@@ -18,7 +18,6 @@ import android.support.multidex.MultiDex;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -45,7 +44,6 @@ import com.bitefast.services.GCMNotificationIntentService;
 import com.bitefast.services.GcmDataSavingAsyncTask;
 import com.bitefast.util.RegistrationDetails;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.spandan.bitefast.gcmbackend.messaging.model.UserDetails;
 
 import org.json.simple.JSONValue;
 
@@ -88,7 +86,6 @@ public class ChatActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         context = getApplicationContext();
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        regId = new RegistrationDetails().getRegistrationId(getApplicationContext());
         isAdmin = new RegistrationDetails().isAdmin(getApplicationContext());
         Log.d(TAG, "Is Admin: " + isAdmin);
         sendTo = getIntent().getStringExtra("SENDTO");
@@ -98,12 +95,10 @@ public class ChatActivity extends ActionBarActivity {
 
         if (isAdmin) {
             this.setTitle(sendTo);
-            nMgr.cancel((int) (Long.parseLong("8886799788") / 10));
+            nMgr.cancel((int) (Long.parseLong(sendTo) / 10));
         } else
             nMgr.cancel(9999);
         ActionBar bar = getSupportActionBar();
-        bar.setHomeButtonEnabled(true);
-
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
         buttonSend = (Button) findViewById(R.id.buttonSend);
         intent = new Intent(this, GCMNotificationIntentService.class);
@@ -140,9 +135,12 @@ public class ChatActivity extends ActionBarActivity {
 
         TextView userPhnNum = (TextView) findViewById(R.id.phnNum);
         userPhnNum.setText(new RegistrationDetails().getPhoneNum(getApplicationContext()));
-        mNavItems.add(new NavItem("Menu", "Go through Item List"));
-        mNavItems.add(new NavItem("Order", "View Past Orders"));
-        mNavItems.add(new NavItem("Settings", "Update Your Profile"));
+        mNavItems.add(new NavItem("Profile"));
+        mNavItems.add(new NavItem("Menu"));
+        mNavItems.add(new NavItem("Order"));
+        mNavItems.add(new NavItem("Settings"));
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.chatActivity);
         mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
         mDrawerList = (ListView) findViewById(R.id.navList);
@@ -177,8 +175,13 @@ public class ChatActivity extends ActionBarActivity {
             }
         });
 
-        listView.setSelection(listView.getCheckedItemCount() - 1);
-
+        listView.post(new Runnable() {
+                @Override
+                public void run() {
+                    // Select the last row so it will scroll into view...
+                    listView.setSelection(listView.getCount() - 1);
+                }
+        });
     }
 
     private boolean sendChatMessage() {
@@ -332,27 +335,8 @@ public class ChatActivity extends ActionBarActivity {
                     chatText.setText("Thanks for Ordering.\nYour Bill Amount: " + amount + "\nOrder Id: " + orderId);
                     sendChatMessage();
                     new GcmDataSavingAsyncTask().saveOrder(orderId, sendTo, amount);
-
-                    UserDetails details = new GcmDataSavingAsyncTask().fetchDetails(new RegistrationDetails().getPhoneNum(getApplicationContext()));
-                    if (details != null) {
-                        String streetName=details.getStreet();
-                        String landmark=details.getLandmark();
-                        if("Optional".equals(streetName))
-                            streetName="";
-
-                        if("Optional".equals(landmark))
-                            landmark="";
-                        String text="Your Order (" + orderId + ") will be delivered to:" + details.getName().toUpperCase() + " " + details.getAddr().toUpperCase() + " " + streetName.toUpperCase() + landmark.toUpperCase() + details.getCity().toUpperCase();
-                        chatText.setText(Html.fromHtml(text));
-
-                        sendChatMessage();
-                        chatText.setText("If there is a change let us know");
-                        sendChatMessage();
-                    } else {
-                        chatText.setText("Share delivery address or We can call you");
-                        sendChatMessage();
-                    }
-
+                    chatText.setText("Share delivery address or We can call you");
+                    sendChatMessage();
                 }
             });
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -385,15 +369,12 @@ public class ChatActivity extends ActionBarActivity {
 
         mDrawerList.setItemChecked(position, true);
 
-        final RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.popup);
-        relativeLayout.setVisibility(View.VISIBLE);
-        Button close = (Button) findViewById(R.id.button_close);
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                relativeLayout.setVisibility(View.INVISIBLE);
-            }
-        });
+        switch(position){
+            case 0:
+                startActivity(new Intent(ChatActivity.this,ProfileView.class));
+                break;
+
+        }
         mDrawerLayout.closeDrawer(mDrawerPane);
     }
 }

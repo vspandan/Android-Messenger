@@ -11,4 +11,7 @@ public class NavItem {
         mTitle = title;
         mSubtitle = subtitle;
     }
+    public NavItem(String title) {
+        mTitle = title;
+    }
 }

@@ -1,0 +1,171 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bitefast.activities.ProfileView">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="70dp">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:id="@+id/profileTable"
+                android:padding="5dp">
+
+        <TableRow
+            android:id="@+id/tableRow0"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp">
+
+            <TextView
+                android:id="@+id/profileName"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_span="2"
+                android:padding="5dp"
+                android:gravity="center"
+                android:text="---"
+                android:textAllCaps="true"
+                android:textSize="20dp"
+                android:textColor="@color/abc_input_method_navigation_guard" />
+        </TableRow>
+
+        <TableRow
+                    android:id="@+id/tableRow1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/switch_thumb_normal_material_dark">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_span="2"
+                        android:padding="5dp"
+                        android:text="contact information"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/abc_input_method_navigation_guard" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:layout_width="110dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:padding="5dp"
+                        android:text="@string/phone_label"
+                        android:textColor="@color/abc_input_method_navigation_guard"
+                        android:textSize="18dp"
+                         />
+
+                    <TextView
+                        android:id="@+id/phoneNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:text="+919999999999"
+                        android:textColor="@color/abc_input_method_navigation_guard"
+                        android:textSize="18dp" />
+                </TableRow>
+
+
+                <TableRow
+                    android:id="@+id/tableRow3"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:layout_width="110dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:padding="5dp"
+                        android:text="@string/email_label"
+                        android:textColor="@color/abc_input_method_navigation_guard"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/emailid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:text="bitefastindia@gmail.com"
+                        android:textColor="@color/abc_input_method_navigation_guard"
+                        android:textSize="18dp" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:radius="5dp"
+                    android:background="@color/switch_thumb_normal_material_dark">
+
+                    <TextView
+                        android:id="@+id/textView_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_span="2"
+                        android:padding="5dp"
+                        android:text="Addresses"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/abc_input_method_navigation_guard" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    >
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_span="2">
+
+                    </LinearLayout>
+                </TableRow>
+
+
+
+            </TableLayout>
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Add New Address"
+                android:textAllCaps="true"
+                android:textColor="@color/accent_material_light"
+                android:textSize="18dp"
+                android:clickable="true"
+                android:id="@+id/addrbutton"/>
+
+
+    </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

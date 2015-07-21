@@ -2,7 +2,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/chatActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.bitefast.activities.ChatActivity">
 
     <!-- The main content view -->
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -60,33 +62,6 @@
                 android:layout_alignBottom="@+id/chatText"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/popup"
-            android:visibility="gone"
-            >
-            <LinearLayout
-                android:id="@+id/content"
-                android:layout_width="300dp"
-                android:layout_height="420dp"
-                android:layout_marginTop="65dp"
-                android:layout_centerInParent="true"
-                android:orientation="vertical"
-                android:background="@color/switch_thumb_normal_material_dark">
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/button_close"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignRight="@+id/content"
-                android:layout_alignTop="@+id/content"
-                android:layout_marginRight="-15dp"
-                android:layout_marginTop="-15dp"
-                android:background="@drawable/closepanel" />
         </RelativeLayout>
 
 

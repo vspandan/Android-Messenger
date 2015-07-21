@@ -18,38 +18,6 @@ public class GcmDataSavingAsyncTask {
     public Messaging msgService = null;
     public AsyncTask<Void, Void, String> sendTask;
 
-    public UserDetails fetchDetails(final String phn) {
-        Logger.getLogger("Messaging:FetchDetails:DEVICEID.:").log(Level.INFO, phn);
-        final UserDetails[] userDetails = new UserDetails[1];
-        try {
-            Thread t = new Thread(new Runnable() {
-                public void run() {
-                    Messaging msgService = null;
-                    if (msgService == null) {
-                        Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
-                                new AndroidJsonFactory(), null);
-                        builder.setApplicationName("BiteFast");
-                        msgService = builder.build();
-                    }
-                    try {
-                        Logger.getLogger("Messaging:FetchDetails:DEVICEID.:").log(Level.INFO, phn);
-                        UserDetails userdetails1 = msgService.fetchAddress(phn).execute();
-                        userDetails[0] = userdetails1;
-                        Logger.getLogger("Messaging:FetchDetails:DATAFETCHED:").log(Level.INFO, userDetails[0].toString());
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-            t.start();
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return userDetails[0];
-    }
-
-
     public void saveOrder(final String order, final String usr, final String message) {
         sendTask = new AsyncTask<Void, Void, String>() {
             @Override
@@ -80,7 +48,7 @@ public class GcmDataSavingAsyncTask {
     }
 
 
-    public void insertUser(final String androidId, final String regId, final String phn, final String name, final String email, final String addr, final String street, final String landmark, final String city, final boolean isAdmin) {
+    public void insertUser(final String androidId, final String regId, final String phn, final String name, final String email, final boolean isAdmin) {
 
 
         sendTask = new AsyncTask<Void, Void, String>() {
@@ -95,7 +63,7 @@ public class GcmDataSavingAsyncTask {
                 String msg = "";
                 Logger.getLogger("Messaging:InsertUser:DATA").log(Level.INFO, ":");
                 try {
-                    msgService.insertUser(androidId, regId, phn, name, email, addr, street, landmark, city, isAdmin).execute();
+                    msgService.insertUser(androidId, regId, phn, name, email, isAdmin).execute();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     msg += "InsertUser Error: " + ex.getMessage();
@@ -110,6 +78,39 @@ public class GcmDataSavingAsyncTask {
         };
         sendTask.execute(null, null, null);
     }
+
+
+    public void insertAddress(final String phn, final String addr, final String street, final String landmark, final String city) {
+
+
+        sendTask = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                if (msgService == null) {
+                    Messaging.Builder builder = new Messaging.Builder(AndroidHttp.newCompatibleTransport(),
+                            new AndroidJsonFactory(), null);
+                    builder.setApplicationName("BiteFast");
+                    msgService = builder.build();
+                }
+                String msg = "";
+                Logger.getLogger("Messaging:InsertUser:DATA").log(Level.INFO, ":");
+                try {
+                    msgService.insertUserAddr(phn, addr, street, landmark, city).execute();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    msg += "InsertUser Error: " + ex.getMessage();
+                }
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+                Logger.getLogger("Messaging:InsertUser:POST:").log(Level.INFO, msg);
+            }
+        };
+        sendTask.execute(null, null, null);
+    }
+
 
 
     public void updateUserRegid(final String androidId, final String regId, final String phoneNum) {

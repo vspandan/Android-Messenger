@@ -16,6 +16,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
@@ -33,28 +34,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import javax.inject.Named;
 
 @Api(name = "messaging", version = "v1", namespace = @ApiNamespace(ownerDomain = "gcmbackend.bitefast.spandan.com", ownerName = "gcmbackend.bitefast.spandan.com", packagePath = ""))
 
 public class MessagingEndpoint {
-    private static final Logger log = Logger.getLogger(MessagingEndpoint.class.getName());
     private static Random random = new Random();
     private static final String API_KEY = System.getProperty("gcm.api.key");
     private Sender sender = null;
 
     @ApiMethod(name = "insertUser", httpMethod = ApiMethod.HttpMethod.POST)
-    public void insertUser(@Named("androidId") String androidId, @Named("regId") String regId, @Named("phoneNum") String phoneNum, @Named("name") String name, @Named("email") String email, @Named("addr") String addr, @Named("street") String street, @Named("landmark") String landmark, @Named("city") String city, @Named("isAdmin") boolean isAdmin) throws EntityNotFoundException, IOException {
+    public void insertUser(@Named("androidId") String androidId, @Named("regId") String regId, @Named("phoneNum") String phoneNum, @Named("name") String name, @Named("email") String email, @Named("isAdmin") boolean isAdmin) throws EntityNotFoundException, IOException {
 
-        Entity customer = new Entity("UserList", phoneNum);
+        Entity customer ;
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        customer.setProperty("Phoneno", phoneNum);
-        customer.setProperty("Admin", isAdmin);
-        customer.setProperty("TimeStamp", new Date());
-        if (!findUser(phoneNum))
+        if (!findUser(phoneNum)) {
+            customer= new Entity("UserList", phoneNum);
+            customer.setProperty("Phoneno", phoneNum);
+            customer.setProperty("Admin", isAdmin);
+            customer.setProperty("TimeStamp", new Date());
             datastore.put(customer);
+        }
         Entity device;
         if (findDeviceId(androidId))
             device = datastore.get(KeyFactory.createKey("DeviceRegDetails", androidId));
@@ -65,15 +66,23 @@ public class MessagingEndpoint {
         device.setProperty("PhoneNum", phoneNum);
         datastore.put(device);
 
-        if (findUserId(androidId))
-            customer = datastore.get(KeyFactory.createKey("UserAppDetails", phoneNum));
-        else
-            customer = new Entity("UserAppDetails", phoneNum);
-        customer.setProperty("AndroidId", androidId);
-        customer.setProperty("RegId", regId);
+        Entity customer1;
+        if(!findUserId(phoneNum)) {
+            customer1 = new Entity("UserContactDetails", phoneNum);
+            customer1.setProperty("PhoneNum", phoneNum);
+            customer1.setProperty("Email", email);
+            customer1.setProperty("Name", name);
+            customer1.setProperty("TimeStamp", new Date());
+            datastore.put(customer1);
+        }
+    }
+
+    @ApiMethod(name = "insertUserAddr", httpMethod = ApiMethod.HttpMethod.POST)
+    public void insertUserAddress(@Named("phoneNum") String phoneNum, @Named("addr") String addr, @Named("street") String street, @Named("landmark") String landmark, @Named("city") String city) throws EntityNotFoundException, IOException {
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Entity customer = new Entity("UserAddrDetails");
         customer.setProperty("PhoneNum", phoneNum);
-        customer.setProperty("Email", email);
-        customer.setProperty("Name", name);
         customer.setProperty("Address Line1", addr);
         customer.setProperty("Street", street);
         customer.setProperty("LandMark", landmark);
@@ -82,35 +91,54 @@ public class MessagingEndpoint {
         datastore.put(customer);
     }
 
+
     private boolean findUserId(String phn) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Query.Filter heightMinFilter =
                 new Query.FilterPredicate("PhoneNum",
                         Query.FilterOperator.EQUAL, phn
                 );
-        Query q = new Query("UserAppDetails").setFilter(heightMinFilter);
+        Query q = new Query("UserContactDetails").setFilter(heightMinFilter);
         PreparedQuery pq = datastore.prepare(q);
         List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1));
         return !results.isEmpty();
     }
 
-    @ApiMethod(name = "fetchAddress", httpMethod = ApiMethod.HttpMethod.POST)
-    public UserDetails fetchDetails(@Named("androidId") String phn) throws EntityNotFoundException {
+    @ApiMethod(name = "removeAddress", httpMethod = ApiMethod.HttpMethod.POST)
+    public void removeAddress(@Named("id") String id) throws EntityNotFoundException {
 
-        UserDetails user = new UserDetails();
-        Entity customer = null;
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        customer = datastore.get(KeyFactory.createKey("UserAppDetails",phn));
-        user.setAndroidID((String) customer.getProperty("AndroidId"));
-        user.setRegId((String) customer.getProperty("RegId"));
-        user.setPhoneNum((String) customer.getProperty("PhoneNum"));
-        user.setEmail((String) customer.getProperty("Email"));
-        user.setName((String) customer.getProperty("Name"));
-        user.setAddr((String) customer.getProperty("Address Line1"));
-        user.setStreet((String) customer.getProperty("Street"));
-        user.setLandmark((String) customer.getProperty("LandMark"));
-        user.setCity((String) customer.getProperty("City"));
-        return user;
+        Key key = KeyFactory.createKey("UserAddrDetails", id);
+        datastore.delete(key);
+
+    }
+
+    @ApiMethod(name = "fetchAddress", httpMethod = ApiMethod.HttpMethod.POST)
+    public UserDetails fetchDetails(@Named("phn") String phn) throws EntityNotFoundException {
+
+        UserDetails addresses=new UserDetails();
+        List<HashMap<String,String>> userList=new ArrayList<HashMap<String,String>>();
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query.Filter heightMinFilter =
+                new Query.FilterPredicate("PhoneNum",
+                        Query.FilterOperator.EQUAL, phn
+                );
+        Query q = new Query("UserAddrDetails").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1000));
+        HashMap<String,String> addr=null;
+        for(Entity customer:results) {
+            addr=new HashMap<String,String>();
+            addr.put("id",""+customer.getKey().getId());
+            addr.put("PhoneNum",(String) customer.getProperty("PhoneNum"));
+            addr.put("Address", (String) customer.getProperty("Address Line1"));
+            addr.put("Street", (String) customer.getProperty("Street"));
+            addr.put("LandMark", (String) customer.getProperty("LandMark"));
+            addr.put("City", (String) customer.getProperty("City"));
+            userList.add(addr);
+        }
+        addresses.setJsonAddressListString(JSONValue.toJSONString(userList));
+        return addresses;
     }
 
     @ApiMethod(name = "updateUserRegid", httpMethod = ApiMethod.HttpMethod.POST)
@@ -140,9 +168,7 @@ public class MessagingEndpoint {
 
         Query q = new Query("MessageLog").setFilter(heightRangeFilter);
         PreparedQuery pq = datastore.prepare(q);
-        /*List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(pq.countEntities()));*/
         List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1000));
-        log.warning(results.toString());
         HashMap<String, String> dataBundle=null;
         for(Entity entity:results) {
             dataBundle = new HashMap<String, String>();
@@ -158,17 +184,31 @@ public class MessagingEndpoint {
         }
     }
 
-    @ApiMethod(name = "isAdmin")
-    public User isAdmin(@Named("phoneNo") String phoneNo) throws IOException {
+    @ApiMethod(name = "profileInfo")
+    public User profileInfo(@Named("phoneNo") String phoneNo) throws IOException {
         User user = new User();
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Query.Filter heightMinFilter =
+                new Query.FilterPredicate("PhoneNum",
+                        Query.FilterOperator.EQUAL, phoneNo
+                );
+        Query q = new Query("UserContactDetails").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+        for (Entity result : pq.asIterable()) {
+            if (result.getProperty("PhoneNum").equals(phoneNo)) {
+                user.setUserNum((String) result.getProperty("PhoneNum"));
+                user.setUserName((String) result.getProperty("Name"));
+                user.setEmailId((String) result.getProperty("Email"));
+
+            }
+        }
+        //Query 2
+        heightMinFilter =
                 new Query.FilterPredicate("Phoneno",
                         Query.FilterOperator.EQUAL, phoneNo
                 );
-        Query q = new Query("UserList").setFilter(heightMinFilter);
-        PreparedQuery pq = datastore.prepare(q);
-        Map<String, String> data = new HashMap<String, String>();
+        q = new Query("UserList").setFilter(heightMinFilter);
+        pq = datastore.prepare(q);
         for (Entity result : pq.asIterable()) {
             if (result.getProperty("Phoneno").equals(phoneNo)) {
                 user.setUserNum((String) result.getProperty("Phoneno"));
@@ -180,7 +220,9 @@ public class MessagingEndpoint {
         else
             reSendMessages(phoneNo);
         return user;
+
     }
+
 
     private void saveMessage(@Named("deviceId") String deviceId, @Named("from") String from, @Named("to") String to, @Named("message") String message, @Named("id") String id, @Named("timeStamp") String timeStamp, boolean delivered) {
         Entity customer = new Entity("MessageLog", id);
@@ -247,7 +289,6 @@ public class MessagingEndpoint {
     @ApiMethod(name = "sendMessage")
     public void sendMessage(@Named("message") String message) throws IOException, ParseException, EntityNotFoundException {
         if (message == null || message.length() == 0) {
-            log.warning("Not sending message because it is empty");
             return;
         }
         Map<String, String> jsonObject = (Map<String, String>) JSONValue

@@ -224,4 +224,3 @@ public class GCMNotificationIntentService extends IntentService implements Const
     }
 
 }
-

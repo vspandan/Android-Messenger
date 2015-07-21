@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/4b40psCYggDA2eIlu6YZCqP2rGQ\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/njY_hWVpCSitjru95_E-Pn6n4Yk\"",
  "discoveryVersion": "v1",
  "id": "messaging:v1",
  "name": "messaging",
@@ -80,6 +80,12 @@
     "admin": {
      "type": "boolean"
     },
+    "emailId": {
+     "type": "string"
+    },
+    "userName": {
+     "type": "string"
+    },
     "userNum": {
      "type": "string"
     }
@@ -89,31 +95,7 @@
    "id": "UserDetails",
    "type": "object",
    "properties": {
-    "addr": {
-     "type": "string"
-    },
-    "androidID": {
-     "type": "string"
-    },
-    "city": {
-     "type": "string"
-    },
-    "email": {
-     "type": "string"
-    },
-    "landmark": {
-     "type": "string"
-    },
-    "name": {
-     "type": "string"
-    },
-    "phoneNum": {
-     "type": "string"
-    },
-    "regId": {
-     "type": "string"
-    },
-    "street": {
+    "jsonAddressListString": {
      "type": "string"
     }
    }
@@ -122,17 +104,17 @@
  "methods": {
   "fetchAddress": {
    "id": "messaging.fetchAddress",
-   "path": "fetchDetails/{androidId}",
+   "path": "fetchDetails/{phn}",
    "httpMethod": "POST",
    "parameters": {
-    "androidId": {
+    "phn": {
      "type": "string",
      "required": true,
      "location": "path"
     }
    },
    "parameterOrder": [
-    "androidId"
+    "phn"
    ],
    "response": {
     "$ref": "UserDetails"
@@ -143,20 +125,10 @@
   },
   "insertUser": {
    "id": "messaging.insertUser",
-   "path": "void/{androidId}/{regId}/{phoneNum}/{name}/{email}/{addr}/{street}/{landmark}/{city}/{isAdmin}",
+   "path": "void/{androidId}/{regId}/{phoneNum}/{name}/{email}/{isAdmin}",
    "httpMethod": "POST",
    "parameters": {
-    "addr": {
-     "type": "string",
-     "required": true,
-     "location": "path"
-    },
     "androidId": {
-     "type": "string",
-     "required": true,
-     "location": "path"
-    },
-    "city": {
      "type": "string",
      "required": true,
      "location": "path"
@@ -171,11 +143,6 @@
      "required": true,
      "location": "path"
     },
-    "landmark": {
-     "type": "string",
-     "required": true,
-     "location": "path"
-    },
     "name": {
      "type": "string",
      "required": true,
@@ -190,11 +157,6 @@
      "type": "string",
      "required": true,
      "location": "path"
-    },
-    "street": {
-     "type": "string",
-     "required": true,
-     "location": "path"
     }
    },
    "parameterOrder": [
@@ -203,19 +165,57 @@
     "phoneNum",
     "name",
     "email",
-    "addr",
-    "street",
-    "landmark",
-    "city",
     "isAdmin"
    ],
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
-  "isAdmin": {
-   "id": "messaging.isAdmin",
-   "path": "isAdmin/{phoneNo}",
+  "insertUserAddr": {
+   "id": "messaging.insertUserAddr",
+   "path": "void/{phoneNum}/{addr}/{street}/{landmark}/{city}",
+   "httpMethod": "POST",
+   "parameters": {
+    "addr": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "city": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "landmark": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "phoneNum": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "street": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "phoneNum",
+    "addr",
+    "street",
+    "landmark",
+    "city"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "profileInfo": {
+   "id": "messaging.profileInfo",
+   "path": "profileInfo/{phoneNo}",
    "httpMethod": "POST",
    "parameters": {
     "phoneNo": {
@@ -247,6 +247,24 @@
    },
    "parameterOrder": [
     "touser"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "removeAddress": {
+   "id": "messaging.removeAddress",
+   "path": "address/{id}",
+   "httpMethod": "POST",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "id"
    ],
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"

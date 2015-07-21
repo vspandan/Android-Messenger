@@ -43,24 +43,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.BitefastSignUp"
+            android:name=".activities.MobileInfoLogin"
             android:label="@string/title_activity_sign_up"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
-            android:name=".activities.BitefastSignUp_2"
+            android:name=".activities.AddAddress"
             android:label="@string/title_activity_sign_up"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" >
-        </activity>
-        <activity
-            android:name=".activities.Otp_Form"
-            android:label="@string/title_activity_otp_form"
-            android:noHistory="true"
-            android:screenOrientation="portrait" >
         </activity>
 
         <meta-data
@@ -109,6 +103,14 @@
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name=".activities.ProfileView"
+            android:label="@string/title_activity_profile_view" >
+        </activity>
+        <activity
+            android:name=".activities.EmailInfoForm"
+            android:label="@string/title_activity_email_info" >
+        </activity>
     </application>
 
 </manifest>

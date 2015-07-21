@@ -5,6 +5,25 @@ package com.spandan.bitefast.gcmbackend.models;
  */
 public class User {
     private String userNum=null;
+    private String userName=null;
+            private String emailId=null;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getEmailId() {
+        return emailId;
+    }
+
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
+    }
+
     private boolean admin=false;
 
     public String getUserNum() {
@@ -27,6 +46,8 @@ public class User {
     public String toString() {
         return "User{" +
                 "userNum='" + userNum + '\'' +
+                ", userName='" + userName + '\'' +
+                ", emailId='" + emailId + '\'' +
                 ", admin=" + admin +
                 '}';
     }

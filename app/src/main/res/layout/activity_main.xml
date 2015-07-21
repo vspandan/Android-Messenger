@@ -9,7 +9,9 @@
     android:layout_marginBottom="175dp"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
-    android:background="@drawable/screen1">
+    android:background="@drawable/screen1"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.bitefast.activities.MainActivity">
 
 
 </RelativeLayout>

@@ -25,50 +25,13 @@ public class RegistrationDetails extends Application{
         editor.commit();
     }
 
-    public void storeUserInfo(Context context,String phoneNum, String userName,
-                              String email,
-                              String addr,
-                              String street,
-                              String landMark,
-                              String city){
-
+    public void setPhoneNum(Context context, String phoneNum){
         final SharedPreferences prefs = getGCMPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("phoneNum", phoneNum);
-        editor.putString("userName", userName);
-        editor.putString("email", email);
-        editor.putString("addr", addr);
-        if(!street.isEmpty())
-            editor.putString("street", street);
-        if(!landMark.isEmpty())
-            editor.putString("landMark", landMark);
-        editor.putString("city", city);
         editor.commit();
     }
 
-
-    public boolean isLoggedIn(Context context) {
-        final SharedPreferences prefs = getGCMPreferences(context);
-        String registrationId = prefs.getString(REG_ID, "");
-        return !(registrationId.isEmpty() || prefs.getString("userName", "").isEmpty() ||
-                prefs.getString("email", "").isEmpty() ||
-                prefs.getString("addr", "").isEmpty() ||
-                prefs.getString("phoneNum", "").isEmpty() ||
-                prefs.getString("city", "").isEmpty());
-    }
-    public void storeAsOtpVerified(Context context){
-        //TODO forfuture
-        final SharedPreferences prefs = getGCMPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("verified", true);
-        editor.commit();
-    }
-
-    public boolean otpVerified(Context context){
-        //TODO forfuture
-        final SharedPreferences prefs = getGCMPreferences(context);
-        return prefs.getBoolean("verified", false);
-    }
 
     private SharedPreferences getGCMPreferences(Context context) {
         return context.getSharedPreferences(RegistrationDetails.class.getSimpleName(), Context.MODE_PRIVATE);
@@ -79,15 +42,18 @@ public class RegistrationDetails extends Application{
         return prefs.getString("phoneNum", "");
     }
 
-    public String getUserName(Context context) {
+    public void onLogout(Context context) {
         final SharedPreferences prefs = getGCMPreferences(context);
-        return prefs.getString("userName", "");
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.commit();
     }
 
     public boolean isAdmin(Context context) {
         final SharedPreferences prefs = getGCMPreferences(context);
         return prefs.getBoolean("admin", false);
     }
+
     public void setAdmin(Context context){
         final SharedPreferences prefs = getGCMPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
@@ -95,4 +61,26 @@ public class RegistrationDetails extends Application{
         editor.commit();
     }
 
+    public String getEmailId(Context applicationContext) {
+        final SharedPreferences prefs = getGCMPreferences(applicationContext);
+        return prefs.getString("email", "");
+    }
+
+    public String getUserName(Context applicationContext) {
+        final SharedPreferences prefs = getGCMPreferences(applicationContext);
+        return prefs.getString("name", "");
+    }
+    public void setUserName(Context applicationContext, String name) {
+        final SharedPreferences prefs = getGCMPreferences(applicationContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("name", name);
+        editor.commit();
+    }
+
+    public void setEmailId(Context applicationContext, String emailVal) {
+        final SharedPreferences prefs = getGCMPreferences(applicationContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("email", emailVal);
+        editor.commit();
+    }
 }

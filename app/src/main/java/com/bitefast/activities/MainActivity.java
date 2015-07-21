@@ -24,6 +24,8 @@ import com.spandan.bitefast.gcmbackend.messaging.Messaging;
 import com.spandan.bitefast.gcmbackend.messaging.model.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,14 +42,6 @@ public class MainActivity extends Activity {
         startService(new Intent(getBaseContext(), HeartBeatService.class));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (!isTaskRoot()) {
-            final Intent intent = getIntent();
-            final String intentAction = intent.getAction();
-            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
-                finish();
-                return;
-            }
-        }
         cd = new CheckInternetConnectivity(getApplicationContext());
         if (cd.isConnectingToInternet()) {
             new AppRegister().execute();
@@ -119,11 +113,11 @@ public class MainActivity extends Activity {
                 else
                 {
                     Intent i = null;
-                    if (new RegistrationDetails().isLoggedIn(getApplicationContext())) {
-                        Logger.getLogger("MainActivity").log(Level.INFO, "sign up");
-                        final boolean values[] = new boolean[1];
+                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "1");
+                    if (!new RegistrationDetails().getPhoneNum(getApplicationContext()).isEmpty()) {
+                        final List<User> user = new ArrayList<User>();
                         try {
-
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "2");
                             final String phoneNum = new RegistrationDetails().getPhoneNum(getApplicationContext());
                             Thread t = new Thread(new Runnable() {
                                 public void run() {
@@ -134,15 +128,14 @@ public class MainActivity extends Activity {
                                         builder.setApplicationName("BiteFast");
                                         msgService = builder.build();
                                     }
-                                    User usr = new User();
                                     try {
-                                        usr = msgService.isAdmin(phoneNum).execute();
-                                        values[0] = usr.getAdmin();
+                                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, new RegistrationDetails().getPhoneNum(getApplicationContext()));
+                                        user.add(msgService.profileInfo(phoneNum).execute());
+                                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, new RegistrationDetails().getPhoneNum(getApplicationContext()));
                                     } catch (Exception ex) {
                                         System.exit(1);
                                         ex.printStackTrace();
                                     }
-                            /*Logger.getLogger("LaunchActivity").log(Level.INFO, phoneNum + ":" + usr.toString());*/
                                 }
                             });
                             t.start();
@@ -150,21 +143,27 @@ public class MainActivity extends Activity {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, user.toString());
+                        User usr=user.get(0);
+                        if(usr.getEmailId()==null||usr.getUserNum()==null) {
+                            i = new Intent(MainActivity.this, EmailInfoForm.class);
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "email registering");
 
-                        Logger.getLogger("LaunchActivity").log(Level.INFO, "Retrieved User: " + values[0]);
-                        if (values[0]) {
+                        }else if (usr.getAdmin()) {
                             new RegistrationDetails().setAdmin(getApplicationContext());
                             i = new Intent(MainActivity.this, UserListActivity.class);
                         } else {
-                            //Updating registration details and
+                            new RegistrationDetails().setUserName(getApplication(),usr.getUserName());
+                            new RegistrationDetails().setEmailId(getApplication(), usr.getEmailId());
                             String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                             new GcmDataSavingAsyncTask().updateUserRegid(androidId, new RegistrationDetails().getRegistrationId(getApplicationContext()), new RegistrationDetails().getPhoneNum(getApplicationContext()));
                             i = new Intent(MainActivity.this, ChatActivity.class);
                             i.putExtra("SENDTO", "BITEFAST_ADMIN");
                         }
-                    } else {
-                        i = new Intent(MainActivity.this, BitefastSignUp.class);
-                        Logger.getLogger("MainActivity").log(Level.INFO, "registering");
+                    }
+                    else {
+                        i = new Intent(MainActivity.this, MobileInfoLogin.class);
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "phone registering");
                     }
                     startActivity(i);
                 }
@@ -182,15 +181,6 @@ public class MainActivity extends Activity {
             }
             return null;
         }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-
-        @Override
-        protected void onPostExecute(Void result) {super.onPostExecute(result);}
 
     }
 

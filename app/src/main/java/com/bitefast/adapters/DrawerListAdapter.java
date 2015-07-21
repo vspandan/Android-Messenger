@@ -56,10 +56,8 @@ public class DrawerListAdapter extends BaseAdapter {
         }
 
         TextView titleView = (TextView) view.findViewById(R.id.title);
-        TextView subtitleView = (TextView) view.findViewById(R.id.subTitle);
 
         titleView.setText( mNavItems.get(position).mTitle );
-        subtitleView.setText( mNavItems.get(position).mSubtitle );
 
         return view;
     }
