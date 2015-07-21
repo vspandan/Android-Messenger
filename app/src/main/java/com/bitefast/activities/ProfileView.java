@@ -101,37 +101,40 @@ public class ProfileView extends ActionBarActivity {
                         ((TextView) row.findViewById(R.id.landmarkTV)).setText(val.get("LandMark"));
                         ((TextView) row.findViewById(R.id.Id)).setText(val.get("id"));
 
-                        row.setOnLongClickListener(new View.OnLongClickListener() {
+                        if(!new RegistrationDetails().isAdmin(getApplicationContext())) {
+                            row.setOnLongClickListener(new View.OnLongClickListener() {
 
-                            @Override
-                            public boolean onLongClick(View v) {
-                                AlertDialog alertDialog = new AlertDialog.Builder(ProfileView.this).create();
-                                alertDialog.setMessage("Delete Address?");
-                                alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        table.removeView(row);
-                                        Thread t = new Thread(new Runnable() {
-                                            public void run() {
-                                                try {
-                                                    msgService.removeAddress(((TextView) row.findViewById(R.id.Id)).getText().toString(), new RegistrationDetails().getPhoneNum(getApplicationContext())).execute();
+                                @Override
+                                public boolean onLongClick(View v) {
+                                    AlertDialog alertDialog = new AlertDialog.Builder(ProfileView.this).create();
+                                    alertDialog.setMessage("Delete Address?");
+                                    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            table.removeView(row);
+                                            Thread t = new Thread(new Runnable() {
+                                                public void run() {
+                                                    try {
+                                                        msgService.removeAddress(((TextView) row.findViewById(R.id.Id)).getText().toString(), new RegistrationDetails().getPhoneNum(getApplicationContext())).execute();
 
-                                                } catch (IOException e) {
-                                                    e.printStackTrace();
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
                                                 }
-                                            }});
-                                        t.start();
-                                        try {
-                                            t.join();
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
+                                            });
+                                            t.start();
+                                            try {
+                                                t.join();
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
 
-                                    }
-                                });
-                                alertDialog.show();
-                                return false;
-                            }
-                        });
+                                        }
+                                    });
+                                    alertDialog.show();
+                                    return false;
+                                }
+                            });
+                        }
                         table.addView(row);
                     }
                 } catch (ParseException e1) {
