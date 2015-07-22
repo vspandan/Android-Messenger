@@ -203,7 +203,11 @@ public class GCMNotificationIntentService extends IntentService {
         Notification notification = new Notification(R.drawable.ic_launcher,
                 "New Message", System.currentTimeMillis());
         notification.sound = defaultSoundUri;
-        notification.setLatestEventInfo(this, title,
+        String notifyTitle=title;
+        if(title.equalsIgnoreCase("Bitefast_admin")){
+            notifyTitle="Bitefast";
+        }
+        notification.setLatestEventInfo(this, notifyTitle,
                 "New Message", pendingIntent);
 
         try {

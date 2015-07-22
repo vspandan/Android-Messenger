@@ -29,6 +29,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -63,7 +64,7 @@ public class ChatActivity extends ActionBarActivity {
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
-    private Button buttonSend;
+    private ImageButton buttonSend;
     private boolean isAdmin = false;
     private GoogleCloudMessaging gcm;
     private Intent intent;
@@ -100,7 +101,7 @@ public class ChatActivity extends ActionBarActivity {
             nMgr.cancel(9999);
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
-        buttonSend = (Button) findViewById(R.id.buttonSend);
+        buttonSend = (ImageButton) findViewById(R.id.buttonSend);
         intent = new Intent(this, GCMNotificationIntentService.class);
 
         registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.chatmessage"));
