@@ -160,8 +160,7 @@ public class GcmDataSavingAsyncTask {
                 try {
                     msgService.sendMessage(jsondata).execute();
                 } catch (IOException ex) {
-                    ex.printStackTrace();
-                    msg = "SendMessage Error: " + ex.getMessage();
+                    msg = "SendMessage Error: No End User:  " + ex.getMessage();
                 }
                 return msg;
             }

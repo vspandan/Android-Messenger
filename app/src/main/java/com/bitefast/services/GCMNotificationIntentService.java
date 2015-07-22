@@ -13,15 +13,12 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
 
 import com.bitefast.R;
 import com.bitefast.activities.ChatActivity;
-import com.bitefast.beans.UserListBean;
 import com.bitefast.receiver.GcmBroadcastReceiver;
 import com.bitefast.sqlite.MySQLiteHelper;
 import com.bitefast.sqlite.MySQLiteHelper2;
-import com.bitefast.util.Constants;
 import com.bitefast.util.RegistrationDetails;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -29,12 +26,11 @@ import org.json.simple.JSONValue;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class GCMNotificationIntentService extends IntentService implements Constants {
+public class GCMNotificationIntentService extends IntentService {
 
     private String androidId = null;
     private SQLiteDatabase database = null;
@@ -53,13 +49,7 @@ public class GCMNotificationIntentService extends IntentService implements Const
 
         if (extras != null && messageType != null) {
             if (!extras.isEmpty()) {
-                if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR
-                        .equals(messageType)) {
-                    sendNotification("Send error", "Error", "Error");
-                } else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED
-                        .equals(messageType)) {
-                    sendNotification("Deleted messages on server", "Expired Message on Server", "Expired Message on Server");
-                } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE
+                    if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE
                         .equals(messageType)) {
                     String from = extras.get("FROM").toString();
                     String receivedMsg = extras.get("CHATMESSAGE").toString();
@@ -105,7 +95,7 @@ public class GCMNotificationIntentService extends IntentService implements Const
                             database.close();
                             dbHelper.close();
 
-                            if(new RegistrationDetails().isAdmin(getApplicationContext())) {
+                            if(new RegistrationDetails().isAdmin(getApplicationContext()) && insertId >0) {
 
                                 Intent intent1 = new Intent("com.bitefast.update.userlist");
                                 intent1.putExtra("CHATMESSAGE", receivedMsg);

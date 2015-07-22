@@ -90,7 +90,6 @@ public class MainActivity extends Activity {
                 msg = "Device registered, registration ID=" + regId;
                 new RegistrationDetails().storeRegistrationId(getApplicationContext(), regId);
             } catch (IOException ex) {
-                ex.printStackTrace();
                 msg = "Error: " + ex.getMessage();
             }
             return null;
@@ -148,16 +147,23 @@ public class MainActivity extends Activity {
                             new RegistrationDetails().setAdmin(getApplicationContext(),usr.getAdmin());
                             if (usr.getEmailId() == null || usr.getUserNum() == null) {
                                 i = new Intent(MainActivity.this, EmailInfoForm.class);
-
-                            } else if (usr.getAdmin()) {
-                                i = new Intent(MainActivity.this, UserListActivity.class);
-                            } else {
+                            }
+                            else {
                                 new RegistrationDetails().setUserName(getApplication(), usr.getUserName());
                                 new RegistrationDetails().setEmailId(getApplication(), usr.getEmailId());
                                 String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                                new GcmDataSavingAsyncTask().updateUserRegid(androidId, new RegistrationDetails().getRegistrationId(getApplicationContext()), new RegistrationDetails().getPhoneNum(getApplicationContext()));
-                                i = new Intent(MainActivity.this, ChatActivity.class);
-                                i.putExtra("SENDTO", "BITEFAST_ADMIN");
+                                try {
+                                    new GcmDataSavingAsyncTask().updateUserRegid(androidId, new RegistrationDetails().getRegistrationId(getApplicationContext()), new RegistrationDetails().getPhoneNum(getApplicationContext()));
+                                }
+                                catch(Error e){
+
+                                }
+                                if (usr.getAdmin()) {
+                                    i = new Intent(MainActivity.this, UserListActivity.class);
+                                } else {
+                                    i = new Intent(MainActivity.this, ChatActivity.class);
+                                    i.putExtra("SENDTO", "BITEFAST_ADMIN");
+                                }
                             }
                         }
                     }

@@ -15,7 +15,7 @@ public class MySQLiteHelper2 extends SQLiteOpenHelper {
     public static final String COLUMN_TIMESTAMP= "timestamp";
     public static final String COLUMN_REGPHN="regPhn";
 
-    private static final String DATABASE_NAME = "user.db";
+    private static final String DATABASE_NAME = "msgs.db";
     private static final int DATABASE_VERSION = 1;
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "

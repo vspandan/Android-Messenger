@@ -1,5 +1,6 @@
 package com.bitefast.services;
 
+import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -29,12 +30,20 @@ import java.util.List;
 /**
  * Created by rubbernecker on 14/7/15.
  */
-public class HeartBeatService extends Service {
+public class HeartBeatService extends IntentService {
 
 
     public Context context = null;
     private GcmKeepAlive gcmKeepAlive;
     private String androidId;
+
+    public HeartBeatService(){
+        super("HeartBeatService");
+    }
+
+    public HeartBeatService(String name) {
+        super(name);
+    }
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -42,10 +51,23 @@ public class HeartBeatService extends Service {
     }
 
     @Override
+    protected void onHandleIntent(Intent intent) {
+        String status=intent.getExtras().getString("Status");
+        if("off".equals(status)){
+            stopService(intent);
+            Log.d(this.getClass().getName(), "Lost Connectivity: Killing service");
+        }
+        if("on".equals(status)){
+            Log.d(this.getClass().getName(), "Regained Connectivity: Starting service");
+            startService(new Intent(getBaseContext(), HeartBeatService.class));
+        }
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         gcmKeepAlive.start();
-        Log.d("HeartBeatService", "starting heartbeat countdown timer");
+        Log.d(this.getClass().getName(), "starting heartbeat countdown timer");
         return START_STICKY;
     }
 
@@ -70,7 +92,7 @@ public class HeartBeatService extends Service {
             mContext = context;
             gTalkHeartBeatIntent = new Intent("com.google.android.intent.action.GTALK_HEARTBEAT");
             mcsHeartBeatIntent = new Intent("com.google.android.intent.action.MCS_HEARTBEAT");
-            Log.d("GcmKeepAlive", "starting heartbeat countdown timer ");
+            Log.d(this.getClass().getName(), "starting heartbeat countdown timer ");
             this.start();
         }
 
@@ -82,7 +104,7 @@ public class HeartBeatService extends Service {
 
         @Override
         public void onFinish() {
-            Log.d("GcmKeepAlive", "sending heart beat to keep gcm alive");
+            Log.d(this.getClass().getName(), "sending heart beat to keep gcm alive");
             //TODO find and send unsend messages
             new ReqUndeliveredMessage().execute();
             mContext.sendBroadcast(gTalkHeartBeatIntent);
@@ -106,17 +128,20 @@ public class HeartBeatService extends Service {
                 msgService = builder.build();
             }
 
-            reSendUndeliveredMessages();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
 
             try {
-                msgService.reSendMessages(new RegistrationDetails().getPhoneNum(context)).execute();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+                if (new RegistrationDetails().isAdmin(context))
+                    msgService.reSendMessages("BITEFAST_ADMIN").execute();
+                else
+                    msgService.reSendMessages(new RegistrationDetails().getPhoneNum(context)).execute();
+            } catch (Exception ex) {
+                Log.d(this.getClass().getName(), "Requesting messages : " + ex.getMessage());
             }
+            reSendUndeliveredMessages();
             return null;
         }
 
@@ -134,7 +159,7 @@ public class HeartBeatService extends Service {
             Cursor cursor = database.query(MySQLiteHelper.TABLE_CHAT,
                     chatDataSource.allColumns, MySQLiteHelper.COLUMN_SENT_STATUS + " = 0", null, null, null, null);
             int count = cursor.getCount();
-            Log.d("GcmKeepAlive", "resending unsent message : " + count);
+            Log.d(this.getClass().getName(), "resending unsent message : " + count);
 
             chats.clear();
             cursor.moveToFirst();
@@ -162,7 +187,7 @@ public class HeartBeatService extends Service {
                             dataBundle.put("MSGTIMESTAMP", "" + chat.getTimestamp());
                             dataBundle.put("ID", "" + chat.getMsgId());
                             try {
-                                /*Log.d("GcmKeepAlive", "resending message : " + dataBundle);*/
+                                /*Log.d(this.getClass().getName(), "resending message : " + dataBundle);*/
                                 msgService.sendMessage(JSONValue.toJSONString(dataBundle)).execute();
                             } catch (Exception ex){
                                 ex.printStackTrace();
@@ -173,13 +198,15 @@ public class HeartBeatService extends Service {
                 t.start();
                 t.join();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.d(this.getClass().getName(), "resending unsent message : " + e.getMessage());
             } catch (Error e){
-
+                Log.d(this.getClass().getName(), "resending unsent message : " + e.getMessage());
             }
 
         }
     }
+
+
 
 
 }

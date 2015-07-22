@@ -237,7 +237,21 @@ public class MessagingEndpoint {
     }
 
 
+    private boolean findMsgId(String msgId) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query.Filter heightMinFilter =
+                new Query.FilterPredicate("ID",
+                        Query.FilterOperator.EQUAL, msgId
+                );
+        Query q = new Query("MessageLog").setFilter(heightMinFilter);
+        PreparedQuery pq = datastore.prepare(q);
+        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1));
+        return !results.isEmpty();
+    }
+
     private void saveMessage(@Named("deviceId") String deviceId, @Named("from") String from, @Named("to") String to, @Named("message") String message, @Named("id") String id, @Named("timeStamp") String timeStamp, boolean delivered) {
+        if(findMsgId(id))
+            return;
         Entity customer = new Entity("MessageLog", id);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         customer.setProperty("DeviceId", deviceId);
