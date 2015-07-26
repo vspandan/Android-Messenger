@@ -64,7 +64,7 @@ public class ChatActivity extends ActionBarActivity {
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
-    private Button buttonSend;
+    private ImageButton buttonSend;
     private boolean isAdmin = false;
     private GoogleCloudMessaging gcm;
     private Intent intent;
@@ -101,7 +101,7 @@ public class ChatActivity extends ActionBarActivity {
             nMgr.cancel(9999);
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(0xffffac26));
-        buttonSend = (Button) findViewById(R.id.buttonSend);
+        buttonSend = (ImageButton) findViewById(R.id.buttonSend);
         intent = new Intent(this, GCMNotificationIntentService.class);
 
         registerReceiver(broadcastReceiver, new IntentFilter("com.bitefast.chatmessage"));
