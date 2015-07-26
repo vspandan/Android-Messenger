@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +57,10 @@ public class UserListArrayAdapter extends ArrayAdapter<UserListItem> {
         UserListItem itemValue = getItem(position);
         TextView item=(TextView) row.findViewById(android.R.id.text1);
         item.setText(itemValue.message);
-        item.setBackgroundColor(itemValue.readStatus ? Color.LTGRAY : Color.GRAY);
+        item.setTextColor(Color.DKGRAY);
+        item.setTextSize(TypedValue.COMPLEX_UNIT_SP,30);
+
+        //item.setBackgroundColor(itemValue.readStatus ? Color.LTGRAY : Color.GRAY);
         return row;
     }
 

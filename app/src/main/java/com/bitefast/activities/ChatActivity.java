@@ -29,6 +29,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -110,7 +111,7 @@ public class ChatActivity extends ActionBarActivity {
         gcm = GoogleCloudMessaging.getInstance(context);
 
         chatText = (EditText) findViewById(R.id.chatText);
-        chatText.setBackgroundColor(Color.WHITE);
+        //chatText.setBackgroundColor(Color.WHITE);
         chatText.setOnKeyListener(new OnKeyListener() {
 
             public boolean onKey(View v, int keyCode, KeyEvent event) {

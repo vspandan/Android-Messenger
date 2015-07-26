@@ -7,65 +7,61 @@
     tools:context="com.bitefast.activities.ChatActivity">
 
     <!-- The main content view -->
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/mainContent"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:isScrollContainer="false" >
 
-        <ListView
-            android:id="@+id/listView1"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:isScrollContainer="false"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="50dp"></ListView>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/form"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:paddingLeft="5dp"
-            android:paddingBottom="5dp"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:padding="20dp">
 
             <EditText
                 android:id="@+id/chatText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
                 android:layout_toLeftOf="@+id/buttonSend"
-                android:layout_toStartOf="@+id/buttonSend"
-                android:background="@drawable/bubble_b1"
-                android:paddingBottom="10dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
-                android:ems="10"
-                android:gravity="bottom|left"
-                android:hint="Talk to BiteFast"
-                android:inputType="textMultiLine"
-                android:lines="1" />
+                android:autoText="true"
+                android:hint="type message" />
 
             <Button
                 android:id="@+id/buttonSend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Send"
-                android:layout_alignBottom="@+id/chatText"
+                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
+                android:background="@color/background_floating_material_dark"
+                android:text="Send"
+                android:textColor="@color/background_material_light"/>
+
+            <ListView
+                android:id="@+id/listView1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="20dp"
+                android:layout_above="@+id/chatText"
+                android:layout_marginTop="45dp"
+                android:listSelector="@android:color/transparent"
+                android:transcriptMode="alwaysScroll"
+                android:dividerHeight="0dp"
+                android:divider="@null" />
+
+
+
+
         </RelativeLayout>
+    </LinearLayout>
 
 
-    </RelativeLayout>
     <!-- The navigation drawer -->
     <RelativeLayout
         android:layout_width="280dp"

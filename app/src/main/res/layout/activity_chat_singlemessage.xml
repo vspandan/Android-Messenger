@@ -1,48 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    >
-
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
     <LinearLayout
-        android:id="@+id/singleMessageContainer"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/singleMessage"
+
+        <LinearLayout
+            android:id="@+id/contentWithBackground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/bubble_b"
-            android:paddingLeft="5dip"
-            android:paddingTop="5dip"
-            android:paddingBottom="5dip"
-            android:paddingRight="5dip"
-            android:text="Hello bubbles!"
-            android:textColor="@android:color/tertiary_text_dark"
-            android:textSize="18dp" />
-        <LinearLayout
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="bottom"
-            android:id="@+id/statusTime"
-            >
+            android:layout_gravity="right"
+            android:background="@drawable/in_bg"
+            android:paddingLeft="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="vertical">
+
             <TextView
-                android:id="@+id/time"
+                android:id="@+id/singleMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:paddingRight="3dp"
-                android:text="10:10"/>
-            <ImageView
-                android:id="@+id/status"
-                android:layout_width="10dip"
-                android:layout_height="10dip"
-                android:layout_gravity="bottom"
-                android:src="@drawable/msg_pending"/>
-        </LinearLayout>
-    </LinearLayout>
+                android:textColor="@android:color/black"
+                android:text="helooe fsifjskjs"
+                android:maxWidth="240dp" />
 
-</LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="30sp"
+            android:layout_gravity="right"
+            android:textSize="12sp"
+            android:text="10:10"
+            android:textColor="@android:color/darker_gray" />
+
+
+    </LinearLayout>
+</RelativeLayout>

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bitefast.beans.ChatMessage;
@@ -42,6 +44,7 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 		super.add(object);
 	}
 
+
 	public ChatArrayAdapter(Context context, int textViewResourceId) {
 		super(context, textViewResourceId);
 	}
@@ -55,64 +58,89 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-		if (row == null) {
-			LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			row = inflater.inflate(R.layout.activity_chat_singlemessage, parent, false);
+		ViewHolder holder;
+		chatMessageObj = getItem(position);
+		LayoutInflater vi = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		if (convertView == null) {
+			convertView = vi.inflate(R.layout.activity_chat_singlemessage, null);
+			holder = createViewHolder(convertView);
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
 		}
 
-		singleMessageContainer = (LinearLayout) row.findViewById(R.id.singleMessageContainer);
-        chatText = (TextView) row.findViewById(R.id.singleMessage);
-		timeView=(TextView) row.findViewById(R.id.time);
-		imageView = (ImageView) row.findViewById(R.id.status);
-        params = (LinearLayout.LayoutParams)chatText.getLayoutParams();
-        chatMessageObj = getItem(position);
-        chatText.setText(chatMessageObj.getMessage());
-		timeView.setText(chatMessageObj.gettS());
-		status_Time=(LinearLayout)row.findViewById(R.id.statusTime);
-		if (chatMessageObj.isLeft()) {
-            chatText.setPadding(30, 10, 15, 10);
-            params.setMargins(0, 10, 0, 4);
-			imageView.setVisibility(View.INVISIBLE);
-        }
-		else {
-            chatText.setPadding(20, 10, 25, 10);
-            params.setMargins(10, 10, 0, 4);
-        }
-		chatText.setBackgroundResource(chatMessageObj.isLeft() ? R.drawable.bubble_b : R.drawable.bubble_c);
-		chatText.setTextColor(Color.BLACK);
-
-		if(!chatMessageObj.isSent() && !chatMessageObj.isDelivered()){
-			imageView.setImageResource(R.drawable.msg_pending);
-		}
-		if(chatMessageObj.isSent()){
-			imageView.setImageResource(R.drawable.sent);
-		}
-		if(chatMessageObj.isDelivered()){
-			imageView.setImageResource(R.drawable.delivered);
+		boolean myMsg = chatMessageObj.isLeft() ;//Just a dummy check to simulate whether it me or other sender
+		setAlignment(holder, myMsg);
+		holder.singleMessage.setText(chatMessageObj.getMessage());
+		holder.time.setText(chatMessageObj.gettS());
+		if(position-1>0&&getItem(position-1).isLeft()==myMsg){
+			holder.time.setVisibility(View.GONE);
 		}
 
-        if(position>=1) {
-            ChatMessage prev = getItem(position - 1);
-            if (prev != null) {
-                if (prev.isLeft() == chatMessageObj.isLeft()) {
-                    params.setMargins(10, 0, 7, 0);
-                    chatText.setPadding(20,10,15,10);
-                    chatText.setBackgroundResource(chatMessageObj.isLeft() ? R.drawable.bubble_b1 : R.drawable.bubble_c1);
-                }
-            }
-        }
-		else{
-			params.setMargins(0, 20, 0, 4);
-		}
-        chatText.setLayoutParams(params);
-        singleMessageContainer.setGravity(chatMessageObj.isLeft() ? Gravity.LEFT : Gravity.RIGHT);
-
-        return row;
+		return convertView;
 	}
 
 	public Bitmap decodeToBitmap(byte[] decodedByte) {
 		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+	}
+
+
+	private void setAlignment(ViewHolder holder, boolean isMe) {
+		if (!isMe) {
+			holder.contentWithBG.setBackgroundResource(R.drawable.in_bg);
+
+			LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) holder.contentWithBG.getLayoutParams();
+			layoutParams.gravity = Gravity.RIGHT;
+			holder.contentWithBG.setLayoutParams(layoutParams);
+
+			RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.content.getLayoutParams();
+			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+			lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+			holder.content.setLayoutParams(lp);
+			layoutParams = (LinearLayout.LayoutParams) holder.singleMessage.getLayoutParams();
+			layoutParams.gravity = Gravity.RIGHT;
+			holder.singleMessage.setLayoutParams(layoutParams);
+
+			layoutParams = (LinearLayout.LayoutParams) holder.time.getLayoutParams();
+			layoutParams.gravity = Gravity.RIGHT;
+			holder.time.setLayoutParams(layoutParams);
+		} else {
+			holder.contentWithBG.setBackgroundResource(R.drawable.out_bg);
+
+			LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) holder.contentWithBG.getLayoutParams();
+			layoutParams.gravity = Gravity.LEFT;
+			holder.contentWithBG.setLayoutParams(layoutParams);
+
+			RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.content.getLayoutParams();
+			lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+			holder.content.setLayoutParams(lp);
+			layoutParams = (LinearLayout.LayoutParams) holder.singleMessage.getLayoutParams();
+			layoutParams.gravity = Gravity.LEFT;
+			holder.singleMessage.setLayoutParams(layoutParams);
+
+			layoutParams = (LinearLayout.LayoutParams) holder.time.getLayoutParams();
+			layoutParams.gravity = Gravity.LEFT;
+			holder.time.setLayoutParams(layoutParams);
+		}
+	}
+
+	private ViewHolder createViewHolder(View v) {
+		ViewHolder holder = new ViewHolder();
+		holder.singleMessage = (TextView) v.findViewById(R.id.singleMessage);
+		holder.content = (LinearLayout) v.findViewById(R.id.content);
+		holder.contentWithBG = (LinearLayout) v.findViewById(R.id.contentWithBackground);
+		holder.time = (TextView) v.findViewById(R.id.time);
+		return holder;
+	}
+
+
+	private static class ViewHolder {
+		public TextView singleMessage;
+		public TextView time;
+		public LinearLayout content;
+		public LinearLayout contentWithBG;
 	}
 
 }

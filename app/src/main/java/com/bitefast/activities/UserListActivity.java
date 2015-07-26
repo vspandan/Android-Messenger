@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -86,8 +87,7 @@ public class UserListActivity extends ActionBarActivity {
             }
         });
 
-        userListArrayAdapter = new UserListArrayAdapter(
-                getApplicationContext(), android.R.layout.simple_list_item_1);
+        userListArrayAdapter = new UserListArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1);
 
         userListArrayAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
